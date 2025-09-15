@@ -1,7 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { userService } from "../services/user.service";
+
 import { sessionStore } from "@/lib/session/session-store";
+
+import { userService } from "../services/user.service";
 
 export function useUpdateUserPicture() {
   return useMutation({

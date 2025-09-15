@@ -1,13 +1,15 @@
 // import { DEFAULT_DATE_RANGE } from "@/lib/constants/date.constants";
 
-type SearchParams = {
+interface SearchParams {
   selectedRange?: "day" | "week" | "month" | "trimester" | "year";
-};
+}
 
-export default async function Dashboard({}: // searchParams,
-{
+export default async function Dashboard({
+  searchParams,
+}: {
   searchParams: Promise<SearchParams>;
 }) {
+  console.log("🚀 ~ Dashboard ~ searchParams:", searchParams);
   // const { selectedRange = "day" } = await searchParams;
 
   return (

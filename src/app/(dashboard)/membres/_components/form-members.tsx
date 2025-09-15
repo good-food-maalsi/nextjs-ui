@@ -1,5 +1,12 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
 import { FileUpload } from "@/components/ui/file-upload";
 import {
@@ -19,16 +26,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { authService } from "@/services/auth.service";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { queryClient } from "@/lib/config/query/queryClient";
 import { memberFormSchema } from "@/lib/schemas/user.schema";
-import { MemberForm } from "@/lib/types/user.types";
-import { useState } from "react";
+import type { MemberForm } from "@/lib/types/user.types";
+import { authService } from "@/services/auth.service";
 
 export default function FormMembers() {
   const [selectedRole, setSelectedRole] = useState<

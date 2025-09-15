@@ -1,8 +1,9 @@
 "use client";
 
-import { sessionStore } from "@/lib/session/session-store";
-import { Session } from "@/lib/types/session.types";
 import { useEffect } from "react";
+
+import { sessionStore } from "@/lib/session/session-store";
+import type { Session } from "@/lib/types/session.types";
 
 export function SessionHydrater({ session }: { session: Session }) {
   useEffect(() => {

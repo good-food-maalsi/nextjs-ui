@@ -1,7 +1,9 @@
-import api from "@/lib/config/api.config";
-import { ConfigAxios } from "@/lib/types/axios";
-import { useLayoutEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useLayoutEffect } from "react";
+
+import api from "@/lib/config/api.config";
+import type { ConfigAxios } from "@/lib/types/axios";
+
 import { authService } from "../services/auth.service";
 
 export const useAuthInterceptors = () => {

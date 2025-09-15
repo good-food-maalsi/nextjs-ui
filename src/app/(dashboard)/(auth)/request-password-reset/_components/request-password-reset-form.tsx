@@ -1,8 +1,8 @@
 "use client";
-import React from "react";
-import Link from "next/link";
-import { useRequestPasswordReset } from "../_hooks/use-request-password-reset";
 import { KeyRound, Loader2 } from "lucide-react";
+import Link from "next/link";
+import React from "react";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -20,6 +20,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+
+import { useRequestPasswordReset } from "../_hooks/use-request-password-reset";
 
 const RequestPasswordResetForm = () => {
   const { form, isPending, onSubmit } = useRequestPasswordReset();

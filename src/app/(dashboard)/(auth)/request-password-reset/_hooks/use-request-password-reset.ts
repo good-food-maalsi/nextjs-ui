@@ -1,12 +1,14 @@
-import {
-  requestPasswordResetSchema,
-  TrequestPasswordResetSchema,
-} from "@/lib/schemas/auth.schema";
-import { authService } from "@/services/auth.service";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+
+import type {
+  TrequestPasswordResetSchema} from "@/lib/schemas/auth.schema";
+import {
+  requestPasswordResetSchema
+} from "@/lib/schemas/auth.schema";
+import { authService } from "@/services/auth.service";
 
 export const useRequestPasswordReset = () => {
   const form = useForm<TrequestPasswordResetSchema>({

@@ -1,5 +1,9 @@
 "use client";
 
+import { Eye, EyeOff, Loader2, UserPlus } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,16 +22,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useFormMutation } from "@/hooks/use-password-register";
-import { Eye, EyeOff, Loader2, UserPlus } from "lucide-react";
-import Link from "next/link";
-import { useState } from "react";
 
-type RegisterFormProps = {
+interface RegisterFormProps {
   formTitle: string;
   children: React.ReactNode;
   magicToken: string;
   successMessage: string;
-};
+}
 
 export const PasswordRegisterForm = ({
   formTitle,
@@ -80,13 +81,14 @@ export const PasswordRegisterForm = ({
                           type={showPassword ? "text" : "password"}
                         />
                       </FormControl>
-                      <div
+                      <button
+                        type="button"
                         className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer"
                         onClick={() => setShowPassword(!showPassword)}
                         data-testid="eye-icon"
                       >
                         {showPassword ? <EyeOff /> : <Eye />}
-                      </div>
+                      </button>
                     </div>
                     <FormMessage />
                   </FormItem>
@@ -112,7 +114,8 @@ export const PasswordRegisterForm = ({
                           type={showPasswordConfirmation ? "text" : "password"}
                         />
                       </FormControl>
-                      <div
+                      <button
+                        type="button"
                         className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer"
                         onClick={() =>
                           setShowPasswordConfirmation(!showPasswordConfirmation)
@@ -120,7 +123,7 @@ export const PasswordRegisterForm = ({
                         data-testid="eye-icon"
                       >
                         {showPasswordConfirmation ? <EyeOff /> : <Eye />}
-                      </div>
+                      </button>
                     </div>
                     <FormMessage />
                   </FormItem>

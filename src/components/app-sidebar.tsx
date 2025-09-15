@@ -1,7 +1,5 @@
 "use client";
 
-import { Session } from "@/lib/types/session.types";
-import { cn } from "@/lib/utils";
 import { useMutation } from "@tanstack/react-query";
 import {
   BadgeCheck,
@@ -12,12 +10,19 @@ import {
   Settings,
   Users,
 } from "lucide-react";
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+
+import type { Session } from "@/lib/types/session.types";
+import { cn } from "@/lib/utils";
+import { renderRoleName } from "@/lib/utils/role.utils";
+
+import { authService } from "../services/auth.service";
 import { AccountSettingsDialog } from "./account-settings-dialog";
 import { Icons } from "./icons";
-import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
+import { Avatar, AvatarFallback,AvatarImage } from "./ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -41,9 +46,6 @@ import {
   SidebarRail,
   useSidebar,
 } from "./ui/sidebar";
-import Link from "next/link";
-import { renderRoleName } from "@/lib/utils/role.utils";
-import { authService } from "../services/auth.service";
 
 const firstGroupItems = [
   {

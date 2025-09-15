@@ -1,12 +1,15 @@
 "use client";
 
+import type { Table } from "@tanstack/react-table";
 import { useState } from "react";
-import { Table } from "@tanstack/react-table";
+import { createPortal } from "react-dom";
+
+import { useDeleteManyMembers } from "@/app/(dashboard)/membres/_hooks/use-delete-members";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -14,11 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-import { useDeleteManyMembers } from "@/app/(dashboard)/membres/_hooks/use-delete-members";
-import { createPortal } from "react-dom";
-import { User } from "@/lib/types/user.types";
 import { MutationTypeEnum } from "@/lib/types/enum";
+import type { User } from "@/lib/types/user.types";
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;

@@ -1,13 +1,14 @@
-import { Button } from "@/components/ui/button";
 import { createPortal } from "react-dom";
+
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-type DeleteModalProps = {
+interface DeleteModalProps {
   isOpen: boolean;
   onClose: () => void;
   onDelete: () => void;
   siteName?: string;
-};
+}
 
 export const DeleteModal = ({
   isOpen,

@@ -1,4 +1,5 @@
 import { isServer, QueryClient } from "@tanstack/react-query";
+
 import { queryConfig } from "@/lib/config/query/query.config";
 
 let browserQueryClient: QueryClient | undefined = undefined;

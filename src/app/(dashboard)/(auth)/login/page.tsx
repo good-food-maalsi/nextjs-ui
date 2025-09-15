@@ -1,5 +1,6 @@
-import { LoginForm } from "./_components/login-form";
 import { AuthHeader } from "@/components/auth-header";
+
+import { LoginForm } from "./_components/login-form";
 
 export default function Login() {
   return (

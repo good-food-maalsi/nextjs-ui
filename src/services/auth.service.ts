@@ -1,10 +1,12 @@
 import { importSPKI, jwtVerify } from "jose";
-import { NextResponse } from "next/server";
+import type { NextResponse } from "next/server";
+
 import api from "@/lib/config/api.config";
 import { SESSION_MAX_AGE } from "@/lib/constants/auth.constants";
-import { TrequestPasswordResetSchema } from "@/lib/schemas/auth.schema";
+import type { TrequestPasswordResetSchema } from "@/lib/schemas/auth.schema";
+import type { MemberForm } from "@/lib/types/user.types";
 import { decodeBase64Key } from "@/lib/utils/token.utils";
-import { MemberForm } from "@/lib/types/user.types";
+
 import { DOCKER_SERVICE_BASE_URL } from "../lib/constants/global.constants";
 
 export const authService = {

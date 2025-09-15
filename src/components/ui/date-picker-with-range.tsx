@@ -4,7 +4,7 @@ import { format, subDays } from "date-fns";
 import { fr } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
 import { useState } from "react";
-import { DateRange } from "react-day-picker";
+import type { DateRange } from "react-day-picker";
 
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -15,11 +15,11 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
-type DatePickerWithRangeProps = {
+interface DatePickerWithRangeProps {
   className?: string;
   onSelect?: (date: DateRange | undefined) => void;
   defaultDateRange?: DateRange;
-};
+}
 
 export function DatePickerWithRange({
   className,

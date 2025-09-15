@@ -1,5 +1,11 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -17,15 +23,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { userService } from "@/services/user.service";
-import { sessionStore } from "@/lib/session/session-store";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { baseUserFormSchema } from "@/lib/schemas/user.schema";
-import { UserForm } from "@/lib/types/user.types";
+import { sessionStore } from "@/lib/session/session-store";
+import type { UserForm } from "@/lib/types/user.types";
+import { userService } from "@/services/user.service";
 
 interface EditUsernameDialogProps {
   open: boolean;

@@ -1,6 +1,6 @@
 import api from "@/lib/config/api.config";
 import { userSchema, usersSchema } from "@/lib/schemas/user.schema";
-import { User } from "@/lib/types/user.types";
+import type { User } from "@/lib/types/user.types";
 
 interface IUserService {
   findAll: () => Promise<User[]>;

@@ -1,5 +1,6 @@
 import { importSPKI, jwtVerify } from "jose";
-import { Session } from "@/lib/types/session.types";
+
+import type { Session } from "@/lib/types/session.types";
 
 export const encodeBase64Key = (key: string) =>
   Buffer.from(key).toString("base64");

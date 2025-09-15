@@ -1,5 +1,14 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { ChevronRight } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+
+import { useDeleteYourself } from "@/app/(dashboard)/membres/_hooks/use-delete-members";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,24 +19,17 @@ import {
 import { FileUpload } from "@/components/ui/file-upload";
 import { Form } from "@/components/ui/form";
 import { Separator } from "@/components/ui/separator";
+import { useUpdateUserPicture } from "@/hooks/use-update-user-picture";
 import { userFormSchema } from "@/lib/schemas/user.schema";
 import { sessionStore } from "@/lib/session/session-store";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ChevronRight } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import type { UserForm } from "@/lib/types/user.types";
+
+import { BASE_URL } from "../lib/constants/global.constants";
+import { authService } from "../services/auth.service";
 import { EditEmailDialog } from "./edit-email-dialog";
 import { EditPasswordDialog } from "./edit-password-dialog";
 import { EditUsernameDialog } from "./edit-username-dialog";
 import { Tabs, TabsContent } from "./ui/tabs";
-import { UserForm } from "@/lib/types/user.types";
-import { useMutation } from "@tanstack/react-query";
-import { BASE_URL } from "../lib/constants/global.constants";
-import { useDeleteYourself } from "@/app/(dashboard)/membres/_hooks/use-delete-members";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { useUpdateUserPicture } from "@/hooks/use-update-user-picture";
-import { authService } from "../services/auth.service";
 
 interface AccountSettingsDialogProps {
   open: boolean;

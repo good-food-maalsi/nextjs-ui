@@ -1,10 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
-import { queryClient } from "@/lib/config/query/queryClient";
-import { userService } from "@/services/user.service";
-import { toast } from "sonner";
 import { AxiosError } from "axios";
-import { User } from "@/lib/types/user.types";
+import { toast } from "sonner";
+
+import { queryClient } from "@/lib/config/query/queryClient";
 import { roleErrorMessages } from "@/lib/dictionary/member.dictionary";
+import type { User } from "@/lib/types/user.types";
+import { userService } from "@/services/user.service";
 
 export function useMemberMutations() {
   const updateRoleMutation = useMutation({

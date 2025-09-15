@@ -2,8 +2,8 @@ import { AppSidebar } from "@/components/app-sidebar";
 import Header from "@/components/header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { serverSession } from "@/lib/session/server-session";
-import AuthInterceptorsProvider from "@/providers/auth-interceptors-provider";
 import { SessionHydrater } from "@/lib/session/session-hydrater";
+import AuthInterceptorsProvider from "@/providers/auth-interceptors-provider";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;

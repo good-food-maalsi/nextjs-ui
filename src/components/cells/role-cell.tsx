@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -8,13 +10,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useState } from "react";
 
-type RoleCellProps = {
+interface RoleCellProps {
   role: string;
   isEditing?: boolean;
   onRoleChange?: (value: string) => void;
-};
+}
 
 const getRoleButton = (role: string) => {
   switch (role) {

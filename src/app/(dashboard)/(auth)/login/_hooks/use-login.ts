@@ -1,10 +1,12 @@
-import { loginSchema, TLoginSchema } from "@/lib/schemas/auth.schema";
-import { authService } from "@/services/auth.service";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+
+import type { TLoginSchema } from "@/lib/schemas/auth.schema";
+import { loginSchema } from "@/lib/schemas/auth.schema";
+import { authService } from "@/services/auth.service";
 
 export const useLogin = () => {
   const router = useRouter();

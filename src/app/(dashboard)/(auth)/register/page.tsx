@@ -1,6 +1,7 @@
-import { PasswordRegisterForm } from "@/components/form/password-registration-form";
-import { AuthHeader } from "@/components/auth-header";
 import { redirect } from "next/navigation";
+
+import { AuthHeader } from "@/components/auth-header";
+import { PasswordRegisterForm } from "@/components/form/password-registration-form";
 
 export default async function Register({
   searchParams,

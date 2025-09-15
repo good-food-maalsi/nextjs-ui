@@ -1,11 +1,14 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { Trash2, Upload, X } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
-import { FileRejection, useDropzone } from "react-dropzone";
+import type { FileRejection } from "react-dropzone";
+import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
+
+import { cn } from "@/lib/utils";
+
 import { Badge } from "./badge";
 import { Button } from "./button";
 
@@ -58,7 +61,7 @@ export const FileUpload = ({
         return true;
       });
 
-      let newFiles =
+      const newFiles =
         maxFiles === 1
           ? validFiles
           : [...value, ...validFiles].slice(0, maxFiles);
@@ -66,7 +69,7 @@ export const FileUpload = ({
       onChange?.(newFiles);
       if (size === "icon") handleImageChange(newFiles);
     },
-    [value, maxFiles, maxSize, onChange]
+    [value, maxFiles, maxSize, onChange, size]
   );
 
   const removeFile = (fileToRemove: File) => {
@@ -117,6 +120,15 @@ export const FileUpload = ({
         onClick={() => {
           if (value.length < maxFiles) open();
         }}
+        onKeyDown={(e) => {
+          if ((e.key === "Enter" || e.key === " ") && value.length < maxFiles) {
+            e.preventDefault();
+            open();
+          }
+        }}
+        role="button"
+        tabIndex={0}
+        aria-label="Télécharger des fichiers"
       >
         <input type="file" {...getInputProps()} />
         <Upload

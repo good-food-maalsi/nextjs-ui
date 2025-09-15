@@ -1,7 +1,8 @@
 import "server-only";
 
 import { cookies } from "next/headers";
-import { Session } from "@/lib/types/session.types";
+
+import type { Session } from "@/lib/types/session.types";
 import { decrypt } from "@/lib/utils/token.utils";
 
 export const serverSession = {

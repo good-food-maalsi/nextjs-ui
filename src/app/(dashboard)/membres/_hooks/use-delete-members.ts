@@ -1,9 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { queryClient } from "@/lib/config/query/queryClient";
-import { userService } from "@/services/user.service";
 import { AxiosError } from "axios";
+import { toast } from "sonner";
+
+import { queryClient } from "@/lib/config/query/queryClient";
 import { deleteErrorMessages } from "@/lib/dictionary/member.dictionary";
+import { userService } from "@/services/user.service";
 
 export const useDeleteMember = () => {
   return useMutation({

@@ -1,5 +1,5 @@
-import { Session } from "@/lib/types/session.types";
 import { sessionState } from "@/lib/config/session.config";
+import type { Session } from "@/lib/types/session.types";
 
 export const sessionStore = {
   get: () => sessionState.get(),

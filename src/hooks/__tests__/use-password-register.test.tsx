@@ -1,10 +1,11 @@
-import { describe, beforeEach, vi, expect, it } from "vitest";
-import { toastMock } from "@/tests/mocks/toast.mock";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { act, renderHook } from "@testing-library/react";
+import { beforeEach, describe, expect, it,vi } from "vitest";
+
 import { authServiceMock, clearAuthMocks } from "@/tests/mocks/auth.mock";
 import { clearRouterMocks, mockRouter } from "@/tests/mocks/router.mock";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { clearToastMocks } from "@/tests/mocks/toast.mock";
-import { act, renderHook } from "@testing-library/react";
+import { clearToastMocks,toastMock  } from "@/tests/mocks/toast.mock";
+
 import { useFormMutation } from "../use-password-register";
 
 vi.mock("next/navigation", () => ({
