@@ -1,15 +1,7 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import {
-  BadgeCheck,
-  ChartLine,
-  ChevronsUpDown,
-  Home,
-  LogOut,
-  Settings,
-  Users,
-} from "lucide-react";
+import { BadgeCheck, ChevronsUpDown, LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -22,7 +14,7 @@ import { renderRoleName } from "@/lib/utils/role.utils";
 import { authService } from "../services/auth.service";
 import { AccountSettingsDialog } from "./account-settings-dialog";
 import { Icons } from "./icons";
-import { Avatar, AvatarFallback,AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,7 +24,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { Separator } from "./ui/separator";
 import {
   Sidebar,
   SidebarContent,
@@ -47,38 +38,50 @@ import {
   useSidebar,
 } from "./ui/sidebar";
 
-const firstGroupItems = [
-  {
-    title: "Accueil",
-    url: "/",
-    icon: Home,
-  },
-  {
-    title: "Analyses des données",
-    url: "/analyses",
-    icon: ChartLine,
-  },
-];
-
-const secondGroupItems = [
-  {
-    title: "Gestion du personnel",
-    url: "/membres",
-    icon: Users,
-  },
-  {
-    title: "Paramètres",
-    url: "/parametres",
-    icon: Settings,
-  },
-];
-
 interface AppSidebarProps {
   session: Session;
 }
 
 export function AppSidebar({ session }: AppSidebarProps) {
   const pathname = usePathname();
+
+  const firstGroupItems = [
+    {
+      title: "Tableau de bord",
+      url: "/",
+      icon: pathname === "/" ? Icons.homeOutline : Icons.home,
+    },
+    {
+      title: "Commandes",
+      url: "/commmandes",
+      icon: pathname === "/commmandes" ? Icons.commandOutline : Icons.command,
+    },
+    {
+      title: "Plats",
+      url: "/plats",
+      icon: pathname === "/plats" ? Icons.productOutline : Icons.product,
+    },
+    {
+      title: "Finance",
+      url: "/finance",
+      icon: pathname === "/finance" ? Icons.financeOutline : Icons.finance,
+    },
+    {
+      title: "Analyses des données",
+      url: "/analyses",
+      icon: pathname === "/analyses" ? Icons.analyticsOutline : Icons.analytics,
+    },
+    {
+      title: "Réductions",
+      url: "/reductions",
+      icon: pathname === "/reductions" ? Icons.discountOutline : Icons.discount,
+    },
+    {
+      title: "Gestion du personnel",
+      url: "/membres",
+      icon: pathname === "/membres" ? Icons.clientOutline : Icons.client,
+    },
+  ];
 
   const [isAccountDialogOpen, setIsAccountDialogOpen] = useState(false);
 
@@ -141,7 +144,6 @@ export function AppSidebar({ session }: AppSidebarProps) {
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
-          <RenderSecondGroup session={session} pathname={pathname} />
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
@@ -234,36 +236,5 @@ export function AppSidebar({ session }: AppSidebarProps) {
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  );
-}
-
-interface RenderSecondGroupProps extends AppSidebarProps {
-  pathname: string;
-}
-
-function RenderSecondGroup({ session, pathname }: RenderSecondGroupProps) {
-  if (session.role === "EDITOR" || session.role === "READER") return null;
-  return (
-    <>
-      <Separator className="my-2" />
-      <SidebarGroupContent>
-        <SidebarMenu>
-          {secondGroupItems.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton
-                variant="default"
-                asChild
-                isActive={pathname === item.url}
-              >
-                <a href={item.url}>
-                  <item.icon />
-                  <span className="truncate">{item.title}</span>
-                </a>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
-      </SidebarGroupContent>
-    </>
   );
 }

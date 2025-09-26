@@ -4,6 +4,7 @@ import { Eye, EyeOff, Loader2, LockKeyhole } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
+import { useLogin } from "@/app/(auth)/login/_hooks/use-login";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -21,8 +22,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-
-import { useLogin } from "../_hooks/use-login";
 
 export const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -87,7 +86,6 @@ export const LoginForm = () => {
                         />
                       </FormControl>
                       <button
-                        type="button"
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer"
                         data-testid="eye-icon"

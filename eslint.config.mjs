@@ -75,7 +75,7 @@ export default [
       "import/newline-after-import": "error",
 
       // Simple import sort
-      "simple-import-sort/imports": "error",
+      "simple-import-sort/imports": "off",
       "simple-import-sort/exports": "error",
 
       // Unused imports

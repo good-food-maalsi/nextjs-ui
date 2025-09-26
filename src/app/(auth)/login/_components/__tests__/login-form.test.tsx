@@ -1,7 +1,7 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { test, expect, beforeEach, describe, vi } from "vitest";
 
 import { authServiceMock, clearAuthMocks } from "@/tests/mocks/auth.mock";
 import { clearRouterMocks, mockRouter } from "@/tests/mocks/router.mock";
