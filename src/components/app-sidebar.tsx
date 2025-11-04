@@ -53,8 +53,8 @@ export function AppSidebar({ session }: AppSidebarProps) {
     },
     {
       title: "Commandes",
-      url: "/commmandes",
-      icon: pathname === "/commmandes" ? Icons.commandOutline : Icons.command,
+      url: "/commandes",
+      icon: pathname === "/commandes" ? Icons.commandOutline : Icons.command,
     },
     {
       title: "Plats",
