@@ -6,6 +6,14 @@ import { X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  paymentStatusLabels,
+  orderStatusLabels,
+  deliveryStatusLabels,
+  PaymentStatus,
+  OrderStatus,
+  DeliveryStatus,
+} from "@/app/(dashboard)/commandes/columns";
 
 import { DataTableFacetedFilter } from "./data-table-faceted-filter";
 import { DataTableDateFilter } from "./data-table-filter-date";
@@ -45,10 +53,8 @@ export function DataTableToolbar<TData>({
               table={table}
               column={table.getColumn("statutPaiement")!}
               title="Paiement"
-              options={Array.from(
-                table.getColumn("statutPaiement")!.getFacetedUniqueValues().keys()
-              ).map((value: string) => ({
-                label: value,
+              options={Object.values(PaymentStatus).map((value) => ({
+                label: paymentStatusLabels[value],
                 value,
               }))}
               canMultipleSlection={true}
@@ -61,10 +67,8 @@ export function DataTableToolbar<TData>({
               table={table}
               column={table.getColumn("statutCommande")!}
               title="Commande"
-              options={Array.from(
-                table.getColumn("statutCommande")!.getFacetedUniqueValues().keys()
-              ).map((value: string) => ({
-                label: value,
+              options={Object.values(OrderStatus).map((value) => ({
+                label: orderStatusLabels[value],
                 value,
               }))}
               canMultipleSlection={true}
@@ -77,10 +81,8 @@ export function DataTableToolbar<TData>({
               table={table}
               column={table.getColumn("statutLivraison")!}
               title="Livraison"
-              options={Array.from(
-                table.getColumn("statutLivraison")!.getFacetedUniqueValues().keys()
-              ).map((value: string) => ({
-                label: value,
+              options={Object.values(DeliveryStatus).map((value) => ({
+                label: deliveryStatusLabels[value],
                 value,
               }))}
               canMultipleSlection={true}

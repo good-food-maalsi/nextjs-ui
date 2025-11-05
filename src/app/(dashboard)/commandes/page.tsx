@@ -4,14 +4,48 @@ import React from "react";
 
 import { OrdersDataTable } from "@/components/ui/orders-data-table";
 
-import { columns, type Order } from "./columns";
+import {
+  columns,
+  type Order,
+  PaymentStatus,
+  OrderStatus,
+  DeliveryStatus,
+} from "./columns";
 
 // Données de test avec variété pour tester les filtres
-const statutsPaiement = ["En attente", "Traitée", "Payé", "Remboursé"];
-const statutsCommande = ["En cours", "Confirmée", "Annulée", "Terminée", "Traitée"];
-const statutsLivraison = ["Préparation", "Expédiée", "Livrée", "Retournée", "Traitée"];
-const clients = ["Alexandre KAKAL", "Marie DUPONT", "Jean MARTIN", "Sophie BERNARD", "Lucas PETIT"];
-const dates = ["Aujourd'hui à 14:30", "Hier à 7:10", "Il y a 2 jours", "Il y a 3 jours", "Il y a 1 semaine"];
+const statutsPaiement: PaymentStatus[] = [
+  PaymentStatus.PENDING,
+  PaymentStatus.COMPLETED,
+  PaymentStatus.FAILED,
+  PaymentStatus.REFUND,
+];
+const statutsCommande: OrderStatus[] = [
+  OrderStatus.DRAFT,
+  OrderStatus.CONFIRMED,
+  OrderStatus.PREPARATION,
+  OrderStatus.READY,
+  OrderStatus.CANCELED,
+];
+const statutsLivraison: DeliveryStatus[] = [
+  DeliveryStatus.AWAITING,
+  DeliveryStatus.COMMAND_RETRIEVED,
+  DeliveryStatus.DELIVERED,
+  DeliveryStatus.UNABLE_TO_DELIVER,
+];
+const clients = [
+  "Alexandre KAKAL",
+  "Marie DUPONT",
+  "Jean MARTIN",
+  "Sophie BERNARD",
+  "Lucas PETIT",
+];
+const dates = [
+  "Aujourd'hui à 14:30",
+  "Hier à 7:10",
+  "Il y a 2 jours",
+  "Il y a 3 jours",
+  "Il y a 1 semaine",
+];
 
 const mockOrders: Order[] = Array.from({ length: 25 }, (_, i) => ({
   id: `order-${i + 1}`,

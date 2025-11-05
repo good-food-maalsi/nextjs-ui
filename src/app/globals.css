@@ -47,7 +47,8 @@
   --radius: 0.625rem;
 
   /* Brand color variables */
-  --white: rgba(255, 249, 233, 1);
+  --white: rgb(255, 255, 255);
+  --off-white: rgba(255, 249, 233, 1);
   --black-500: rgba(33, 9, 0, 1);
   --black-400: rgba(77, 58, 52, 1);
   --black-300: rgba(122, 107, 102, 1);
@@ -92,16 +93,16 @@
   --blur-white: 0px 3px 10px rgba(255, 249, 233, 0.6);
 
   /* Shadcn/UI theme variables */
-  --background: var(--white);
+  --background: var(--off-white);
   --foreground: var(--black-500);
   --card: var(--white);
   --card-foreground: var(--black-500);
-  --popover: var(--white);
+  --popover: var(--off-white);
   --popover-foreground: var(--black-500);
   --primary: var(--primary-500);
   --primary-foreground: var(--black-500);
   --secondary: var(--secondary-500);
-  --secondary-foreground: var(--white);
+  --secondary-foreground: var(--off-white);
   --muted: var(--black-100);
   --muted-foreground: var(--black-300);
   --accent: var(--primary-300);
@@ -119,7 +120,7 @@
   --sidebar-foreground: var(--black-500);
   --sidebar-primary: var(--primary-500);
   --sidebar-primary-foreground: var(--black-500);
-  --sidebar-accent: var(--primary-200);
+  --sidebar-accent: var(--primary-500);
   --sidebar-accent-foreground: var(--black-500);
   --sidebar-border: var(--black-200);
   --sidebar-ring: var(--primary-400);

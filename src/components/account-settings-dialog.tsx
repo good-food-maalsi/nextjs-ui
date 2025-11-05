@@ -167,7 +167,7 @@ export function AccountSettingsDialog({
                   </div>
                 </div>
                 <Button
-                  variant="outline"
+                  variant="secondaryOutline"
                   size="sm"
                   onClick={handleUpdateProfilePicture}
                   className="border-primary text-primary hover:bg-primary hover:text-background"
@@ -206,7 +206,7 @@ export function AccountSettingsDialog({
                         </p>
                       </div>
                       <Button
-                        variant="outline"
+                        variant="secondaryOutline"
                         size="sm"
                         className="border-primary text-primary hover:bg-primary hover:text-background"
                         onClick={() => setActiveDialog("username")}
@@ -222,7 +222,7 @@ export function AccountSettingsDialog({
                         </p>
                       </div>
                       <Button
-                        variant="outline"
+                        variant="secondaryOutline"
                         size="sm"
                         className="border-primary text-primary  hover:bg-primary hover:text-background"
                         onClick={() => setActiveDialog("email")}
@@ -241,7 +241,7 @@ export function AccountSettingsDialog({
                         </p>
                       </div>
                       <Button
-                        variant="outline"
+                        variant="secondaryOutline"
                         size="sm"
                         className="border-primary text-primary  hover:bg-primary hover:text-background"
                         onClick={() => setActiveDialog("password")}
@@ -309,7 +309,10 @@ export function AccountSettingsDialog({
               irréversible.
             </p>
             <div className="flex justify-end space-x-4">
-              <Button variant="outline" onClick={() => setActiveDialog(null)}>
+              <Button
+                variant="secondaryOutline"
+                onClick={() => setActiveDialog(null)}
+              >
                 Annuler
               </Button>
               <Button onClick={handleDeleteAccount}>Supprimer</Button>

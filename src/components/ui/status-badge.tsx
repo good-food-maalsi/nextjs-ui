@@ -15,18 +15,23 @@ const statusBadgeVariants = cva(
         refunded: "border-purple-200 bg-purple-50 text-purple-700 dark:border-purple-800 dark:bg-purple-900/20 dark:text-purple-400",
 
         // Statuts de commande
-        processing: "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
+        draft: "border-gray-200 bg-gray-50 text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300",
         confirmed: "border-green-200 bg-green-50 text-green-700 dark:border-green-800 dark:bg-green-900/20 dark:text-green-400",
+        preparing: "border-orange-200 bg-orange-50 text-orange-700 dark:border-orange-800 dark:bg-orange-900/20 dark:text-orange-400",
+        ready: "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
         cancelled: "border-red-200 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400",
-        completed: "border-gray-200 bg-gray-50 text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300",
 
         // Statuts de livraison
-        preparing: "border-orange-200 bg-orange-50 text-orange-700 dark:border-orange-800 dark:bg-orange-900/20 dark:text-orange-400",
-        shipped: "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
+        awaiting: "border-yellow-200 bg-yellow-50 text-yellow-700 dark:border-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
+        retrieved: "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
         delivered: "border-green-200 bg-green-50 text-green-700 dark:border-green-800 dark:bg-green-900/20 dark:text-green-400",
-        returned: "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-400",
+        undeliverable: "border-red-200 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400",
 
-        // Statut générique "traité" comme dans l'image
+        // Statuts génériques (pour compatibilité)
+        processing: "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
+        completed: "border-gray-200 bg-gray-50 text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300",
+        shipped: "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
+        returned: "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-400",
         processed: "border-gray-200 bg-gray-50 text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300",
       },
     },
@@ -49,27 +54,27 @@ function StatusBadge({ className, variant, ...props }: StatusBadgeProps) {
   )
 }
 
-// Fonction utilitaire pour mapper les statuts en français vers les variants
+// Fonction utilitaire pour mapper les clés d'enums vers les variants
 export function getStatusVariant(status: string): StatusBadgeVariant {
   const statusMap: Record<string, StatusBadgeVariant> = {
-    // Statuts de paiement
-    "payé": "paid",
-    "en attente": "pending",
-    "échoué": "failed",
-    "remboursé": "refunded",
+    // Payment Status
+    "pending": "pending",
+    "completed": "paid",
+    "failed": "failed",
+    "refund": "refunded",
 
-    // Statuts de commande
-    "en cours": "processing",
-    "confirmée": "confirmed",
-    "annulée": "cancelled",
-    "terminée": "completed",
-    "traitée": "processed",
+    // Order Status
+    "draft": "draft",
+    "confirmed": "confirmed",
+    "preparation": "preparing",
+    "ready": "ready",
+    "canceled": "cancelled",
 
-    // Statuts de livraison
-    "préparation": "preparing",
-    "expédiée": "shipped",
-    "livrée": "delivered",
-    "retournée": "returned",
+    // Delivery Status
+    "awaiting": "awaiting",
+    "command_retrieved": "retrieved",
+    "delivered": "delivered",
+    "unable_to_deliver": "undeliverable",
   }
 
   return statusMap[status.toLowerCase()] || "processed"
