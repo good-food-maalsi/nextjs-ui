@@ -134,7 +134,11 @@ export function DataTableDateFilter<TData, TValue>({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="sm" className="h-8 border-dashed">
+        <Button
+          variant="secondaryOutline"
+          size="sm"
+          className="h-8 border-dashed"
+        >
           <PlusCircle />
           {title}
           {selectedValues?.size > 0 && (
@@ -211,7 +215,7 @@ export function DataTableDateFilter<TData, TValue>({
                 }}
               />
               <Button
-                variant="outline"
+                variant="secondaryOutline"
                 onClick={handleCloseModal}
                 className="w-auto bg-orange-500 text-white hover:bg-orange-400 hover:text-white"
               >

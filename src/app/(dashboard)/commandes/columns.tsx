@@ -15,16 +15,62 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { StatusBadge, getStatusVariant } from "@/components/ui/status-badge";
 
+// Enums pour les statuts
+export enum PaymentStatus {
+  PENDING = "pending",
+  COMPLETED = "completed",
+  FAILED = "failed",
+  REFUND = "refund",
+}
+
+export enum OrderStatus {
+  DRAFT = "draft",
+  CONFIRMED = "confirmed",
+  PREPARATION = "preparation",
+  READY = "ready",
+  CANCELED = "canceled",
+}
+
+export enum DeliveryStatus {
+  AWAITING = "awaiting",
+  COMMAND_RETRIEVED = "command_retrieved",
+  DELIVERED = "delivered",
+  UNABLE_TO_DELIVER = "unable_to_deliver",
+}
+
+// Mappings français pour les statuts
+export const paymentStatusLabels: Record<PaymentStatus, string> = {
+  [PaymentStatus.PENDING]: "En attente",
+  [PaymentStatus.COMPLETED]: "Payée",
+  [PaymentStatus.FAILED]: "Échec",
+  [PaymentStatus.REFUND]: "Remboursée",
+};
+
+export const orderStatusLabels: Record<OrderStatus, string> = {
+  [OrderStatus.DRAFT]: "Brouillon",
+  [OrderStatus.CONFIRMED]: "Confirmée",
+  [OrderStatus.PREPARATION]: "En préparation",
+  [OrderStatus.READY]: "Prête",
+  [OrderStatus.CANCELED]: "Annulée",
+};
+
+export const deliveryStatusLabels: Record<DeliveryStatus, string> = {
+  [DeliveryStatus.AWAITING]: "En attente",
+  [DeliveryStatus.COMMAND_RETRIEVED]: "Commande récupérée",
+  [DeliveryStatus.DELIVERED]: "Livrée",
+  [DeliveryStatus.UNABLE_TO_DELIVER]: "Impossible à livrer",
+};
+
 export interface Order {
   id: string;
   numero: string;
   date: string;
   client: string;
   total: string;
-  statutPaiement: string;
-  statutCommande: string;
+  statutPaiement: PaymentStatus;
+  statutCommande: OrderStatus;
   articles: number;
-  statutLivraison: string;
+  statutLivraison: DeliveryStatus;
 }
 
 export const columns: ColumnDef<Order>[] = [
@@ -64,9 +110,17 @@ export const columns: ColumnDef<Order>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => (
-      <div className="font-medium">{row.getValue("numero")}</div>
-    ),
+    cell: ({ row }) => {
+      const order = row.original;
+      return (
+        <a
+          href={`/commandes/${order.id}`}
+          className="font-medium text-secondary underline"
+        >
+          {row.getValue("numero")}
+        </a>
+      );
+    },
   },
   {
     accessorKey: "date",
@@ -129,10 +183,10 @@ export const columns: ColumnDef<Order>[] = [
     accessorKey: "statutPaiement",
     header: "Statut du paiement",
     cell: ({ row }) => {
-      const status = row.getValue("statutPaiement") as string;
+      const status = row.getValue("statutPaiement") as PaymentStatus;
       return (
         <StatusBadge variant={getStatusVariant(status)}>
-          {status}
+          {paymentStatusLabels[status]}
         </StatusBadge>
       );
     },
@@ -144,10 +198,10 @@ export const columns: ColumnDef<Order>[] = [
     accessorKey: "statutCommande",
     header: "Statut des commandes",
     cell: ({ row }) => {
-      const status = row.getValue("statutCommande") as string;
+      const status = row.getValue("statutCommande") as OrderStatus;
       return (
         <StatusBadge variant={getStatusVariant(status)}>
-          {status}
+          {orderStatusLabels[status]}
         </StatusBadge>
       );
     },
@@ -166,10 +220,10 @@ export const columns: ColumnDef<Order>[] = [
     accessorKey: "statutLivraison",
     header: "Statut de la livraison",
     cell: ({ row }) => {
-      const status = row.getValue("statutLivraison") as string;
+      const status = row.getValue("statutLivraison") as DeliveryStatus;
       return (
         <StatusBadge variant={getStatusVariant(status)}>
-          {status}
+          {deliveryStatusLabels[status]}
         </StatusBadge>
       );
     },
