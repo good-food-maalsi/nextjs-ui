@@ -76,9 +76,15 @@ export function OrdersDataTable<TData, TValue>({
       // Recherche sur numero, client, et id
       const numero = String(row.getValue("numero") || "").toLowerCase();
       const client = String(row.getValue("client") || "").toLowerCase();
-      const id = String((row.original as { id?: string }).id || "").toLowerCase();
+      const id = String(
+        (row.original as { id?: string }).id || ""
+      ).toLowerCase();
 
-      return numero.includes(search) || client.includes(search) || id.includes(search);
+      return (
+        numero.includes(search) ||
+        client.includes(search) ||
+        id.includes(search)
+      );
     },
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -91,9 +97,9 @@ export function OrdersDataTable<TData, TValue>({
   return (
     <div className="space-y-4">
       <DataTableToolbar table={table} />
-      <div className="rounded-md border">
+      <div className="rounded-md border overflow-hidden">
         <Table>
-          <TableHeader className="bg-muted/50">
+          <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
@@ -127,7 +133,6 @@ export function OrdersDataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className="hover:bg-muted/50"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} className="py-3">

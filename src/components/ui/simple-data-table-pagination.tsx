@@ -54,7 +54,7 @@ export function SimpleDataTablePagination<TData>({
         </div>
         <div className="flex items-center space-x-2">
           <Button
-            variant="outline"
+            variant="secondaryOutline"
             size="sm"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
@@ -62,7 +62,7 @@ export function SimpleDataTablePagination<TData>({
             Précédent
           </Button>
           <Button
-            variant="outline"
+            variant="secondaryOutline"
             size="sm"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}

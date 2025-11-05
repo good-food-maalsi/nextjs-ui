@@ -8,6 +8,46 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Brand colors */
+  --color-white: var(--white);
+  --color-off-white: var(--off-white);
+
+  /* Black scale */
+  --color-black-500: var(--black-500);
+  --color-black-400: var(--black-400);
+  --color-black-300: var(--black-300);
+  --color-black-200: var(--black-200);
+  --color-black-100: var(--black-100);
+
+  /* Primary scale */
+  --color-primary-500: var(--primary-500);
+  --color-primary-400: var(--primary-400);
+  --color-primary-300: var(--primary-300);
+  --color-primary-200: var(--primary-200);
+  --color-primary-100: var(--primary-100);
+
+  /* Mahogany scale */
+  --color-mahogany-500: var(--mahogany-500);
+  --color-mahogany-400: var(--mahogany-400);
+  --color-mahogany-300: var(--mahogany-300);
+  --color-mahogany-200: var(--mahogany-200);
+  --color-mahogany-100: var(--mahogany-100);
+
+  /* Secondary scale */
+  --color-secondary-500: var(--secondary-500);
+  --color-secondary-400: var(--secondary-400);
+  --color-secondary-300: var(--secondary-300);
+  --color-secondary-200: var(--secondary-200);
+  --color-secondary-100: var(--secondary-100);
+
+  /* Success and Danger */
+  --color-success: var(--success);
+  --color-success-light: var(--success-light);
+  --color-danger: var(--danger);
+  --color-danger-light: var(--danger-light);
+
+  /* Sidebar colors */
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -16,11 +56,15 @@
   --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
+
+  /* Chart colors */
   --color-chart-5: var(--chart-5);
   --color-chart-4: var(--chart-4);
   --color-chart-3: var(--chart-3);
   --color-chart-2: var(--chart-2);
   --color-chart-1: var(--chart-1);
+
+  /* UI colors */
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
@@ -37,6 +81,8 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+
+  /* Radius */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -47,7 +93,8 @@
   --radius: 0.625rem;
 
   /* Brand color variables */
-  --white: rgba(255, 249, 233, 1);
+  --white: rgb(255, 255, 255);
+  --off-white: rgba(255, 249, 233, 1);
   --black-500: rgba(33, 9, 0, 1);
   --black-400: rgba(77, 58, 52, 1);
   --black-300: rgba(122, 107, 102, 1);
@@ -92,16 +139,16 @@
   --blur-white: 0px 3px 10px rgba(255, 249, 233, 0.6);
 
   /* Shadcn/UI theme variables */
-  --background: var(--white);
+  --background: var(--off-white);
   --foreground: var(--black-500);
   --card: var(--white);
   --card-foreground: var(--black-500);
-  --popover: var(--white);
+  --popover: var(--off-white);
   --popover-foreground: var(--black-500);
   --primary: var(--primary-500);
   --primary-foreground: var(--black-500);
   --secondary: var(--secondary-500);
-  --secondary-foreground: var(--white);
+  --secondary-foreground: var(--off-white);
   --muted: var(--black-100);
   --muted-foreground: var(--black-300);
   --accent: var(--primary-300);
@@ -119,7 +166,7 @@
   --sidebar-foreground: var(--black-500);
   --sidebar-primary: var(--primary-500);
   --sidebar-primary-foreground: var(--black-500);
-  --sidebar-accent: var(--primary-200);
+  --sidebar-accent: var(--primary-500);
   --sidebar-accent-foreground: var(--black-500);
   --sidebar-border: var(--black-200);
   --sidebar-ring: var(--primary-400);
