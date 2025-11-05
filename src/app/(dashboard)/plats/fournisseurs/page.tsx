@@ -3,7 +3,8 @@
 import React from "react";
 
 import { Button } from "@/components/ui/button";
-import { SuppliersDataTable } from "@/components/ui/suppliers-data-table";
+import { PageHeaderActions } from "@/components/ui/page-header-actions";
+import { SuppliersDataTable } from "./_components/suppliers-data-table";
 
 import { columns, type Fournisseur } from "./_components/columns";
 
@@ -51,7 +52,7 @@ export default function FournisseursPage() {
           <h1 className="text-3xl font-bold tracking-tight">Fournisseurs</h1>
         </div>
 
-        <div className="flex gap-2">
+        <PageHeaderActions>
           <Button variant="secondaryOutline" size="sm">
             Importer
           </Button>
@@ -61,7 +62,7 @@ export default function FournisseursPage() {
           <Button variant="secondaryOutline" size="sm">
             Ajouter un fournisseur
           </Button>
-        </div>
+        </PageHeaderActions>
       </div>
 
       <SuppliersDataTable

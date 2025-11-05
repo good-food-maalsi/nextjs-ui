@@ -20,7 +20,7 @@ import {
 import * as React from "react";
 
 import { SimpleDataTablePagination } from "@/components/ui/simple-data-table-pagination";
-import { FournisseursDataTableToolbar } from "@/components/ui/fournisseurs-data-table-toolbar";
+import { DataTableToolbar } from "./data-table-toolbar";
 import {
   Table,
   TableBody,
@@ -30,19 +30,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-interface FournisseursDataTableProps<TData, TValue> {
+interface OrdersDataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   isLoading?: boolean;
   isError?: boolean;
 }
 
-export function FournisseursDataTable<TData, TValue>({
+export function OrdersDataTable<TData, TValue>({
   columns,
   data,
   isLoading = false,
   isError = false,
-}: FournisseursDataTableProps<TData, TValue>) {
+}: OrdersDataTableProps<TData, TValue>) {
   const safeData = data ?? [];
 
   const [rowSelection, setRowSelection] = React.useState({});
@@ -73,13 +73,18 @@ export function FournisseursDataTable<TData, TValue>({
     globalFilterFn: (row, _columnId, filterValue) => {
       const search = filterValue.toLowerCase();
 
-      // Recherche sur nom, email, téléphone, et adresse
-      const nom = String(row.getValue("nom") || "").toLowerCase();
-      const email = String(row.getValue("email") || "").toLowerCase();
-      const telephone = String(row.getValue("telephone") || "").toLowerCase();
-      const adresse = String(row.getValue("adresse") || "").toLowerCase();
+      // Recherche sur numero, client, et id
+      const numero = String(row.getValue("numero") || "").toLowerCase();
+      const client = String(row.getValue("client") || "").toLowerCase();
+      const id = String(
+        (row.original as { id?: string }).id || ""
+      ).toLowerCase();
 
-      return nom.includes(search) || email.includes(search) || telephone.includes(search) || adresse.includes(search);
+      return (
+        numero.includes(search) ||
+        client.includes(search) ||
+        id.includes(search)
+      );
     },
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -91,10 +96,10 @@ export function FournisseursDataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <FournisseursDataTableToolbar table={table} />
-      <div className="rounded-md border">
+      <DataTableToolbar table={table} />
+      <div className="rounded-md border overflow-hidden">
         <Table>
-          <TableHeader className="bg-muted/50">
+          <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
@@ -128,7 +133,6 @@ export function FournisseursDataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className="hover:bg-muted/50"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} className="py-3">
@@ -152,8 +156,8 @@ export function FournisseursDataTable<TData, TValue>({
                     }`}
                   >
                     {isError
-                      ? "Une erreur est survenue lors du chargement des fournisseurs."
-                      : "Aucun fournisseur trouvé"}
+                      ? "Une erreur est survenue lors du chargement des commandes."
+                      : "Aucune commande trouvée"}
                   </div>
                 </TableCell>
               </TableRow>
