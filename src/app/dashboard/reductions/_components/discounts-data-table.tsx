@@ -74,7 +74,7 @@ export function DiscountsDataTable<TData, TValue>({
       const search = filterValue.toLowerCase();
 
       // Recherche sur nom et description
-      const name = String(row.getValue("name") || "").toLowerCase();
+      const name = String(row.original.name || "").toLowerCase();
       const description = String(
         row.original.description || ""
       ).toLowerCase();
