@@ -4,7 +4,8 @@ import type {
   ColumnDef,
   ColumnFiltersState,
   SortingState,
-  VisibilityState} from "@tanstack/react-table";
+  VisibilityState,
+} from "@tanstack/react-table";
 import {
   flexRender,
   getCoreRowModel,
@@ -77,9 +78,9 @@ export function DataTable<TData, TValue>({
   return (
     <div className="space-y-4">
       <DataTableToolbar table={table} />
-      <div className="rounded-md border">
+      <div className="rounded-md border overflow-hidden">
         <Table>
-          <TableHeader className="bg-tertiary-200">
+          <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
