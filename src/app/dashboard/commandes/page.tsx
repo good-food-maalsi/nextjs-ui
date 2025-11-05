@@ -2,16 +2,17 @@
 
 import React from "react";
 
-import { OrdersDataTable } from "@/components/ui/orders-data-table";
+import { OrdersDataTable } from "./_components/orders-data-table";
 import { Button } from "@/components/ui/button";
+import { PageHeaderActions } from "@/components/ui/page-header-actions";
 
+import { columns } from "./_components/columns";
+import type { Order } from "./_types";
 import {
-  columns,
-  type Order,
   PaymentStatus,
   OrderStatus,
   DeliveryStatus,
-} from "./columns";
+} from "./_types";
 
 // Données de test avec variété pour tester les filtres
 const statutsPaiement: PaymentStatus[] = [
@@ -75,18 +76,24 @@ export default function CommandesPage() {
 
   return (
     <div className="container mx-auto py-6">
-      <div className="flex items-start justify-between">
-        <div className="mb-6">
+      <div className="mb-6 flex items-start justify-between">
+        <div>
           <h1 className="text-3xl font-bold tracking-tight">Commandes</h1>
           <p className="text-muted-foreground">
             Gérez et suivez toutes vos commandes depuis cette interface.
           </p>
         </div>
-        <div className="flex items-center gap-5">
-          <Button variant="secondaryOutline">Importer</Button>
-          <Button variant="secondaryOutline">Exporter</Button>
-          <Button variant="secondaryOutline">Créer une commande</Button>
-        </div>
+        <PageHeaderActions>
+          <Button variant="secondaryOutline" size="sm">
+            Importer
+          </Button>
+          <Button variant="secondaryOutline" size="sm">
+            Exporter
+          </Button>
+          <Button variant="secondaryOutline" size="sm">
+            Créer une commande
+          </Button>
+        </PageHeaderActions>
       </div>
 
       <OrdersDataTable

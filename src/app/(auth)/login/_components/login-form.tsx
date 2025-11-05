@@ -4,7 +4,7 @@ import { Eye, EyeOff, Loader2, LockKeyhole } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
-import { useLogin } from "@/app/(auth)/login/_hooks/use-login";
+import { useLogin } from "../_hooks/use-login";
 import { Button } from "@/components/ui/button";
 import {
   Card,

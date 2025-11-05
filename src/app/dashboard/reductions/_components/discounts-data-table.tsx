@@ -20,7 +20,7 @@ import {
 import * as React from "react";
 
 import { SimpleDataTablePagination } from "@/components/ui/simple-data-table-pagination";
-import { DataTableToolbar } from "@/components/ui/data-table-toolbar";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -30,19 +30,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-interface OrdersDataTableProps<TData, TValue> {
+interface DiscountsDataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   isLoading?: boolean;
   isError?: boolean;
 }
 
-export function OrdersDataTable<TData, TValue>({
+export function DiscountsDataTable<TData, TValue>({
   columns,
   data,
   isLoading = false,
   isError = false,
-}: OrdersDataTableProps<TData, TValue>) {
+}: DiscountsDataTableProps<TData, TValue>) {
   const safeData = data ?? [];
 
   const [rowSelection, setRowSelection] = React.useState({});
@@ -73,18 +73,13 @@ export function OrdersDataTable<TData, TValue>({
     globalFilterFn: (row, _columnId, filterValue) => {
       const search = filterValue.toLowerCase();
 
-      // Recherche sur numero, client, et id
-      const numero = String(row.getValue("numero") || "").toLowerCase();
-      const client = String(row.getValue("client") || "").toLowerCase();
-      const id = String(
-        (row.original as { id?: string }).id || ""
+      // Recherche sur nom et description
+      const name = String(row.original.name || "").toLowerCase();
+      const description = String(
+        row.original.description || ""
       ).toLowerCase();
 
-      return (
-        numero.includes(search) ||
-        client.includes(search) ||
-        id.includes(search)
-      );
+      return name.includes(search) || description.includes(search);
     },
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -96,10 +91,17 @@ export function OrdersDataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <DataTableToolbar table={table} />
+      <div className="flex items-center justify-between">
+        <Input
+          placeholder="Rechercher (nom, description)..."
+          value={globalFilter}
+          onChange={(event) => table.setGlobalFilter(event.target.value)}
+          className="h-8 w-[400px]"
+        />
+      </div>
       <div className="rounded-md border overflow-hidden">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-primary-200">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
@@ -133,6 +135,7 @@ export function OrdersDataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  className="hover:bg-muted/50"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} className="py-3">
@@ -156,8 +159,8 @@ export function OrdersDataTable<TData, TValue>({
                     }`}
                   >
                     {isError
-                      ? "Une erreur est survenue lors du chargement des commandes."
-                      : "Aucune commande trouvée"}
+                      ? "Une erreur est survenue lors du chargement des réductions."
+                      : "Aucune réduction trouvée"}
                   </div>
                 </TableCell>
               </TableRow>

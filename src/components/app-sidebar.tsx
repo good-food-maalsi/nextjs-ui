@@ -47,7 +47,7 @@ export function AppSidebar({ session }: AppSidebarProps) {
   const [isPlatsExpanded, setIsPlatsExpanded] = useState(false);
 
   // Vérifie si on est sur une page Plats ou ses sous-pages
-  const isOnPlatsPage = pathname.startsWith("/plats");
+  const isOnPlatsPage = pathname.startsWith("/dashboard/plats");
 
   // Garde les sous-liens ouverts si on est sur la page Plats
   useEffect(() => {
@@ -59,47 +59,60 @@ export function AppSidebar({ session }: AppSidebarProps) {
   const firstGroupItems = [
     {
       title: "Tableau de bord",
-      url: "/",
-      icon: pathname === "/" ? Icons.homeOutline : Icons.home,
+      url: "/dashboard",
+      icon: pathname === "/dashboard" ? Icons.homeOutline : Icons.home,
     },
     {
       title: "Commandes",
-      url: "/commandes",
-      icon: pathname === "/commandes" ? Icons.commandOutline : Icons.command,
+      url: "/dashboard/commandes",
+      icon:
+        pathname === "/dashboard/commandes"
+          ? Icons.commandOutline
+          : Icons.command,
     },
   ];
 
   const platsItem = {
     title: "Plats",
-    url: "/plats",
+    url: "/dashboard/plats",
     icon: isOnPlatsPage ? Icons.productOutline : Icons.product,
     subItems: [
-      { title: "Menus", url: "/plats/menus" },
-      { title: "Fournisseurs", url: "/plats/fournisseurs" },
-      { title: "Stocks", url: "/plats/stocks" },
+      { title: "Menus", url: "/dashboard/plats/menus" },
+      { title: "Fournisseurs", url: "/dashboard/plats/fournisseurs" },
+      { title: "Stocks", url: "/dashboard/plats/stocks" },
     ],
   };
 
   const secondGroupItems = [
     {
       title: "Finance",
-      url: "/finance",
-      icon: pathname === "/finance" ? Icons.financeOutline : Icons.finance,
+      url: "/dashboard/finance",
+      icon:
+        pathname === "/dashboard/finance"
+          ? Icons.financeOutline
+          : Icons.finance,
     },
     {
       title: "Analyses des données",
-      url: "/analyses",
-      icon: pathname === "/analyses" ? Icons.analyticsOutline : Icons.analytics,
+      url: "/dashboard/analyses",
+      icon:
+        pathname === "/dashboard/analyses"
+          ? Icons.analyticsOutline
+          : Icons.analytics,
     },
     {
       title: "Réductions",
-      url: "/reductions",
-      icon: pathname === "/reductions" ? Icons.discountOutline : Icons.discount,
+      url: "/dashboard/reductions",
+      icon:
+        pathname === "/dashboard/reductions"
+          ? Icons.discountOutline
+          : Icons.discount,
     },
     {
       title: "Gestion du personnel",
-      url: "/membres",
-      icon: pathname === "/membres" ? Icons.clientOutline : Icons.client,
+      url: "/dashboard/membres",
+      icon:
+        pathname === "/dashboard/membres" ? Icons.clientOutline : Icons.client,
     },
   ];
 
@@ -112,7 +125,7 @@ export function AppSidebar({ session }: AppSidebarProps) {
   const { mutate, isPending } = useMutation({
     mutationFn: authService.logout,
     onSuccess: () => {
-      router.push("/login");
+      router.push("/dashboard/login");
     },
     onError: () => {
       toast.error("Une erreur est survenue lors de la déconnexion");

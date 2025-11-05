@@ -6,6 +6,9 @@ import { X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { DataTableFacetedFilter } from "@/components/ui/data-table-faceted-filter";
+import { DataTableDateFilter } from "@/components/ui/data-table-filter-date";
+
 import {
   paymentStatusLabels,
   orderStatusLabels,
@@ -13,10 +16,7 @@ import {
   PaymentStatus,
   OrderStatus,
   DeliveryStatus,
-} from "@/app/dashboard/commandes/columns";
-
-import { DataTableFacetedFilter } from "./data-table-faceted-filter";
-import { DataTableDateFilter } from "./data-table-filter-date";
+} from "../_types";
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -26,7 +26,8 @@ export function DataTableToolbar<TData>({
   table,
 }: DataTableToolbarProps<TData>) {
   const isFiltered =
-    table.getState().columnFilters.length > 0 || table.getState().globalFilter;
+    table.getState().columnFilters.length > 0 ||
+    table.getState().globalFilter;
   const globalFilter = table.getState().globalFilter ?? "";
 
   const dateFilterValues = [

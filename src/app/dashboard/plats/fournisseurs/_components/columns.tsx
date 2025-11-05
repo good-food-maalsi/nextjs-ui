@@ -14,6 +14,24 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+// Enum pour les clés des colonnes
+export enum FournisseurColumnKey {
+  SELECT = "select",
+  NOM = "nom",
+  ADRESSE = "adresse",
+  TELEPHONE = "telephone",
+  EMAIL = "email",
+  ACTIONS = "actions",
+}
+
+// Labels français pour les colonnes
+export const fournisseurColumnLabels: Record<string, string> = {
+  [FournisseurColumnKey.NOM]: "Fournisseur",
+  [FournisseurColumnKey.ADRESSE]: "Adresse",
+  [FournisseurColumnKey.TELEPHONE]: "Téléphone",
+  [FournisseurColumnKey.EMAIL]: "Email",
+};
+
 export interface Fournisseur {
   id: string;
   nom: string;
@@ -24,7 +42,7 @@ export interface Fournisseur {
 
 export const columns: ColumnDef<Fournisseur>[] = [
   {
-    id: "select",
+    id: FournisseurColumnKey.SELECT,
     header: ({ table }) => (
       <Checkbox
         checked={
@@ -46,39 +64,39 @@ export const columns: ColumnDef<Fournisseur>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "nom",
-    header: "Fournisseur",
+    accessorKey: FournisseurColumnKey.NOM,
+    header: fournisseurColumnLabels[FournisseurColumnKey.NOM],
     cell: ({ row }) => (
-      <div className="font-medium">{row.getValue("nom")}</div>
+      <div className="font-medium">{row.getValue(FournisseurColumnKey.NOM)}</div>
     ),
     enableSorting: false,
   },
   {
-    accessorKey: "adresse",
-    header: "Adresse",
+    accessorKey: FournisseurColumnKey.ADRESSE,
+    header: fournisseurColumnLabels[FournisseurColumnKey.ADRESSE],
     cell: ({ row }) => (
-      <div className="text-muted-foreground">{row.getValue("adresse")}</div>
+      <div>{row.getValue(FournisseurColumnKey.ADRESSE)}</div>
     ),
     enableSorting: false,
   },
   {
-    accessorKey: "telephone",
-    header: "Téléphone",
+    accessorKey: FournisseurColumnKey.TELEPHONE,
+    header: fournisseurColumnLabels[FournisseurColumnKey.TELEPHONE],
     cell: ({ row }) => (
-      <div className="font-medium">{row.getValue("telephone")}</div>
+      <div>{row.getValue(FournisseurColumnKey.TELEPHONE)}</div>
     ),
     enableSorting: false,
   },
   {
-    accessorKey: "email",
-    header: "Email",
+    accessorKey: FournisseurColumnKey.EMAIL,
+    header: fournisseurColumnLabels[FournisseurColumnKey.EMAIL],
     cell: ({ row }) => (
-      <div className="text-muted-foreground">{row.getValue("email")}</div>
+      <div>{row.getValue(FournisseurColumnKey.EMAIL)}</div>
     ),
     enableSorting: false,
   },
   {
-    id: "actions",
+    id: FournisseurColumnKey.ACTIONS,
     enableHiding: false,
     cell: ({ row }) => {
       const fournisseur = row.original;

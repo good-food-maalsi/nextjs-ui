@@ -20,7 +20,7 @@ import {
 import * as React from "react";
 
 import { SimpleDataTablePagination } from "@/components/ui/simple-data-table-pagination";
-import { FournisseursDataTableToolbar } from "@/components/ui/fournisseurs-data-table-toolbar";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -30,19 +30,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-interface FournisseursDataTableProps<TData, TValue> {
+interface SuppliersDataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   isLoading?: boolean;
   isError?: boolean;
 }
 
-export function FournisseursDataTable<TData, TValue>({
+export function SuppliersDataTable<TData, TValue>({
   columns,
   data,
   isLoading = false,
   isError = false,
-}: FournisseursDataTableProps<TData, TValue>) {
+}: SuppliersDataTableProps<TData, TValue>) {
   const safeData = data ?? [];
 
   const [rowSelection, setRowSelection] = React.useState({});
@@ -73,13 +73,18 @@ export function FournisseursDataTable<TData, TValue>({
     globalFilterFn: (row, _columnId, filterValue) => {
       const search = filterValue.toLowerCase();
 
-      // Recherche sur nom, email, téléphone, et adresse
+      // Recherche sur nom, adresse, téléphone, email
       const nom = String(row.getValue("nom") || "").toLowerCase();
-      const email = String(row.getValue("email") || "").toLowerCase();
-      const telephone = String(row.getValue("telephone") || "").toLowerCase();
       const adresse = String(row.getValue("adresse") || "").toLowerCase();
+      const telephone = String(row.getValue("telephone") || "").toLowerCase();
+      const email = String(row.getValue("email") || "").toLowerCase();
 
-      return nom.includes(search) || email.includes(search) || telephone.includes(search) || adresse.includes(search);
+      return (
+        nom.includes(search) ||
+        adresse.includes(search) ||
+        telephone.includes(search) ||
+        email.includes(search)
+      );
     },
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -91,10 +96,17 @@ export function FournisseursDataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <FournisseursDataTableToolbar table={table} />
-      <div className="rounded-md border">
+      <div className="flex items-center justify-between">
+        <Input
+          placeholder="Rechercher (nom, adresse, téléphone, email)..."
+          value={globalFilter}
+          onChange={(event) => table.setGlobalFilter(event.target.value)}
+          className="h-8 w-[400px]"
+        />
+      </div>
+      <div className="rounded-md border overflow-hidden">
         <Table>
-          <TableHeader className="bg-muted/50">
+          <TableHeader className="bg-primary-200">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
