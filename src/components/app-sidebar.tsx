@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { BadgeCheck, ChevronsUpDown, LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 import type { Session } from "@/lib/types/session.types";
@@ -44,6 +44,17 @@ interface AppSidebarProps {
 
 export function AppSidebar({ session }: AppSidebarProps) {
   const pathname = usePathname();
+  const [isPlatsExpanded, setIsPlatsExpanded] = useState(false);
+
+  // Vérifie si on est sur une page Plats ou ses sous-pages
+  const isOnPlatsPage = pathname.startsWith("/plats");
+
+  // Garde les sous-liens ouverts si on est sur la page Plats
+  useEffect(() => {
+    if (isOnPlatsPage) {
+      setIsPlatsExpanded(true);
+    }
+  }, [isOnPlatsPage]);
 
   const firstGroupItems = [
     {
@@ -56,11 +67,20 @@ export function AppSidebar({ session }: AppSidebarProps) {
       url: "/commandes",
       icon: pathname === "/commandes" ? Icons.commandOutline : Icons.command,
     },
-    {
-      title: "Plats",
-      url: "/plats",
-      icon: pathname === "/plats" ? Icons.productOutline : Icons.product,
-    },
+  ];
+
+  const platsItem = {
+    title: "Plats",
+    url: "/plats",
+    icon: isOnPlatsPage ? Icons.productOutline : Icons.product,
+    subItems: [
+      { title: "Menus", url: "/plats/menus" },
+      { title: "Fournisseurs", url: "/plats/fournisseurs" },
+      { title: "Stocks", url: "/plats/stocks" },
+    ],
+  };
+
+  const secondGroupItems = [
     {
       title: "Finance",
       url: "/finance",
@@ -129,6 +149,69 @@ export function AppSidebar({ session }: AppSidebarProps) {
           <SidebarGroupContent>
             <SidebarMenu>
               {firstGroupItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton
+                    variant="default"
+                    asChild
+                    isActive={pathname === item.url}
+                  >
+                    <a href={item.url}>
+                      <item.icon />
+                      <span className="truncate">{item.title}</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+
+              {/* Élément Plats avec sous-menu */}
+              <SidebarMenuItem
+                onMouseEnter={() => !isOnPlatsPage && setIsPlatsExpanded(true)}
+                onMouseLeave={() => !isOnPlatsPage && setIsPlatsExpanded(false)}
+              >
+                <SidebarMenuButton
+                  variant="default"
+                  asChild
+                  isActive={pathname === platsItem.url}
+                >
+                  <a href={platsItem.url}>
+                    <platsItem.icon />
+                    <span className="truncate">{platsItem.title}</span>
+                  </a>
+                </SidebarMenuButton>
+
+                {/* Sous-menu animé */}
+                <div
+                  className={cn(
+                    "grid overflow-hidden transition-all duration-300 ease-in-out",
+                    isPlatsExpanded || isOnPlatsPage
+                      ? "grid-rows-[1fr] opacity-100"
+                      : "grid-rows-[0fr] opacity-0"
+                  )}
+                >
+                  <div className="overflow-hidden">
+                    <SidebarMenu className="ml-4 mt-1 space-y-1">
+                      {platsItem.subItems.map((subItem) => (
+                        <SidebarMenuItem key={subItem.title}>
+                          <SidebarMenuButton
+                            variant="default"
+                            asChild
+                            isActive={pathname === subItem.url}
+                            size="sm"
+                          >
+                            <a href={subItem.url}>
+                              <span className="truncate text-sm">
+                                {subItem.title}
+                              </span>
+                            </a>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      ))}
+                    </SidebarMenu>
+                  </div>
+                </div>
+              </SidebarMenuItem>
+
+              {secondGroupItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     variant="default"
