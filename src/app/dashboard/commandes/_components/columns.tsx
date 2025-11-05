@@ -68,7 +68,7 @@ export const columns: ColumnDef<Order>[] = [
       const order = row.original;
       return (
         <a
-          href={`/commandes/${order.id}`}
+          href={`/dashboard/commandes/${order.id}`}
           className="font-medium text-secondary underline"
         >
           {row.getValue("numero")}
