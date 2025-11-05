@@ -3,6 +3,7 @@
 import React from "react";
 
 import { OrdersDataTable } from "@/components/ui/orders-data-table";
+import { Button } from "@/components/ui/button";
 
 import {
   columns,
@@ -74,11 +75,18 @@ export default function CommandesPage() {
 
   return (
     <div className="container mx-auto py-6">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold tracking-tight">Commandes</h1>
-        <p className="text-muted-foreground">
-          Gérez et suivez toutes vos commandes depuis cette interface.
-        </p>
+      <div className="flex items-start justify-between">
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold tracking-tight">Commandes</h1>
+          <p className="text-muted-foreground">
+            Gérez et suivez toutes vos commandes depuis cette interface.
+          </p>
+        </div>
+        <div className="flex items-center gap-5">
+          <Button variant="secondaryOutline">Importer</Button>
+          <Button variant="secondaryOutline">Exporter</Button>
+          <Button variant="secondaryOutline">Créer une commande</Button>
+        </div>
       </div>
 
       <OrdersDataTable
