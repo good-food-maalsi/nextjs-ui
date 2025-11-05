@@ -13,7 +13,7 @@ import {
   PaymentStatus,
   OrderStatus,
   DeliveryStatus,
-} from "@/app/(dashboard)/commandes/columns";
+} from "@/app/dashboard/commandes/columns";
 
 import { DataTableFacetedFilter } from "./data-table-faceted-filter";
 import { DataTableDateFilter } from "./data-table-filter-date";
@@ -25,7 +25,8 @@ interface DataTableToolbarProps<TData> {
 export function DataTableToolbar<TData>({
   table,
 }: DataTableToolbarProps<TData>) {
-  const isFiltered = table.getState().columnFilters.length > 0 || table.getState().globalFilter;
+  const isFiltered =
+    table.getState().columnFilters.length > 0 || table.getState().globalFilter;
   const globalFilter = table.getState().globalFilter ?? "";
 
   const dateFilterValues = [
