@@ -13,7 +13,7 @@ import {
   PaymentStatus,
   OrderStatus,
   DeliveryStatus,
-} from "@/app/dashboard/commandes/columns";
+} from "@/app/dashboard/(dashboard-layout)/commandes/columns";
 
 import { DataTableFacetedFilter } from "./data-table-faceted-filter";
 import { DataTableDateFilter } from "./data-table-filter-date";

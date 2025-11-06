@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
-import { AuthHeader } from "@/components/auth-header";
 import { PasswordRegisterForm } from "@/components/form/password-registration-form";
+import { Icons } from "@/components/icons";
 
 export default async function Register({
   searchParams,
@@ -16,7 +16,7 @@ export default async function Register({
 
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center gap-5 px-6">
-      <AuthHeader />
+      <Icons.logo className="size-32" />
       <PasswordRegisterForm
         formTitle="Créer un compte"
         magicToken={magicToken}

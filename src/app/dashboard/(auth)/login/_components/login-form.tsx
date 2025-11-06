@@ -28,7 +28,7 @@ export const LoginForm = () => {
   const { form, isPending, onSubmit: login } = useLogin();
 
   return (
-    <Card className="mx-auto max-w-lg p-4 text-secondary">
+    <Card className="mx-auto max-w-md p-4 w-full">
       <CardHeader>
         <CardTitle className="flex items-center gap-3 text-2xl">
           <LockKeyhole />
@@ -57,7 +57,7 @@ export const LoginForm = () => {
                     <FormControl>
                       <Input
                         {...field}
-                        className="rounded-none border-0 border-b border-secondary shadow-none"
+                        className="rounded-none border-0 border-b shadow-none"
                         id="email"
                       />
                     </FormControl>
@@ -80,12 +80,13 @@ export const LoginForm = () => {
                       <FormControl>
                         <Input
                           {...field}
-                          className="rounded-none border-0 border-b border-secondary pr-10 shadow-none"
+                          className="rounded-none border-0 border-b pr-10 shadow-none"
                           id="password"
                           type={showPassword ? "text" : "password"}
                         />
                       </FormControl>
                       <button
+                        type="button"
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer"
                         data-testid="eye-icon"
@@ -98,7 +99,12 @@ export const LoginForm = () => {
                 )}
               />
               <div className="flex items-center justify-between">
-                <Button type="submit" className="px-6" disabled={isPending}>
+                <Button
+                  variant="secondary"
+                  type="submit"
+                  className="px-6"
+                  disabled={isPending}
+                >
                   {isPending ? (
                     <div className="flex items-center gap-2">
                       <Loader2 className="animate-spin" />
@@ -109,7 +115,7 @@ export const LoginForm = () => {
                   )}
                 </Button>
                 <Link
-                  href="/request-password-reset"
+                  href="/dashboard/request-password-reset"
                   className="hover:underline"
                 >
                   Mot de passe oublié ?

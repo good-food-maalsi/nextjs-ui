@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-import { useDeleteYourself } from "@/app/dashboard/membres/_hooks/use-delete-members";
+import { useDeleteYourself } from "@/app/dashboard/(dashboard-layout)/membres/_hooks/use-delete-members";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

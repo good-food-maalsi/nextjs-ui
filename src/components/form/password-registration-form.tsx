@@ -46,7 +46,7 @@ export const PasswordRegisterForm = ({
   } = useFormMutation(magicToken, successMessage);
 
   return (
-    <Card className="mx-auto max-w-lg p-4 text-secondary">
+    <Card className="mx-auto max-w-md p-4 w-full">
       <CardHeader>
         <CardTitle className="flex items-center gap-3 text-2xl">
           <UserPlus />
@@ -76,7 +76,7 @@ export const PasswordRegisterForm = ({
                       <FormControl>
                         <Input
                           {...field}
-                          className="rounded-none border-0 border-b border-secondary pr-10 shadow-none"
+                          className="rounded-none border-0 border-b pr-10 shadow-none"
                           id="password"
                           type={showPassword ? "text" : "password"}
                         />
@@ -109,7 +109,7 @@ export const PasswordRegisterForm = ({
                       <FormControl>
                         <Input
                           {...field}
-                          className="rounded-none border-0 border-b border-secondary pr-10 shadow-none"
+                          className="rounded-none border-0 border-b pr-10 shadow-none"
                           id="passwordConfirmation"
                           type={showPasswordConfirmation ? "text" : "password"}
                         />
@@ -130,7 +130,12 @@ export const PasswordRegisterForm = ({
                 )}
               />
               <div className="flex items-center justify-between">
-                <Button type="submit" className="px-6" disabled={isPending}>
+                <Button
+                  variant="secondary"
+                  type="submit"
+                  className="px-6"
+                  disabled={isPending}
+                >
                   {isPending ? (
                     <div className="flex items-center gap-2">
                       <Loader2 className="animate-spin" />
