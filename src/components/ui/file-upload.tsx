@@ -111,10 +111,10 @@ export const FileUpload = ({
       <div
         className={cn(
           size === "icon"
-            ? "flex items-center justify-center rounded-full size-28 border-secondary"
-            : "flex h-full flex-col items-center justify-center rounded-xl border-secondary-400 gap-2",
-          "cursor-pointer border-2 border-dashed bg-primary-100 p-4",
-          isDragActive && "bg-primary-100/80"
+            ? "flex items-center justify-center rounded-full size-28 border-black-500"
+            : "flex h-full flex-col items-center justify-center rounded-xl border-black-500 gap-2",
+          "cursor-pointer border-2 border-dashed bg-secondary-100 p-4",
+          isDragActive && "bg-secondary-100/80"
         )}
         {...getRootProps()}
         onClick={() => {
@@ -133,9 +133,7 @@ export const FileUpload = ({
         <input type="file" {...getInputProps()} />
         <Upload
           size={40}
-          className={cn(
-            size === "icon" ? "text-secondary" : "text-secondary-400"
-          )}
+          className={cn(size === "icon" ? "text-black-500" : "text-black-500")}
         />
         {size === "icon" && value.length > 0 && imagePreview && (
           <>

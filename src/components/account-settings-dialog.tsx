@@ -131,16 +131,16 @@ export function AccountSettingsDialog({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-3xl space-y-3">
+        <DialogContent className="space-y-3 sm:max-w-3xl">
           <DialogHeader>
-            <DialogTitle className="text-4xl font-medium text-secondary">
+            <DialogTitle className="text-4xl font-medium">
               Mon compte
             </DialogTitle>
           </DialogHeader>
           <Form {...form}>
             <div className="space-y-6">
               <div className="space-y-4">
-                <div className="flex items-start gap-6">
+                <div className="flex items-start gap-6 sm:flex-row flex-col">
                   <FileUpload
                     value={form.watch("profilePicture")}
                     onChange={handleFileUploadChange}
@@ -150,7 +150,7 @@ export function AccountSettingsDialog({
                     maxSize={0.5}
                   />
                   <div className="space-y-3">
-                    <h3 className="font-medium text-primary">
+                    <h3 className="font-medium text-secondary">
                       Uploader une nouvelle photo
                     </h3>
                     <p className="text-sm">
@@ -170,7 +170,6 @@ export function AccountSettingsDialog({
                   variant="secondaryOutline"
                   size="sm"
                   onClick={handleUpdateProfilePicture}
-                  className="border-primary text-primary hover:bg-primary hover:text-background"
                   disabled={form.watch("profilePicture")?.length === 0}
                 >
                   Mettre à jour la photo de profil
@@ -198,17 +197,12 @@ export function AccountSettingsDialog({
                   <div className="space-y-6">
                     <div className="flex items-center justify-between">
                       <div className="space-y-2">
-                        <h3 className="font-medium text-secondary">
-                          Nom d’utilisateur
-                        </h3>
-                        <p className="text-sm text-secondary">
-                          {session.username}
-                        </p>
+                        <h3 className="font-medium">Nom d’utilisateur</h3>
+                        <p className="text-sm">{session.username}</p>
                       </div>
                       <Button
                         variant="secondaryOutline"
                         size="sm"
-                        className="border-primary text-primary hover:bg-primary hover:text-background"
                         onClick={() => setActiveDialog("username")}
                       >
                         Changer de nom d’utilisateur
@@ -216,15 +210,12 @@ export function AccountSettingsDialog({
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="space-y-2">
-                        <h3 className="font-medium text-secondary">Email</h3>
-                        <p className="text-sm text-secondary">
-                          {session.email}
-                        </p>
+                        <h3 className="font-medium">Email</h3>
+                        <p className="text-sm">{session.email}</p>
                       </div>
                       <Button
                         variant="secondaryOutline"
                         size="sm"
-                        className="border-primary text-primary  hover:bg-primary hover:text-background"
                         onClick={() => setActiveDialog("email")}
                       >
                         Changer d’adresse e-mail
@@ -232,9 +223,7 @@ export function AccountSettingsDialog({
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="space-y-2">
-                        <h3 className="font-medium text-secondary">
-                          Mot de passe
-                        </h3>
+                        <h3 className="font-medium">Mot de passe</h3>
                         <p className="text-sm text-muted-foreground">
                           Modifiez votre mot de passe pour vous connecter à
                           votre compte
@@ -243,7 +232,6 @@ export function AccountSettingsDialog({
                       <Button
                         variant="secondaryOutline"
                         size="sm"
-                        className="border-primary text-primary  hover:bg-primary hover:text-background"
                         onClick={() => setActiveDialog("password")}
                       >
                         Modifier le mot de passe
