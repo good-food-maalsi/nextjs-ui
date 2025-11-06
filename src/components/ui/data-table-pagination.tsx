@@ -4,7 +4,7 @@ import type { Table } from "@tanstack/react-table";
 import { useState } from "react";
 import { createPortal } from "react-dom";
 
-import { useDeleteManyMembers } from "@/app/dashboard/membres/_hooks/use-delete-members";
+import { useDeleteManyMembers } from "@/app/dashboard/(dashboard-layout)/membres/_hooks/use-delete-members";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
