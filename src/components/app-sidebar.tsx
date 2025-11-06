@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import { BadgeCheck, ChevronsUpDown, LogOut } from "lucide-react";
+import { BadgeCheck, ChevronRight, ChevronsUpDown, LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -186,9 +186,15 @@ export function AppSidebar({ session }: AppSidebarProps) {
                   asChild
                   isActive={pathname === platsItem.url}
                 >
-                  <a href={platsItem.url}>
+                  <a href={platsItem.url} className="relative">
                     <platsItem.icon />
                     <span className="truncate">{platsItem.title}</span>
+                    <ChevronRight
+                      className={cn(
+                        "ml-auto size-4 transition-transform duration-200",
+                        isPlatsExpanded || isOnPlatsPage ? "rotate-90" : ""
+                      )}
+                    />
                   </a>
                 </SidebarMenuButton>
 
