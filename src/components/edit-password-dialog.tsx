@@ -50,15 +50,17 @@ export function EditPasswordDialog({
     },
   });
 
+  const { reset } = form;
+
   useEffect(() => {
     if (!open) {
-      form.reset({
+      reset({
         currentPassword: "",
         newPassword: "",
         confirmPassword: "",
       });
     }
-  }, [open]);
+  }, [open, reset]);
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (data: EditPasswordForm) =>
@@ -70,7 +72,7 @@ export function EditPasswordDialog({
     onSuccess: () => {
       toast.success("Mot de passe modifié avec succès");
       onOpenChange(false);
-      form.reset();
+      reset();
     },
     onError: () => {
       toast.error("Erreur lors de la modification du mot de passe");

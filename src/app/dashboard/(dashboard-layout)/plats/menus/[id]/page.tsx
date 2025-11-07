@@ -6,7 +6,7 @@ import { ArrowLeft, Plus, Trash2, Tag } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { StatusBadge } from "@/components/ui/status-badge";
+import { StatusBadge, getStatusVariant } from "@/components/ui/status-badge";
 import {
   Table,
   TableBody,
@@ -75,7 +75,7 @@ const discountTypeLabels: Record<string, string> = {
 };
 
 export default function MenuDetailPage() {
-  const params = useParams();
+  const _params = useParams();
   const router = useRouter();
   const [menu] = React.useState<MenuDetail>(mockMenuDetail);
   const [isLoading] = React.useState(false);
@@ -115,7 +115,7 @@ export default function MenuDetailPage() {
             <Button variant="secondaryOutline" size="sm">
               Modifier
             </Button>
-            <Button variant="destructiveOutline" size="sm">
+            <Button variant="destructive" size="sm">
               <Trash2 className="mr-2 h-4 w-4" />
               Supprimer
             </Button>
@@ -139,14 +139,8 @@ export default function MenuDetailPage() {
             <p className="text-sm font-medium text-muted-foreground">
               Disponibilité
             </p>
-            <div className="mt-1">
-              <StatusBadge
-                variant={
-                  menu.availability === MenuAvailability.AVAILABLE
-                    ? "success"
-                    : "destructive"
-                }
-              >
+              <div className="mt-1">
+              <StatusBadge variant={getStatusVariant(menu.availability)}>
                 {menuAvailabilityLabels[menu.availability]}
               </StatusBadge>
             </div>
@@ -203,13 +197,7 @@ export default function MenuDetailPage() {
                       </TableCell>
                       <TableCell>{dish.basePrice}</TableCell>
                       <TableCell>
-                        <StatusBadge
-                          variant={
-                            dish.availability === "available"
-                              ? "success"
-                              : "destructive"
-                          }
-                        >
+                        <StatusBadge variant={getStatusVariant(dish.availability)}>
                           {dish.availability === "available"
                             ? "Disponible"
                             : "Indisponible"}

@@ -75,6 +75,9 @@ export function getStatusVariant(status: string): StatusBadgeVariant {
     "command_retrieved": "retrieved",
     "delivered": "delivered",
     "unable_to_deliver": "undeliverable",
+    // Generic availability
+    "available": "completed",
+    "unavailable": "cancelled",
   }
 
   return statusMap[status.toLowerCase()] || "processed"
