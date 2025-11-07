@@ -1,0 +1,87 @@
+meta {
+  name: Create Supplier
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{apiUrl}}/suppliers
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "Fresh Produce Co.",
+    "logo_url": "https://example.com/logo.png",
+    "latitude": 48.8566,
+    "longitude": 2.3522,
+    "phone": "+33 1 23 45 67 89",
+    "email": "contact@freshproduce.com"
+  }
+}
+
+docs {
+  # Create Supplier
+
+  Crée un nouveau fournisseur dans le système.
+
+  ## Required Fields
+
+  - `name` (string, 2-255 chars): Nom du fournisseur
+  - `phone` (string, 1-100 chars): Numéro de téléphone
+  - `email` (string, email, max 100 chars): Email unique
+
+  ## Optional Fields
+
+  - `logo_url` (string, url, max 500 chars): URL du logo
+  - `latitude` (number, -90 to 90): Latitude GPS (doit être fournie avec longitude)
+  - `longitude` (number, -180 to 180): Longitude GPS (doit être fournie avec latitude)
+
+  ## Response (201 Created)
+
+  ```json
+  {
+    "id": "uuid",
+    "name": "Fresh Produce Co.",
+    "logo_url": "https://example.com/logo.png",
+    "latitude": 48.8566,
+    "longitude": 2.3522,
+    "phone": "+33 1 23 45 67 89",
+    "email": "contact@freshproduce.com",
+    "created_at": "2025-01-01T00:00:00.000Z",
+    "updated_at": "2025-01-01T00:00:00.000Z"
+  }
+  ```
+
+  ## Error Responses
+
+  - `400 Bad Request`: Données invalides (ex: coordonnées GPS invalides, email invalide)
+  - `409 Conflict`: Email déjà utilisé
+}
+
+tests {
+  test("Status code is 201", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+
+  test("Response has supplier ID", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('id');
+  });
+
+  test("Email matches request", function() {
+    const data = res.getBody();
+    expect(data.email).to.equal('contact@freshproduce.com');
+  });
+
+  // Save supplier ID for subsequent requests
+  if (res.getStatus() === 201) {
+    const data = res.getBody();
+    bru.setVar("supplierId", data.id);
+  }
+}
