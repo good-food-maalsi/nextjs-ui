@@ -1,0 +1,26 @@
+meta {
+  name: Good Food API
+  type: collection
+  version: 1.0.0
+}
+
+vars {
+  baseUrl: http://localhost:3000
+  apiUrl: {{baseUrl}}/api
+}
+
+auth {
+  mode: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+script:pre-request {
+  // Script executed before each request
+  const token = bru.getEnvVar("accessToken");
+  if (token) {
+    req.setHeader("Authorization", `Bearer ${token}`);
+  }
+}

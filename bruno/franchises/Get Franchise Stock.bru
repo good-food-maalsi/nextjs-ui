@@ -1,0 +1,133 @@
+meta {
+  name: Get Franchise Stock
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{apiUrl}}/franchises/{{franchiseId}}/stock
+  body: none
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+vars:pre-request {
+  franchiseId: 550e8400-e29b-41d4-a716-446655440000
+}
+
+docs {
+  # Get Franchise Stock
+
+  Récupère l'inventaire complet d'une franchise avec les détails des ingrédients, fournisseurs et catégories.
+
+  ## URL Parameters
+
+  - `id` (uuid): ID de la franchise
+
+  ## Response (200 OK)
+
+  ```json
+  [
+    {
+      "id": "uuid",
+      "franchise_id": "uuid",
+      "ingredient_id": "uuid",
+      "quantity": 100,
+      "created_at": "2025-01-01T00:00:00.000Z",
+      "updated_at": "2025-01-01T00:00:00.000Z",
+      "ingredient": {
+        "id": "uuid",
+        "name": "Tomates",
+        "description": "Tomates fraîches bio",
+        "supplier_id": "uuid",
+        "unit_price": "2.50",
+        "created_at": "2025-01-01T00:00:00.000Z",
+        "updated_at": "2025-01-01T00:00:00.000Z",
+        "supplier": {
+          "id": "uuid",
+          "name": "Fruits & Légumes Bio",
+          "logo_url": "https://example.com/logo.png",
+          "latitude": 48.8566,
+          "longitude": 2.3522,
+          "phone": "+33 1 23 45 67 89",
+          "email": "contact@fruitslegumes.com",
+          "created_at": "2025-01-01T00:00:00.000Z",
+          "updated_at": "2025-01-01T00:00:00.000Z"
+        },
+        "ingredient_categories": [
+          {
+            "id": "uuid",
+            "ingredient_id": "uuid",
+            "category_id": "uuid",
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "category": {
+              "id": "uuid",
+              "name": "Légumes",
+              "description": "Légumes frais",
+              "created_at": "2025-01-01T00:00:00.000Z",
+              "updated_at": "2025-01-01T00:00:00.000Z"
+            }
+          }
+        ]
+      }
+    }
+  ]
+  ```
+
+  ## Utilisation
+
+  Cette route est utile pour :
+  - Afficher l'inventaire complet d'une franchise
+  - Vérifier les niveaux de stock
+  - Connaître les fournisseurs des ingrédients
+  - Lister les catégories d'ingrédients disponibles
+  - Calculer la valeur totale du stock (quantité × unit_price)
+
+  ## Error Responses
+
+  - `400 Bad Request`: Format d'ID invalide
+  - `404 Not Found`: Franchise non trouvée
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Response is an array", function() {
+    const data = res.getBody();
+    expect(data).to.be.an('array');
+  });
+
+  test("Stock items have ingredient details", function() {
+    const data = res.getBody();
+    if (data.length > 0) {
+      expect(data[0]).to.have.property('ingredient');
+      expect(data[0].ingredient).to.have.property('name');
+      expect(data[0].ingredient).to.have.property('unit_price');
+    }
+  });
+
+  test("Ingredients have supplier details", function() {
+    const data = res.getBody();
+    if (data.length > 0 && data[0].ingredient) {
+      expect(data[0].ingredient).to.have.property('supplier');
+      expect(data[0].ingredient.supplier).to.have.property('name');
+    }
+  });
+
+  test("Stock items are sorted by ingredient name", function() {
+    const data = res.getBody();
+    if (data.length > 1) {
+      for (let i = 1; i < data.length; i++) {
+        const prevName = data[i-1].ingredient.name.toLowerCase();
+        const currName = data[i].ingredient.name.toLowerCase();
+        expect(prevName.localeCompare(currName)).to.be.at.most(0);
+      }
+    }
+  });
+}

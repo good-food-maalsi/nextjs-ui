@@ -1,0 +1,92 @@
+meta {
+  name: Get All Franchises
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{apiUrl}}/franchises?page=1&limit=10
+  body: none
+  auth: inherit
+}
+
+params:query {
+  page: 1
+  limit: 10
+  ~search: Paris
+  ~city: Paris
+  ~state: Ile-de-France
+}
+
+headers {
+  Content-Type: application/json
+}
+
+docs {
+  # Get All Franchises
+
+  Récupère la liste de toutes les franchises avec pagination et filtres optionnels.
+
+  ## Query Parameters
+
+  - `page` (optional): Numéro de page (défaut: 1)
+  - `limit` (optional): Nombre d'éléments par page (défaut: 10, max: 100)
+  - `search` (optional): Recherche dans le nom, email, ou adresse
+  - `city` (optional): Filtrer par ville
+  - `state` (optional): Filtrer par état/région
+
+  ## Response
+
+  ```json
+  {
+    "data": [
+      {
+        "id": "uuid",
+        "name": "Good Food Paris",
+        "latitude": 48.8566,
+        "longitude": 2.3522,
+        "street": "123 Rue de la Paix",
+        "city": "Paris",
+        "state": "Ile-de-France",
+        "zip": "75001",
+        "owner_id": "uuid",
+        "email": "paris@goodfood.com",
+        "phone": "+33 1 23 45 67 89",
+        "created_at": "2025-01-01T00:00:00.000Z",
+        "updated_at": "2025-01-01T00:00:00.000Z",
+        "_count": {
+          "stocks": 25,
+          "commands": 150
+        }
+      }
+    ],
+    "meta": {
+      "total": 50,
+      "page": 1,
+      "limit": 10,
+      "totalPages": 5
+    }
+  }
+  ```
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Response has data array", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('data');
+    expect(data.data).to.be.an('array');
+  });
+
+  test("Response has meta", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('meta');
+    expect(data.meta).to.have.property('total');
+    expect(data.meta).to.have.property('page');
+    expect(data.meta).to.have.property('limit');
+    expect(data.meta).to.have.property('totalPages');
+  });
+}
