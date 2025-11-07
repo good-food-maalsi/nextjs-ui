@@ -3,6 +3,7 @@ import { ExclusiveDeals } from "./_components/ExclusiveDeals";
 import { PopularCategories } from "./_components/PopularCategories";
 import { PopularRestaurants } from "./_components/PopularRestaurants";
 import { JoinUs } from "./_components/JoinUs";
+import { Stats } from "./_components/Stats";
 
 export default function HomePage() {
   return (
@@ -16,6 +17,8 @@ export default function HomePage() {
       <PopularRestaurants />
 
       <JoinUs />
+
+      <Stats />
     </div>
   );
 }
