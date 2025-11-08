@@ -52,7 +52,7 @@ export function Footer() {
             </div>
 
             <p className="text-xs text-black-400">
-              Société n° 490039-445, enregistrée auprès de la Chambre des sociétés.
+              Société n°490039-445, enregistrée auprès de la Chambre des sociétés.
             </p>
           </div>
 
