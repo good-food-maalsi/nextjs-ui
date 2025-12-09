@@ -1,0 +1,70 @@
+meta {
+  name: Get Ingredient by ID
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{apiUrl}}/ingredients/{{ingredientId}}
+  body: none
+  auth: inherit
+}
+
+docs {
+  # Get Ingredient by ID
+
+  Récupère un ingrédient spécifique avec toutes ses relations.
+
+  ## Path Parameters
+
+  - `id` (uuid): ID de l'ingrédient
+
+  ## Response (200 OK)
+
+  ```json
+  {
+    "id": "uuid",
+    "name": "Poulet fermier",
+    "description": "Poulet Label Rouge",
+    "supplier_id": "uuid",
+    "unit_price": "12.50",
+    "created_at": "2025-01-01T00:00:00.000Z",
+    "updated_at": "2025-01-01T00:00:00.000Z",
+    "supplier": {
+      "id": "uuid",
+      "name": "Ferme Bio",
+      "email": "contact@fermebio.fr"
+    },
+    "ingredient_categories": [
+      {
+        "category": {
+          "id": "uuid",
+          "name": "Viandes",
+          "description": "Produits carnés"
+        }
+      }
+    ],
+    "_count": {
+      "stocks": 3,
+      "command_ingredients": 10
+    }
+  }
+  ```
+
+  ## Error Responses
+
+  - `404 Not Found`: Ingrédient non trouvé
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Response has ingredient data", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('id');
+    expect(data).to.have.property('name');
+    expect(data).to.have.property('supplier');
+  });
+}
