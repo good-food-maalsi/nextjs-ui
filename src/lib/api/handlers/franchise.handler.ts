@@ -1,14 +1,21 @@
 import { franchiseRepository } from "../repositories/franchise.repository";
+import { ingredientRepository } from "../repositories/ingredient.repository";
 import type {
   CreateFranchiseInput,
   UpdateFranchiseInput,
   FranchiseQueryParams,
 } from "../validators/franchise.validator";
+import type {
+  UpsertStockInput,
+  UpdateStockQuantityInput,
+} from "../validators/stock.validator";
+import { NotFoundError } from "../errors/api-error";
 import {
-  NotFoundError,
-  ConflictError,
-  BadRequestError,
-} from "../errors/api-error";
+  validateGPSCoordinates,
+  ensureExists,
+  validateEmailUniqueness,
+  validateEmailUniquenessForUpdate,
+} from "../../utils/validators";
 
 export const franchiseHandler = {
   /**
@@ -36,23 +43,10 @@ export const franchiseHandler = {
    */
   async createFranchise(data: CreateFranchiseInput) {
     // Vérifier si l'email existe déjà
-    const existingFranchise = await franchiseRepository.findByEmail(data.email);
+    await validateEmailUniqueness(franchiseRepository, data.email, "franchise");
 
-    if (existingFranchise) {
-      throw new ConflictError(
-        `A franchise with email ${data.email} already exists`
-      );
-    }
-
-    // Valider les coordonnées GPS
-    if (
-      data.latitude < -90 ||
-      data.latitude > 90 ||
-      data.longitude < -180 ||
-      data.longitude > 180
-    ) {
-      throw new BadRequestError("Invalid GPS coordinates");
-    }
+    // Valider les coordonnées GPS (franchises always have coordinates)
+    validateGPSCoordinates(data.latitude, data.longitude);
 
     return franchiseRepository.create(data);
   },
@@ -62,32 +56,32 @@ export const franchiseHandler = {
    */
   async updateFranchise(id: string, data: UpdateFranchiseInput) {
     // Vérifier si la franchise existe
-    const exists = await franchiseRepository.exists(id);
-    if (!exists) {
-      throw new NotFoundError(`Franchise with ID ${id} not found`);
-    }
+    await ensureExists(franchiseRepository, id, "Franchise");
 
     // Si l'email est modifié, vérifier qu'il n'existe pas déjà
     if (data.email) {
-      const existingFranchise = await franchiseRepository.findByEmail(
-        data.email
+      await validateEmailUniquenessForUpdate(
+        franchiseRepository,
+        data.email,
+        id,
+        "franchise"
       );
-      if (existingFranchise && existingFranchise.id !== id) {
-        throw new ConflictError(
-          `A franchise with email ${data.email} already exists`
-        );
-      }
     }
 
     // Valider les coordonnées GPS si elles sont fournies
     if (data.latitude !== undefined || data.longitude !== undefined) {
       const currentFranchise = await franchiseRepository.findById(id);
-      const lat = data.latitude ?? currentFranchise!.latitude;
-      const lon = data.longitude ?? currentFranchise!.longitude;
 
-      if (lat < -90 || lat > 90 || lon < -180 || lon > 180) {
-        throw new BadRequestError("Invalid GPS coordinates");
+      // Type-safe: currentFranchise should exist since we already checked with ensureExists
+      if (!currentFranchise) {
+        throw new NotFoundError(`Franchise with ID ${id} not found`);
       }
+
+      const lat = data.latitude ?? currentFranchise.latitude;
+      const lon = data.longitude ?? currentFranchise.longitude;
+
+      // Valider les coordonnées GPS
+      validateGPSCoordinates(lat, lon);
     }
 
     return franchiseRepository.update(id, data);
@@ -98,10 +92,7 @@ export const franchiseHandler = {
    */
   async deleteFranchise(id: string) {
     // Vérifier si la franchise existe
-    const exists = await franchiseRepository.exists(id);
-    if (!exists) {
-      throw new NotFoundError(`Franchise with ID ${id} not found`);
-    }
+    await ensureExists(franchiseRepository, id, "Franchise");
 
     return franchiseRepository.delete(id);
   },
@@ -111,11 +102,68 @@ export const franchiseHandler = {
    */
   async getFranchiseStock(id: string) {
     // Vérifier si la franchise existe
-    const exists = await franchiseRepository.exists(id);
-    if (!exists) {
-      throw new NotFoundError(`Franchise with ID ${id} not found`);
-    }
+    await ensureExists(franchiseRepository, id, "Franchise");
 
     return franchiseRepository.getStock(id);
+  },
+
+  /**
+   * Ajouter ou mettre à jour du stock
+   */
+  async upsertFranchiseStock(franchiseId: string, data: UpsertStockInput) {
+    // Vérifier si la franchise et l'ingrédient existent en parallèle
+    await Promise.all([
+      ensureExists(franchiseRepository, franchiseId, "Franchise"),
+      ensureExists(ingredientRepository, data.ingredient_id, "Ingredient"),
+    ]);
+
+    return franchiseRepository.upsertStock(
+      franchiseId,
+      data.ingredient_id,
+      data.quantity
+    );
+  },
+
+  /**
+   * Mettre à jour la quantité en stock
+   */
+  async updateFranchiseStockQuantity(
+    franchiseId: string,
+    ingredientId: string,
+    data: UpdateStockQuantityInput
+  ) {
+    // Vérifier si la franchise et l'ingrédient existent en parallèle
+    await Promise.all([
+      ensureExists(franchiseRepository, franchiseId, "Franchise"),
+      ensureExists(ingredientRepository, ingredientId, "Ingredient"),
+    ]);
+
+    const result = await franchiseRepository.updateStockQuantity(
+      franchiseId,
+      ingredientId,
+      data.quantity
+    );
+
+    if (!result) {
+      throw new NotFoundError(
+        `Stock entry for ingredient ${ingredientId} not found in franchise ${franchiseId}`
+      );
+    }
+
+    return result;
+  },
+
+  /**
+   * Supprimer une entrée de stock
+   */
+  async deleteFranchiseStock(franchiseId: string, ingredientId: string) {
+    // Vérifier si la franchise et l'ingrédient existent en parallèle
+    await Promise.all([
+      ensureExists(franchiseRepository, franchiseId, "Franchise"),
+      ensureExists(ingredientRepository, ingredientId, "Ingredient"),
+    ]);
+
+    await franchiseRepository.deleteStock(franchiseId, ingredientId);
+    return { message: "Stock entry deleted successfully" };
   },
 };
