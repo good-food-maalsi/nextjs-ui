@@ -158,4 +158,92 @@ export const franchiseRepository = {
     });
     return count > 0;
   },
+
+  /**
+   * Ajouter ou mettre à jour du stock (upsert)
+   */
+  async upsertStock(franchiseId: string, ingredientId: string, quantity: number) {
+    // Vérifier si l'entrée de stock existe
+    const existingStock = await prisma.stockFranchise.findFirst({
+      where: {
+        franchise_id: franchiseId,
+        ingredient_id: ingredientId,
+      },
+    });
+
+    if (existingStock) {
+      // Mettre à jour
+      return prisma.stockFranchise.update({
+        where: { id: existingStock.id },
+        data: { quantity },
+        include: {
+          ingredient: {
+            include: {
+              supplier: true,
+            },
+          },
+        },
+      });
+    }
+
+    // Créer
+    return prisma.stockFranchise.create({
+      data: {
+        franchise_id: franchiseId,
+        ingredient_id: ingredientId,
+        quantity,
+      },
+      include: {
+        ingredient: {
+          include: {
+            supplier: true,
+          },
+        },
+      },
+    });
+  },
+
+  /**
+   * Mettre à jour la quantité en stock
+   */
+  async updateStockQuantity(
+    franchiseId: string,
+    ingredientId: string,
+    quantity: number
+  ) {
+    const stock = await prisma.stockFranchise.findFirst({
+      where: {
+        franchise_id: franchiseId,
+        ingredient_id: ingredientId,
+      },
+    });
+
+    if (!stock) {
+      return null;
+    }
+
+    return prisma.stockFranchise.update({
+      where: { id: stock.id },
+      data: { quantity },
+      include: {
+        ingredient: {
+          include: {
+            supplier: true,
+          },
+        },
+      },
+    });
+  },
+
+  /**
+   * Supprimer une entrée de stock
+   */
+  async deleteStock(franchiseId: string, ingredientId: string) {
+    return prisma.stockFranchise.deleteMany({
+      where: {
+        franchise_id: franchiseId,
+        ingredient_id: ingredientId,
+      },
+    });
+  },
 };

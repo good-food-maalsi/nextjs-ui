@@ -1,0 +1,81 @@
+meta {
+  name: Update Stock Quantity
+  type: http
+  seq: 8
+}
+
+put {
+  url: {{apiUrl}}/franchises/{{franchiseId}}/stock/{{ingredientId}}
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "quantity": 75
+  }
+}
+
+docs {
+  # Update Stock Quantity
+
+  Met à jour la quantité d'un ingrédient déjà présent dans le stock.
+
+  **Note**: L'entrée de stock doit déjà exister. Sinon utiliser POST `/franchises/:id/stock`.
+
+  ## Path Parameters
+
+  - `id` (uuid): ID de la franchise
+  - `ingredientId` (uuid): ID de l'ingrédient
+
+  ## Request Body
+
+  - `quantity` (number, int ≥ 0, required): Nouvelle quantité en stock
+
+  ## Response (200 OK)
+
+  ```json
+  {
+    "id": "uuid",
+    "franchise_id": "uuid",
+    "ingredient_id": "uuid",
+    "quantity": 75,
+    "created_at": "2025-01-01T00:00:00.000Z",
+    "updated_at": "2025-01-01T00:30:00.000Z",
+    "ingredient": {
+      "id": "uuid",
+      "name": "Poulet fermier",
+      "unit_price": "12.50",
+      "supplier": {
+        "id": "uuid",
+        "name": "Ferme Bio"
+      }
+    }
+  }
+  ```
+
+  ## Error Responses
+
+  - `404 Not Found`: Franchise, ingrédient, ou entrée de stock non trouvé
+  - `400 Bad Request`: Données invalides (quantité négative)
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Quantity was updated", function() {
+    const data = res.getBody();
+    expect(data.quantity).to.equal(75);
+  });
+
+  test("Has ingredient info", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('ingredient');
+  });
+}
