@@ -1,0 +1,68 @@
+meta {
+  name: Get Category by ID
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{apiUrl}}/categories/{{categoryId}}
+  body: none
+  auth: inherit
+}
+
+docs {
+  # Get Category by ID
+
+  Récupère une catégorie spécifique avec ses ingrédients associés.
+
+  ## Path Parameters
+
+  - `id` (uuid): ID de la catégorie
+
+  ## Response (200 OK)
+
+  ```json
+  {
+    "id": "uuid",
+    "name": "Viandes",
+    "description": "Produits carnés et volailles",
+    "created_at": "2025-01-01T00:00:00.000Z",
+    "updated_at": "2025-01-01T00:00:00.000Z",
+    "ingredient_categories": [
+      {
+        "id": "uuid",
+        "ingredient": {
+          "id": "uuid",
+          "name": "Poulet",
+          "unit_price": "12.50"
+        }
+      }
+    ],
+    "_count": {
+      "ingredient_categories": 5
+    }
+  }
+  ```
+
+  ## Error Responses
+
+  - `404 Not Found`: Catégorie non trouvée
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Response has category data", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('id');
+    expect(data).to.have.property('name');
+  });
+
+  test("Response has ingredient_categories", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('ingredient_categories');
+    expect(data.ingredient_categories).to.be.an('array');
+  });
+}
