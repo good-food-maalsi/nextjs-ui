@@ -58,7 +58,7 @@ export function EditPasswordDialog({
         confirmPassword: "",
       });
     }
-  }, [open]);
+  }, [open, form]);
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (data: EditPasswordForm) =>

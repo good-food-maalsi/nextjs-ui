@@ -74,10 +74,9 @@ export function DiscountsDataTable<TData, TValue>({
       const search = filterValue.toLowerCase();
 
       // Recherche sur nom et description
-      const name = String(row.original.name || "").toLowerCase();
-      const description = String(
-        row.original.description || ""
-      ).toLowerCase();
+      const original = row.original as Record<string, unknown>;
+      const name = String(original.name || "").toLowerCase();
+      const description = String(original.description || "").toLowerCase();
 
       return name.includes(search) || description.includes(search);
     },

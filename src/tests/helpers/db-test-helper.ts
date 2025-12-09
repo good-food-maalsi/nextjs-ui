@@ -89,7 +89,7 @@ export async function runInTransaction<T>(
   const client = getPrismaTestClient();
 
   return client.$transaction(async (tx) => {
-    const _result = await callback(tx as PrismaClient);
+    await callback(tx as PrismaClient);
     // Throw pour forcer rollback
     throw new Error("ROLLBACK_TRANSACTION");
   }).catch((error) => {

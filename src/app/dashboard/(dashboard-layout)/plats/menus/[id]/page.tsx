@@ -75,7 +75,7 @@ const discountTypeLabels: Record<string, string> = {
 };
 
 export default function MenuDetailPage() {
-  const params = useParams();
+  const _params = useParams();
   const router = useRouter();
   const [menu] = React.useState<MenuDetail>(mockMenuDetail);
   const [isLoading] = React.useState(false);

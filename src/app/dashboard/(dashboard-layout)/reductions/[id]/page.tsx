@@ -77,7 +77,7 @@ const getStatusVariant = (
 };
 
 export default function DiscountDetailPage() {
-  const params = useParams();
+  const _params = useParams();
   const router = useRouter();
   const [discount] = React.useState<DiscountDetail>(mockDiscountDetail);
   const [isLoading] = React.useState(false);

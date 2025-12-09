@@ -14,7 +14,10 @@ describe("Category Handler", () => {
   describe("getCategories", () => {
     it("should return paginated categories", async () => {
       const mockData = {
-        data: [createMockCategory()],
+        data: [{
+          ...createMockCategory(),
+          _count: { ingredient_categories: 0 },
+        }],
         meta: { total: 1, page: 1, limit: 10, totalPages: 1 },
       };
 
@@ -29,7 +32,11 @@ describe("Category Handler", () => {
 
   describe("getCategoryById", () => {
     it("should return category if found", async () => {
-      const mockCategory = createMockCategory();
+      const mockCategory = {
+        ...createMockCategory(),
+        ingredient_categories: [],
+        _count: { ingredient_categories: 0 },
+      };
       vi.mocked(categoryRepository.findById).mockResolvedValue(mockCategory);
 
       const result = await categoryHandler.getCategoryById(mockCategory.id);

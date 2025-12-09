@@ -13,7 +13,6 @@ import TextCell from "@/components/cells/text-cell";
 import { DeleteModal } from "@/components/delete-modal";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTable } from "@/components/ui/data-table";
-import { MutationTypeEnum } from "@/lib/types/enum";
 import type { Session } from "@/lib/types/session.types";
 import type { EditedUser, User } from "@/lib/types/user.types";
 import { userService } from "@/services/user.service";
@@ -269,7 +268,6 @@ export default function DataTableMembers({ session }: DataTableMembersProps) {
         }
         columns={columns}
         isError={isMemberError}
-        mutationType={MutationTypeEnum.member}
       />
       <DeleteModal
         isOpen={isModalOpen}

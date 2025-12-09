@@ -5,6 +5,9 @@ import { serverSession } from "@/lib/session/server-session";
 import { SessionHydrater } from "@/lib/session/session-hydrater";
 import AuthInterceptorsProvider from "@/providers/auth-interceptors-provider";
 
+// La route est dynamique car elle utilise des cookies pour l'authentification
+export const dynamic = "force-dynamic";
+
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }

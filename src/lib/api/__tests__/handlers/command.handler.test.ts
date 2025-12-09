@@ -18,8 +18,14 @@ describe("Command Handler", () => {
 
   describe("getCommands", () => {
     it("should return paginated commands", async () => {
+      const mockFranchise = createMockFranchise();
       const mockData = {
-        data: [createMockCommand()],
+        data: [{
+          ...createMockCommand(),
+          franchise: { id: mockFranchise.id, name: mockFranchise.name, city: mockFranchise.city },
+          command_ingredients: [],
+          _count: { command_ingredients: 0 },
+        }],
         meta: { total: 1, page: 1, limit: 10, totalPages: 1 },
       };
 
@@ -34,7 +40,13 @@ describe("Command Handler", () => {
 
   describe("getCommandById", () => {
     it("should return command if found", async () => {
-      const mockCommand = createMockCommand();
+      const mockFranchise = createMockFranchise();
+      const mockCommand = {
+        ...createMockCommand(),
+        franchise: mockFranchise,
+        command_ingredients: [],
+        _count: { command_ingredients: 0 },
+      };
       vi.mocked(commandRepository.findById).mockResolvedValue(mockCommand);
 
       const result = await commandHandler.getCommandById(mockCommand.id);
@@ -54,9 +66,13 @@ describe("Command Handler", () => {
 
   describe("createCommand", () => {
     it("should create command with items", async () => {
-      const mockCommand = createMockCommand();
       const mockFranchise = createMockFranchise();
       const mockIngredient = createMockIngredient();
+      const mockCommand = {
+        ...createMockCommand(),
+        franchise: mockFranchise,
+        command_ingredients: [],
+      };
 
       vi.mocked(franchiseRepository.exists).mockResolvedValue(true);
       vi.mocked(ingredientRepository.exists).mockResolvedValue(true);
@@ -87,6 +103,7 @@ describe("Command Handler", () => {
         commandHandler.createCommand({
           franchise_id: "non-existent-id",
           user_id: "550e8400-e29b-41d4-a716-446655440010",
+          items: [],
         })
       ).rejects.toThrow(NotFoundError);
 
@@ -114,13 +131,19 @@ describe("Command Handler", () => {
     });
 
     it("should create command without items", async () => {
-      const mockCommand = createMockCommand();
+      const mockFranchise = createMockFranchise();
+      const mockCommand = {
+        ...createMockCommand(),
+        franchise: mockFranchise,
+        command_ingredients: [],
+      };
       vi.mocked(franchiseRepository.exists).mockResolvedValue(true);
       vi.mocked(commandRepository.create).mockResolvedValue(mockCommand);
 
       const result = await commandHandler.createCommand({
         franchise_id: "550e8400-e29b-41d4-a716-446655440000",
         user_id: "550e8400-e29b-41d4-a716-446655440010",
+        items: [],
       });
 
       expect(result).toEqual(mockCommand);
@@ -129,7 +152,12 @@ describe("Command Handler", () => {
 
   describe("updateCommand", () => {
     it("should update command if exists", async () => {
-      const mockCommand = createMockCommand({ status: CommandStatus.confirmed });
+      const mockFranchise = createMockFranchise();
+      const mockCommand = {
+        ...createMockCommand({ status: CommandStatus.confirmed }),
+        franchise: mockFranchise,
+        command_ingredients: [],
+      };
       vi.mocked(commandRepository.exists).mockResolvedValue(true);
       vi.mocked(commandRepository.update).mockResolvedValue(mockCommand);
 
@@ -175,6 +203,7 @@ describe("Command Handler", () => {
 
   describe("addIngredientToCommand", () => {
     it("should add ingredient to command", async () => {
+      const mockIngredient = createMockIngredient();
       const mockIngredientItem = {
         id: "item-id",
         command_id: "command-id",
@@ -182,11 +211,12 @@ describe("Command Handler", () => {
         quantity: 5,
         created_at: new Date(),
         updated_at: new Date(),
+        ingredient: mockIngredient,
       };
 
       vi.mocked(commandRepository.exists).mockResolvedValue(true);
       vi.mocked(ingredientRepository.exists).mockResolvedValue(true);
-      vi.mocked(commandRepository.addIngredient).mockResolvedValue(mockIngredientItem as unknown as CommandIngredient);
+      vi.mocked(commandRepository.addIngredient).mockResolvedValue(mockIngredientItem);
 
       const result = await commandHandler.addIngredientToCommand("command-id", {
         ingredient_id: "ingredient-id",
@@ -226,6 +256,7 @@ describe("Command Handler", () => {
 
   describe("updateCommandIngredient", () => {
     it("should update ingredient quantity", async () => {
+      const mockIngredient = createMockIngredient();
       const mockUpdatedItem = {
         id: "item-id",
         command_id: "command-id",
@@ -233,11 +264,12 @@ describe("Command Handler", () => {
         quantity: 15,
         created_at: new Date(),
         updated_at: new Date(),
+        ingredient: mockIngredient,
       };
 
       vi.mocked(commandRepository.exists).mockResolvedValue(true);
       vi.mocked(ingredientRepository.exists).mockResolvedValue(true);
-      vi.mocked(commandRepository.updateIngredientQuantity).mockResolvedValue(mockUpdatedItem as unknown as CommandIngredient);
+      vi.mocked(commandRepository.updateIngredientQuantity).mockResolvedValue(mockUpdatedItem);
 
       const result = await commandHandler.updateCommandIngredient(
         "command-id",
@@ -263,7 +295,7 @@ describe("Command Handler", () => {
     it("should remove ingredient from command", async () => {
       vi.mocked(commandRepository.exists).mockResolvedValue(true);
       vi.mocked(ingredientRepository.exists).mockResolvedValue(true);
-      vi.mocked(commandRepository.removeIngredient).mockResolvedValue({ count: 1 } as unknown as Prisma.BatchPayload);
+      vi.mocked(commandRepository.removeIngredient).mockResolvedValue({ count: 1 } as { count: number });
 
       const result = await commandHandler.removeIngredientFromCommand(
         "command-id",

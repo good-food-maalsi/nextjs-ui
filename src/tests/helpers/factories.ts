@@ -7,6 +7,7 @@ import type {
   Franchise,
   CommandStatus,
 } from "@/generated/prisma/client";
+import { Prisma } from "@/generated/prisma/client";
 
 /**
  * Factory functions pour créer des données de test
@@ -45,7 +46,7 @@ export const createMockIngredient = (
   name: "Poulet fermier",
   description: "Poulet Label Rouge",
   supplier_id: "550e8400-e29b-41d4-a716-446655440001",
-  unit_price: "12.50" as unknown as Prisma.Decimal,
+  unit_price: new Prisma.Decimal(12.50),
   created_at: new Date("2025-01-01T00:00:00.000Z"),
   updated_at: new Date("2025-01-01T00:00:00.000Z"),
   ...overrides,
