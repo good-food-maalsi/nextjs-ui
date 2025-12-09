@@ -1,0 +1,64 @@
+meta {
+  name: Get Command Ingredients
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{apiUrl}}/commands/{{commandId}}/ingredients
+  body: none
+  auth: inherit
+}
+
+docs {
+  # Get Command Ingredients
+
+  Récupère tous les ingrédients (items) d'une commande.
+
+  ## Path Parameters
+
+  - `id` (uuid): ID de la commande
+
+  ## Response (200 OK)
+
+  ```json
+  {
+    "data": [
+      {
+        "id": "uuid",
+        "command_id": "uuid",
+        "ingredient_id": "uuid",
+        "quantity": 10,
+        "created_at": "2025-01-01T00:00:00.000Z",
+        "updated_at": "2025-01-01T00:00:00.000Z",
+        "ingredient": {
+          "id": "uuid",
+          "name": "Poulet fermier",
+          "description": "Poulet Label Rouge",
+          "unit_price": "12.50",
+          "supplier": {
+            "id": "uuid",
+            "name": "Ferme Bio"
+          }
+        }
+      }
+    ]
+  }
+  ```
+
+  ## Error Responses
+
+  - `404 Not Found`: Commande non trouvée
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Response has data array", function() {
+    const body = res.getBody();
+    expect(body).to.have.property('data');
+    expect(body.data).to.be.an('array');
+  });
+}
