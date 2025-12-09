@@ -4,11 +4,13 @@ import type {
   UpdateSupplierInput,
   SupplierQueryParams,
 } from "../validators/supplier.validator";
+import { NotFoundError } from "../errors/api-error";
 import {
-  NotFoundError,
-  ConflictError,
-  BadRequestError,
-} from "../errors/api-error";
+  validateGPSCoordinatesPair,
+  ensureExists,
+  validateEmailUniqueness,
+  validateEmailUniquenessForUpdate,
+} from "../../utils/validators";
 
 export const supplierHandler = {
   /**
@@ -36,35 +38,10 @@ export const supplierHandler = {
    */
   async createSupplier(data: CreateSupplierInput) {
     // Vérifier si l'email existe déjà
-    const existingSupplier = await supplierRepository.findByEmail(data.email);
-
-    if (existingSupplier) {
-      throw new ConflictError(
-        `A supplier with email ${data.email} already exists`
-      );
-    }
+    await validateEmailUniqueness(supplierRepository, data.email, "supplier");
 
     // Valider les coordonnées GPS si elles sont fournies
-    if (data.latitude !== undefined && data.longitude !== undefined) {
-      if (
-        data.latitude < -90 ||
-        data.latitude > 90 ||
-        data.longitude < -180 ||
-        data.longitude > 180
-      ) {
-        throw new BadRequestError("Invalid GPS coordinates");
-      }
-    }
-
-    // Vérifier que si une coordonnée est fournie, l'autre l'est aussi
-    if (
-      (data.latitude !== undefined && data.longitude === undefined) ||
-      (data.latitude === undefined && data.longitude !== undefined)
-    ) {
-      throw new BadRequestError(
-        "Both latitude and longitude must be provided together"
-      );
-    }
+    validateGPSCoordinatesPair(data.latitude, data.longitude);
 
     return supplierRepository.create(data);
   },
@@ -74,40 +51,32 @@ export const supplierHandler = {
    */
   async updateSupplier(id: string, data: UpdateSupplierInput) {
     // Vérifier si le fournisseur existe
-    const exists = await supplierRepository.exists(id);
-    if (!exists) {
-      throw new NotFoundError(`Supplier with ID ${id} not found`);
-    }
+    await ensureExists(supplierRepository, id, "Supplier");
 
     // Si l'email est modifié, vérifier qu'il n'existe pas déjà
     if (data.email) {
-      const existingSupplier = await supplierRepository.findByEmail(data.email);
-      if (existingSupplier && existingSupplier.id !== id) {
-        throw new ConflictError(
-          `A supplier with email ${data.email} already exists`
-        );
-      }
+      await validateEmailUniquenessForUpdate(
+        supplierRepository,
+        data.email,
+        id,
+        "supplier"
+      );
     }
 
     // Valider les coordonnées GPS si elles sont fournies
     if (data.latitude !== undefined || data.longitude !== undefined) {
       const currentSupplier = await supplierRepository.findById(id);
-      const lat = data.latitude ?? currentSupplier!.latitude;
-      const lon = data.longitude ?? currentSupplier!.longitude;
 
-      // Vérifier que les coordonnées sont valides si toutes les deux sont présentes
-      if (lat !== null && lon !== null) {
-        if (lat < -90 || lat > 90 || lon < -180 || lon > 180) {
-          throw new BadRequestError("Invalid GPS coordinates");
-        }
+      // Type-safe: currentSupplier should exist since we already checked with ensureExists
+      if (!currentSupplier) {
+        throw new NotFoundError(`Supplier with ID ${id} not found`);
       }
 
-      // Vérifier que si une coordonnée est fournie, l'autre l'est aussi (pas null)
-      if ((lat === null && lon !== null) || (lat !== null && lon === null)) {
-        throw new BadRequestError(
-          "Both latitude and longitude must be provided together or both set to null"
-        );
-      }
+      const lat = data.latitude ?? currentSupplier.latitude;
+      const lon = data.longitude ?? currentSupplier.longitude;
+
+      // Valider la paire de coordonnées GPS
+      validateGPSCoordinatesPair(lat, lon);
     }
 
     return supplierRepository.update(id, data);
@@ -118,10 +87,7 @@ export const supplierHandler = {
    */
   async deleteSupplier(id: string) {
     // Vérifier si le fournisseur existe
-    const exists = await supplierRepository.exists(id);
-    if (!exists) {
-      throw new NotFoundError(`Supplier with ID ${id} not found`);
-    }
+    await ensureExists(supplierRepository, id, "Supplier");
 
     return supplierRepository.delete(id);
   },
