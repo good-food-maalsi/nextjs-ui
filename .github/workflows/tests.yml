@@ -84,6 +84,10 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Generate Prisma Client
+        # DATABASE_URL required because prisma.config.ts validates this variable
+        # even though it's not used during client generation (only the schema is needed)
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5433/goodfood_test?schema=public
         run: pnpm prisma generate
 
       - name: Run migrations
@@ -125,6 +129,13 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma Client
+        # Dummy DATABASE_URL required because prisma.config.ts validates this variable
+        # even though it's not used during client generation (only the schema is needed)
+        env:
+          DATABASE_URL: postgresql://user:password@localhost:5432/dummy?schema=public
+        run: pnpm prisma generate
 
       - name: Run ESLint
         run: pnpm lint
