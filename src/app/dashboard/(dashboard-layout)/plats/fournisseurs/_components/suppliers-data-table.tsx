@@ -30,20 +30,36 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+interface ColumnsProps<TData> {
+  onEdit: (supplier: TData) => void;
+  onDelete: (supplier: TData) => void;
+}
+
 interface SuppliersDataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
+  columns:
+    | ColumnDef<TData, TValue>[]
+    | ((props: ColumnsProps<TData>) => ColumnDef<TData, TValue>[]);
   data: TData[];
   isLoading?: boolean;
   isError?: boolean;
+  onEdit: (supplier: TData) => void;
+  onDelete: (supplier: TData) => void;
 }
 
 export function SuppliersDataTable<TData, TValue>({
-  columns,
+  columns: columnsOrFactory,
   data,
   isLoading = false,
   isError = false,
+  onEdit,
+  onDelete,
 }: SuppliersDataTableProps<TData, TValue>) {
   const safeData = data ?? [];
+
+  const columns =
+    typeof columnsOrFactory === "function"
+      ? columnsOrFactory({ onEdit, onDelete })
+      : columnsOrFactory;
 
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =

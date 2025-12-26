@@ -5,45 +5,57 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { PageHeaderActions } from "@/components/ui/page-header-actions";
 import { SuppliersDataTable } from "./_components/suppliers-data-table";
+import { createColumns, type Fournisseur } from "./_components/columns";
+import { SupplierFormDialog } from "./_components/supplier-form-dialog";
+import { DeleteSupplierDialog } from "./_components/delete-supplier-dialog";
+import { useSuppliers } from "@/hooks/use-suppliers";
+import type { Supplier } from "@/lib/types/supplier.types";
 
-import { columns, type Fournisseur } from "./_components/columns";
-
-// Données mockées pour la démo
-const fournisseurs = [
-  "UNION PRIMEURS",
-  "BOUCHERIE MODERNE",
-  "FROMAGERIE ARTISANALE",
-  "MARAÎCHERS ASSOCIÉS",
-  "POISSONNERIE DU PORT",
-];
-const adresses = [
-  "Rue Roger Ollivier, 45370 Dry",
-  "Avenue de la République, 76000 Rouen",
-  "Place du Marché, 14000 Caen",
-  "Rue des Fermes, 27000 Évreux",
-  "Quai de la Seine, 76600 Le Havre",
-];
-
-const mockFournisseurs: Fournisseur[] = Array.from({ length: 25 }, (_, i) => ({
-  id: `fournisseur-${i + 1}`,
-  nom: fournisseurs[i % fournisseurs.length],
-  adresse: adresses[i % adresses.length],
-  telephone: "01 23 45 67 89",
-  email: "exemple@exemple.com",
-}));
+function mapSupplierToFournisseur(supplier: Supplier): Fournisseur {
+  return {
+    id: supplier.id,
+    nom: supplier.name,
+    adresse:
+      supplier.latitude && supplier.longitude
+        ? `${supplier.latitude.toFixed(4)}, ${supplier.longitude.toFixed(4)}`
+        : "Position non définie",
+    telephone: supplier.phone,
+    email: supplier.email,
+    logo_url: supplier.logo_url,
+  };
+}
 
 export default function FournisseursPage() {
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [isError] = React.useState(false);
+  const [page] = React.useState(1);
+  const [limit] = React.useState(100);
+  const [search] = React.useState("");
 
-  // Simulation du chargement
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
+  const { data, isLoading, isError } = useSuppliers({ page, limit, search });
 
-    return () => clearTimeout(timer);
-  }, []);
+  const [createDialogOpen, setCreateDialogOpen] = React.useState(false);
+  const [editDialogOpen, setEditDialogOpen] = React.useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const [selectedSupplier, setSelectedSupplier] =
+    React.useState<Supplier | null>(null);
+
+  const handleEdit = (fournisseur: Fournisseur) => {
+    const supplier = data?.data.find((s) => s.id === fournisseur.id);
+    if (supplier) {
+      setSelectedSupplier(supplier);
+      setEditDialogOpen(true);
+    }
+  };
+
+  const handleDelete = (fournisseur: Fournisseur) => {
+    const supplier = data?.data.find((s) => s.id === fournisseur.id);
+    if (supplier) {
+      setSelectedSupplier(supplier);
+      setDeleteDialogOpen(true);
+    }
+  };
+
+  const fournisseurs: Fournisseur[] =
+    data?.data.map(mapSupplierToFournisseur) ?? [];
 
   return (
     <div className="container mx-auto py-6">
@@ -59,17 +71,40 @@ export default function FournisseursPage() {
           <Button variant="secondaryOutline" size="sm">
             Exporter
           </Button>
-          <Button variant="secondaryOutline" size="sm">
+          <Button
+            variant="secondaryOutline"
+            size="sm"
+            onClick={() => setCreateDialogOpen(true)}
+          >
             Ajouter un fournisseur
           </Button>
         </PageHeaderActions>
       </div>
 
       <SuppliersDataTable
-        columns={columns}
-        data={mockFournisseurs}
+        columns={createColumns}
+        data={fournisseurs}
         isLoading={isLoading}
         isError={isError}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
+
+      <SupplierFormDialog
+        open={createDialogOpen}
+        onOpenChange={setCreateDialogOpen}
+      />
+
+      <SupplierFormDialog
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        supplier={selectedSupplier || undefined}
+      />
+
+      <DeleteSupplierDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        supplier={selectedSupplier}
       />
     </div>
   );

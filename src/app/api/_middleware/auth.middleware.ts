@@ -18,6 +18,15 @@ export interface JWTPayload {
 export async function authMiddleware(
   request: NextRequest
 ): Promise<JWTPayload> {
+  // Skip authentication if DISABLE_AUTH is set to "true"
+  if (process.env.DISABLE_AUTH === "true") {
+    return {
+      sub: "test-user",
+      email: "test@example.com",
+      role: "admin",
+    };
+  }
+
   // Récupérer le token depuis le cookie
   const token = request.cookies.get("accessToken")?.value;
 
