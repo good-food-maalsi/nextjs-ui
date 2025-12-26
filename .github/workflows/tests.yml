@@ -96,10 +96,12 @@ jobs:
         run: pnpm prisma migrate deploy
 
       - name: Run integration tests
+        # Skip test:prepare (Docker setup) as we use GitHub Actions PostgreSQL service
+        # Migrations are already run in the previous step
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5433/goodfood_test?schema=public
           JWT_SECRET: test-secret-key
-        run: pnpm test:integration
+        run: pnpm vitest run --config vitest.integration.config.ts
 
       - name: Upload integration test results
         uses: actions/upload-artifact@v4
