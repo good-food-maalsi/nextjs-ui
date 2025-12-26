@@ -1,0 +1,83 @@
+meta {
+  name: Add Categories to Ingredient
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{apiUrl}}/ingredients/{{ingredientId}}/categories
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "categories": [
+      {
+        "id": "{{categoryId}}"
+      },
+      {
+        "name": "Sans Gluten",
+        "description": "Produits sans gluten"
+      }
+    ]
+  }
+}
+
+docs {
+  # Add Categories to Ingredient
+
+  Ajoute ou crée des catégories pour un ingrédient.
+
+  ## Path Parameters
+
+  - `id` (uuid): ID de l'ingrédient
+
+  ## Request Body
+
+  - `categories` (array, required, min: 1): Liste de catégories
+    - Pour lier existante: `{ "id": "uuid" }`
+    - Pour créer nouvelle: `{ "name": "Nom", "description": "Desc" }`
+
+  **Note**: Si une catégorie avec le même nom existe déjà, elle sera réutilisée.
+
+  ## Response (201 Created)
+
+  ```json
+  {
+    "data": [
+      {
+        "id": "uuid",
+        "name": "Viandes",
+        "description": "Produits carnés"
+      },
+      {
+        "id": "uuid",
+        "name": "Sans Gluten",
+        "description": "Produits sans gluten"
+      }
+    ]
+  }
+  ```
+
+  ## Error Responses
+
+  - `404 Not Found`: Ingrédient ou catégorie (par ID) non trouvée
+  - `400 Bad Request`: Données invalides
+}
+
+tests {
+  test("Status code is 201", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+
+  test("Response has data array", function() {
+    const body = res.getBody();
+    expect(body).to.have.property('data');
+    expect(body.data).to.be.an('array');
+  });
+}

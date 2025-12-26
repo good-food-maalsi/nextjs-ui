@@ -1,0 +1,111 @@
+meta {
+  name: Create Ingredient
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{apiUrl}}/ingredients
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "Poulet fermier Label Rouge",
+    "description": "Poulet élevé en plein air",
+    "supplier_id": "{{supplierId}}",
+    "unit_price": 12.50,
+    "categories": [
+      {
+        "id": "{{categoryId}}"
+      },
+      {
+        "name": "Bio",
+        "description": "Produits biologiques"
+      }
+    ]
+  }
+}
+
+docs {
+  # Create Ingredient
+
+  Crée un nouvel ingrédient avec possibilité de lier ou créer des catégories.
+
+  ## Required Fields
+
+  - `name` (string, 2-255 chars): Nom de l'ingrédient
+  - `supplier_id` (uuid): ID du fournisseur (doit exister)
+  - `unit_price` (number, positive): Prix unitaire
+
+  ## Optional Fields
+
+  - `description` (string, max 255 chars): Description
+  - `categories` (array): Liste de catégories à lier/créer
+    - Pour lier à une existante: `{ "id": "uuid" }`
+    - Pour créer à la volée: `{ "name": "Nom", "description": "Desc" }`
+
+  ## Response (201 Created)
+
+  ```json
+  {
+    "id": "uuid",
+    "name": "Poulet fermier Label Rouge",
+    "description": "Poulet élevé en plein air",
+    "supplier_id": "uuid",
+    "unit_price": "12.50",
+    "created_at": "2025-01-01T00:00:00.000Z",
+    "updated_at": "2025-01-01T00:00:00.000Z",
+    "supplier": {
+      "id": "uuid",
+      "name": "Ferme Bio"
+    },
+    "ingredient_categories": [
+      {
+        "category": {
+          "id": "uuid",
+          "name": "Viandes"
+        }
+      },
+      {
+        "category": {
+          "id": "uuid",
+          "name": "Bio"
+        }
+      }
+    ]
+  }
+  ```
+
+  ## Error Responses
+
+  - `400 Bad Request`: Données invalides
+  - `404 Not Found`: Fournisseur ou catégorie (par ID) non trouvé
+}
+
+tests {
+  test("Status code is 201", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+
+  test("Response has ingredient ID", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('id');
+  });
+
+  test("Has supplier info", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('supplier');
+  });
+
+  // Save ingredient ID for subsequent requests
+  if (res.getStatus() === 201) {
+    const data = res.getBody();
+    bru.setVar("ingredientId", data.id);
+  }
+}

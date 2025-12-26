@@ -1,0 +1,46 @@
+meta {
+  name: Delete Category
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{apiUrl}}/categories/{{categoryId}}
+  body: none
+  auth: inherit
+}
+
+docs {
+  # Delete Category
+
+  Supprime une catégorie existante.
+
+  **Note**: Supprime également toutes les relations IngredientCategory associées (CASCADE).
+
+  ## Path Parameters
+
+  - `id` (uuid): ID de la catégorie
+
+  ## Response (200 OK)
+
+  ```json
+  {
+    "message": "Category deleted successfully"
+  }
+  ```
+
+  ## Error Responses
+
+  - `404 Not Found`: Catégorie non trouvée
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Response has success message", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('message');
+  });
+}

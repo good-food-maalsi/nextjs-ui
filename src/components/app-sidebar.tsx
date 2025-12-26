@@ -46,7 +46,7 @@ export function AppSidebar({ session }: AppSidebarProps) {
   const pathname = usePathname();
   const [isPlatsExpanded, setIsPlatsExpanded] = useState(false);
 
-  // Vérifie si on est sur une page Plats ou ses sous-pages
+  // Check if we're on a Plats page or its sub-pages
   const isOnPlatsPage = pathname.startsWith("/dashboard/plats");
 
   // Garde les sous-liens ouverts si on est sur la page Plats

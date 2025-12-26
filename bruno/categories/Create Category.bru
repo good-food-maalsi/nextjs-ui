@@ -1,0 +1,75 @@
+meta {
+  name: Create Category
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{apiUrl}}/categories
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "Viandes",
+    "description": "Produits carnés et volailles"
+  }
+}
+
+docs {
+  # Create Category
+
+  Crée une nouvelle catégorie d'ingrédients.
+
+  ## Required Fields
+
+  - `name` (string, 2-255 chars): Nom de la catégorie (unique)
+
+  ## Optional Fields
+
+  - `description` (string, max 255 chars): Description de la catégorie
+
+  ## Response (201 Created)
+
+  ```json
+  {
+    "id": "uuid",
+    "name": "Viandes",
+    "description": "Produits carnés et volailles",
+    "created_at": "2025-01-01T00:00:00.000Z",
+    "updated_at": "2025-01-01T00:00:00.000Z"
+  }
+  ```
+
+  ## Error Responses
+
+  - `400 Bad Request`: Données invalides
+  - `409 Conflict`: Nom de catégorie déjà existant
+}
+
+tests {
+  test("Status code is 201", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+
+  test("Response has category ID", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('id');
+  });
+
+  test("Name matches request", function() {
+    const data = res.getBody();
+    expect(data.name).to.equal('Viandes');
+  });
+
+  // Save category ID for subsequent requests
+  if (res.getStatus() === 201) {
+    const data = res.getBody();
+    bru.setVar("categoryId", data.id);
+  }
+}

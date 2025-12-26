@@ -1,0 +1,96 @@
+meta {
+  name: Create Franchise
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{apiUrl}}/franchises
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "Good Food Lyon",
+    "latitude": 45.764043,
+    "longitude": 4.835659,
+    "street": "45 Rue de la République",
+    "city": "Lyon",
+    "state": "Auvergne-Rhône-Alpes",
+    "zip": "69002",
+    "owner_id": "550e8400-e29b-41d4-a716-446655440000",
+    "email": "lyon@goodfood.com",
+    "phone": "+33 4 12 34 56 78"
+  }
+}
+
+docs {
+  # Create Franchise
+
+  Crée une nouvelle franchise dans le système.
+
+  ## Required Fields
+
+  - `name` (string, 2-255 chars): Nom de la franchise
+  - `latitude` (number, -90 to 90): Latitude GPS
+  - `longitude` (number, -180 to 180): Longitude GPS
+  - `street` (string, 1-255 chars): Adresse de rue
+  - `city` (string, 1-100 chars): Ville
+  - `state` (string, 1-50 chars): État/Région
+  - `zip` (string, 1-10 chars): Code postal
+  - `owner_id` (uuid): ID du propriétaire
+  - `email` (string, email, max 100 chars): Email unique
+  - `phone` (string, 1-20 chars): Numéro de téléphone
+
+  ## Response (201 Created)
+
+  ```json
+  {
+    "id": "uuid",
+    "name": "Good Food Lyon",
+    "latitude": 45.764043,
+    "longitude": 4.835659,
+    "street": "45 Rue de la République",
+    "city": "Lyon",
+    "state": "Auvergne-Rhône-Alpes",
+    "zip": "69002",
+    "owner_id": "uuid",
+    "email": "lyon@goodfood.com",
+    "phone": "+33 4 12 34 56 78",
+    "created_at": "2025-01-01T00:00:00.000Z",
+    "updated_at": "2025-01-01T00:00:00.000Z"
+  }
+  ```
+
+  ## Error Responses
+
+  - `400 Bad Request`: Données invalides
+  - `409 Conflict`: Email déjà utilisé
+}
+
+tests {
+  test("Status code is 201", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+
+  test("Response has franchise ID", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('id');
+  });
+
+  test("Email matches request", function() {
+    const data = res.getBody();
+    expect(data.email).to.equal('lyon@goodfood.com');
+  });
+
+  // Save franchise ID for subsequent requests
+  if (res.getStatus() === 201) {
+    const data = res.getBody();
+    bru.setVar("franchiseId", data.id);
+  }
+}

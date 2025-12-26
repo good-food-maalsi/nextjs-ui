@@ -1,0 +1,60 @@
+meta {
+  name: Delete Franchise
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{apiUrl}}/franchises/{{franchiseId}}
+  body: none
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+vars:pre-request {
+  franchiseId: 550e8400-e29b-41d4-a716-446655440000
+}
+
+docs {
+  # Delete Franchise
+
+  Supprime une franchise du système. Cette action supprimera également en cascade :
+  - Tous les stocks de la franchise
+  - Toutes les commandes associées
+
+  ## URL Parameters
+
+  - `id` (uuid): ID de la franchise à supprimer
+
+  ## Response (200 OK)
+
+  ```json
+  {
+    "message": "Franchise deleted successfully"
+  }
+  ```
+
+  ## Error Responses
+
+  - `400 Bad Request`: Format d'ID invalide
+  - `404 Not Found`: Franchise non trouvée
+
+  ## ⚠️ Attention
+
+  Cette opération est **irréversible** et supprime toutes les données associées en cascade.
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Response has success message", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('message');
+    expect(data.message).to.include('deleted successfully');
+  });
+}

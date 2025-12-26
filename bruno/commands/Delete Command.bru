@@ -1,0 +1,46 @@
+meta {
+  name: Delete Command
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{apiUrl}}/commands/{{commandId}}
+  body: none
+  auth: inherit
+}
+
+docs {
+  # Delete Command
+
+  Supprime une commande existante.
+
+  **Note**: Supprime également tous les items de commande associés (CASCADE).
+
+  ## Path Parameters
+
+  - `id` (uuid): ID de la commande
+
+  ## Response (200 OK)
+
+  ```json
+  {
+    "message": "Command deleted successfully"
+  }
+  ```
+
+  ## Error Responses
+
+  - `404 Not Found`: Commande non trouvée
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Response has success message", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('message');
+  });
+}

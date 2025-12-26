@@ -1,0 +1,83 @@
+meta {
+  name: Get All Suppliers
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{apiUrl}}/suppliers?page=1&limit=10
+  body: none
+  auth: inherit
+}
+
+params:query {
+  page: 1
+  limit: 10
+  ~search: Fresh
+}
+
+headers {
+  Content-Type: application/json
+}
+
+docs {
+  # Get All Suppliers
+
+  Récupère la liste de tous les fournisseurs avec pagination et filtres optionnels.
+
+  ## Query Parameters
+
+  - `page` (optional): Numéro de page (défaut: 1)
+  - `limit` (optional): Nombre d'éléments par page (défaut: 10, max: 100)
+  - `search` (optional): Recherche dans le nom, email, ou téléphone
+
+  ## Response
+
+  ```json
+  {
+    "data": [
+      {
+        "id": "uuid",
+        "name": "Fresh Produce Co.",
+        "logo_url": "https://example.com/logo.png",
+        "latitude": 48.8566,
+        "longitude": 2.3522,
+        "phone": "+33 1 23 45 67 89",
+        "email": "contact@freshproduce.com",
+        "created_at": "2025-01-01T00:00:00.000Z",
+        "updated_at": "2025-01-01T00:00:00.000Z",
+        "_count": {
+          "ingredients": 45
+        }
+      }
+    ],
+    "meta": {
+      "total": 20,
+      "page": 1,
+      "limit": 10,
+      "totalPages": 2
+    }
+  }
+  ```
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Response has data array", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('data');
+    expect(data.data).to.be.an('array');
+  });
+
+  test("Response has meta", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('meta');
+    expect(data.meta).to.have.property('total');
+    expect(data.meta).to.have.property('page');
+    expect(data.meta).to.have.property('limit');
+    expect(data.meta).to.have.property('totalPages');
+  });
+}

@@ -1,0 +1,93 @@
+meta {
+  name: Get All Ingredients
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{apiUrl}}/ingredients?page=1&limit=10
+  body: none
+  auth: inherit
+}
+
+params:query {
+  page: 1
+  limit: 10
+  ~search: poulet
+  ~supplier_id: {{supplierId}}
+  ~category_id: {{categoryId}}
+}
+
+docs {
+  # Get All Ingredients
+
+  Récupère tous les ingrédients avec pagination et filtres optionnels.
+
+  ## Query Parameters
+
+  - `page` (number, default: 1): Numéro de page
+  - `limit` (number, default: 10, max: 100): Nombre d'éléments par page
+  - `search` (string, optional): Recherche dans nom et description
+  - `supplier_id` (uuid, optional): Filtrer par fournisseur
+  - `category_id` (uuid, optional): Filtrer par catégorie
+
+  ## Response (200 OK)
+
+  ```json
+  {
+    "data": [
+      {
+        "id": "uuid",
+        "name": "Poulet fermier",
+        "description": "Poulet Label Rouge",
+        "supplier_id": "uuid",
+        "unit_price": "12.50",
+        "created_at": "2025-01-01T00:00:00.000Z",
+        "updated_at": "2025-01-01T00:00:00.000Z",
+        "supplier": {
+          "id": "uuid",
+          "name": "Ferme Bio",
+          "email": "contact@fermebio.fr"
+        },
+        "ingredient_categories": [
+          {
+            "category": {
+              "id": "uuid",
+              "name": "Viandes"
+            }
+          }
+        ],
+        "_count": {
+          "stocks": 3,
+          "command_ingredients": 10
+        }
+      }
+    ],
+    "meta": {
+      "total": 50,
+      "page": 1,
+      "limit": 10,
+      "totalPages": 5
+    }
+  }
+  ```
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Response has data array", function() {
+    const body = res.getBody();
+    expect(body).to.have.property('data');
+    expect(body.data).to.be.an('array');
+  });
+
+  test("Each ingredient has supplier info", function() {
+    const body = res.getBody();
+    if (body.data.length > 0) {
+      expect(body.data[0]).to.have.property('supplier');
+    }
+  });
+}

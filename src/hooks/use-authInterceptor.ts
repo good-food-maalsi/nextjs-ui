@@ -40,5 +40,5 @@ export const useAuthInterceptors = () => {
     );
 
     return () => api.interceptors.response.eject(refreshInterceptor);
-  }, []);
+  }, [router]);
 };

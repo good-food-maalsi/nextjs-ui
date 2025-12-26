@@ -4,13 +4,12 @@ interface SearchParams {
   selectedRange?: "day" | "week" | "month" | "trimester" | "year";
 }
 
-export default async function Dashboard({
-  searchParams,
-}: {
+export default async function Dashboard(props: {
   searchParams: Promise<SearchParams>;
 }) {
+  const searchParams = await props.searchParams;
   console.log("🚀 ~ Dashboard ~ searchParams:", searchParams);
-  // const { selectedRange = "day" } = await searchParams;
+  // const { selectedRange = "day" } = searchParams;
 
   return (
     <div className="flex-col space-y-8">

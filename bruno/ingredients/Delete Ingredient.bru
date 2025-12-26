@@ -1,0 +1,46 @@
+meta {
+  name: Delete Ingredient
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{apiUrl}}/ingredients/{{ingredientId}}
+  body: none
+  auth: inherit
+}
+
+docs {
+  # Delete Ingredient
+
+  Supprime un ingrédient existant.
+
+  **Note**: Supprime en cascade les stocks, items de commande et relations de catégories.
+
+  ## Path Parameters
+
+  - `id` (uuid): ID de l'ingrédient
+
+  ## Response (200 OK)
+
+  ```json
+  {
+    "message": "Ingredient deleted successfully"
+  }
+  ```
+
+  ## Error Responses
+
+  - `404 Not Found`: Ingrédient non trouvé
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Response has success message", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('message');
+  });
+}
