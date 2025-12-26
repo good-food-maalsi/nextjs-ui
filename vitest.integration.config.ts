@@ -9,13 +9,13 @@ export default defineConfig({
     include: ["**/*.integration.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
     testTimeout: 30000,
     hookTimeout: 30000,
-    // Isolation maximale : chaque fichier de test dans son propre processus
+    // Maximum isolation: each test file in its own process
     isolate: true,
-    // Exécution strictement séquentielle - UN SEUL fichier à la fois
+    // Strictly sequential execution - ONE file at a time
     fileParallelism: false,
     pool: "forks",
-    // @ts-expect-error - maxForks existe à l'exécution mais n'est pas dans les types
-    maxForks: 1, // Un seul fork pour éviter les conflits DB
+    // @ts-expect-error - maxForks exists at runtime but is not in the types
+    maxForks: 1, // Single fork to avoid DB conflicts
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],

@@ -111,7 +111,7 @@ export const ingredientRepository = {
     categories: CategoryInput[]
   ) {
     return prisma.$transaction(async (tx) => {
-      // Créer l'ingrédient
+      // Create the ingredient
       const ingredient = await tx.ingredient.create({
         data: {
           name: data.name,
@@ -121,16 +121,16 @@ export const ingredientRepository = {
         },
       });
 
-      // Gérer les catégories si elles sont fournies
+      // Handle categories if provided
       if (categories.length > 0) {
         const categoryIds: string[] = [];
 
         for (const cat of categories) {
           if (cat.id) {
-            // Lier à une catégorie existante
+            // Link to existing category
             categoryIds.push(cat.id);
           } else if (cat.name) {
-            // Créer une nouvelle catégorie
+            // Create a new category
             const newCategory = await tx.category.create({
               data: {
                 name: cat.name,
@@ -141,7 +141,7 @@ export const ingredientRepository = {
           }
         }
 
-        // Créer les relations IngredientCategory
+        // Create IngredientCategory relations
         await tx.ingredientCategory.createMany({
           data: categoryIds.map((categoryId) => ({
             ingredient_id: ingredient.id,
@@ -150,7 +150,7 @@ export const ingredientRepository = {
         });
       }
 
-      // Retourner l'ingrédient avec ses relations
+      // Return ingredient with its relations
       return tx.ingredient.findUnique({
         where: { id: ingredient.id },
         include: {
@@ -230,10 +230,10 @@ export const ingredientRepository = {
 
       for (const cat of categories) {
         if (cat.id) {
-          // Lier à une catégorie existante
+          // Link to existing category
           categoryIds.push(cat.id);
         } else if (cat.name) {
-          // Vérifier si la catégorie existe déjà par nom
+          // Check if category already exists by name
           let existingCategory = await tx.category.findFirst({
             where: {
               name: {
@@ -244,7 +244,7 @@ export const ingredientRepository = {
           });
 
           if (!existingCategory) {
-            // Créer une nouvelle catégorie
+            // Create a new category
             existingCategory = await tx.category.create({
               data: {
                 name: cat.name,
@@ -257,9 +257,9 @@ export const ingredientRepository = {
         }
       }
 
-      // Créer les relations (ignorer les doublons)
+      // Create relations (ignore duplicates)
       for (const categoryId of categoryIds) {
-        // Vérifier si la relation existe déjà
+        // Check if relation already exists
         const existing = await tx.ingredientCategory.findFirst({
           where: {
             ingredient_id: ingredientId,
@@ -277,7 +277,7 @@ export const ingredientRepository = {
         }
       }
 
-      // Retourner les catégories mises à jour
+      // Return updated categories
       return this.getCategories(ingredientId);
     });
   },

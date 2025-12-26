@@ -13,14 +13,14 @@ import {
 
 export const categoryHandler = {
   /**
-   * Récupérer toutes les catégories
+   * Get all categories
    */
   async getCategories(params: CategoryQueryParams) {
     return categoryRepository.findAll(params);
   },
 
   /**
-   * Récupérer une catégorie par ID
+   * Get a category by ID
    */
   async getCategoryById(id: string) {
     const category = await categoryRepository.findById(id);
@@ -33,23 +33,23 @@ export const categoryHandler = {
   },
 
   /**
-   * Créer une nouvelle catégorie
+   * Create a new category
    */
   async createCategory(data: CreateCategoryInput) {
-    // Vérifier si le nom existe déjà
+    // Check if name already exists
     await validateNameUniqueness(categoryRepository, data.name, "category");
 
     return categoryRepository.create(data);
   },
 
   /**
-   * Mettre à jour une catégorie
+   * Update a category
    */
   async updateCategory(id: string, data: UpdateCategoryInput) {
-    // Vérifier si la catégorie existe
+    // Check if category exists
     await ensureExists(categoryRepository, id, "Category");
 
-    // Si le nom est modifié, vérifier qu'il n'existe pas déjà
+    // If name is modified, check that it doesn't already exist
     if (data.name) {
       await validateNameUniquenessForUpdate(
         categoryRepository,
@@ -63,10 +63,10 @@ export const categoryHandler = {
   },
 
   /**
-   * Supprimer une catégorie
+   * Delete a category
    */
   async deleteCategory(id: string) {
-    // Vérifier si la catégorie existe
+    // Check if category exists
     await ensureExists(categoryRepository, id, "Category");
 
     return categoryRepository.delete(id);

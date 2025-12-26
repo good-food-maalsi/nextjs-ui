@@ -14,18 +14,18 @@ interface RouteParams {
 
 /**
  * GET /api/categories/:id
- * Récupérer une catégorie par ID
+ * Get a category by ID
  */
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
-    // Vérifier l'authentification
+    // Check authentication
     await authMiddleware(request);
 
-    // Valider l'ID
+    // Validate ID
     const { id } = await params;
     const validatedParams = categoryIdSchema.parse({ id });
 
-    // Récupérer la catégorie
+    // Get category
     const category = await categoryHandler.getCategoryById(validatedParams.id);
 
     return NextResponse.json(category);
@@ -36,22 +36,22 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
 /**
  * PUT /api/categories/:id
- * Mettre à jour une catégorie
+ * Update a category
  */
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
-    // Vérifier l'authentification
+    // Check authentication
     await authMiddleware(request);
 
-    // Valider l'ID
+    // Validate ID
     const { id } = await params;
     const validatedParams = categoryIdSchema.parse({ id });
 
-    // Parser et valider le body
+    // Parse and validate body
     const body = await request.json();
     const validatedData = updateCategorySchema.parse(body);
 
-    // Mettre à jour la catégorie
+    // Update category
     const category = await categoryHandler.updateCategory(
       validatedParams.id,
       validatedData
@@ -65,18 +65,18 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
 /**
  * DELETE /api/categories/:id
- * Supprimer une catégorie
+ * Delete a category
  */
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
-    // Vérifier l'authentification
+    // Check authentication
     await authMiddleware(request);
 
-    // Valider l'ID
+    // Validate ID
     const { id } = await params;
     const validatedParams = categoryIdSchema.parse({ id });
 
-    // Supprimer la catégorie
+    // Delete category
     await categoryHandler.deleteCategory(validatedParams.id);
 
     return NextResponse.json(

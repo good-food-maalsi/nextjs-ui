@@ -2,10 +2,10 @@ import type { PrismaClient } from "@/generated/prisma/client";
 import { CommandStatus } from "@/generated/prisma/client";
 
 /**
- * Seed minimal data pour les tests
+ * Seed minimal data for tests
  */
 export async function seedTestData(prisma: PrismaClient) {
-  // Créer un supplier
+  // Create a supplier
   const supplier = await prisma.supplier.create({
     data: {
       name: "Test Supplier",
@@ -16,7 +16,7 @@ export async function seedTestData(prisma: PrismaClient) {
     },
   });
 
-  // Créer une franchise
+  // Create a franchise
   const franchise = await prisma.franchise.create({
     data: {
       name: "Test Franchise",
@@ -32,7 +32,7 @@ export async function seedTestData(prisma: PrismaClient) {
     },
   });
 
-  // Créer une catégorie
+  // Create a category
   const category = await prisma.category.create({
     data: {
       name: "Test Category",
@@ -40,7 +40,7 @@ export async function seedTestData(prisma: PrismaClient) {
     },
   });
 
-  // Créer un ingrédient
+  // Create an ingredient
   const ingredient = await prisma.ingredient.create({
     data: {
       name: "Test Ingredient",
@@ -50,7 +50,7 @@ export async function seedTestData(prisma: PrismaClient) {
     },
   });
 
-  // Lier ingrédient à catégorie
+  // Link ingredient to category
   await prisma.ingredientCategory.create({
     data: {
       ingredient_id: ingredient.id,
@@ -66,19 +66,21 @@ export async function seedTestData(prisma: PrismaClient) {
   };
 }
 
-// Compteur global pour garantir l'unicité
+// Global counter to ensure uniqueness
 let testCounter = 0;
 
 /**
- * Générer un identifiant unique pour les tests
+ * Generate a unique identifier for tests
  */
 function generateUniqueId(): string {
   testCounter++;
-  return `${Date.now()}-${testCounter}-${Math.random().toString(36).substring(2, 9)}`;
+  return `${Date.now()}-${testCounter}-${Math.random()
+    .toString(36)
+    .substring(2, 9)}`;
 }
 
 /**
- * Créer des données spécifiques pour un test
+ * Create specific data for a test
  */
 export const testDataFactory = {
   async createSupplier(prisma: PrismaClient, overrides = {}) {

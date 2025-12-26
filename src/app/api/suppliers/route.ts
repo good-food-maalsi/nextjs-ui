@@ -10,14 +10,14 @@ import { handleError } from "@/lib/api/errors/error-handler";
 
 /**
  * GET /api/suppliers
- * Récupérer tous les fournisseurs avec pagination et filtres
+ * Get all suppliers with pagination and filters
  */
 export async function GET(request: NextRequest) {
   try {
-    // Vérifier l'authentification
+    // Check authentication
     await authMiddleware(request);
 
-    // Parser et valider les paramètres de requête
+    // Parse and validate query parameters
     const { searchParams } = new URL(request.url);
     const queryParams = supplierQuerySchema.parse({
       page: searchParams.get("page"),
@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
       search: searchParams.get("search"),
     });
 
-    // Récupérer les fournisseurs
+    // Get suppliers
     const result = await supplierHandler.getSuppliers(queryParams);
 
     return NextResponse.json(result);
@@ -36,18 +36,18 @@ export async function GET(request: NextRequest) {
 
 /**
  * POST /api/suppliers
- * Créer un nouveau fournisseur
+ * Create a new supplier
  */
 export async function POST(request: NextRequest) {
   try {
-    // Vérifier l'authentification
+    // Check authentication
     await authMiddleware(request);
 
-    // Parser et valider le body
+    // Parse and validate body
     const body = await request.json();
     const validatedData = createSupplierSchema.parse(body);
 
-    // Créer le fournisseur
+    // Create supplier
     const supplier = await supplierHandler.createSupplier(validatedData);
 
     return NextResponse.json(supplier, { status: 201 });

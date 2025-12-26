@@ -19,14 +19,14 @@ import {
 
 export const franchiseHandler = {
   /**
-   * Récupérer toutes les franchises
+   * Get all franchises
    */
   async getFranchises(params: FranchiseQueryParams) {
     return franchiseRepository.findAll(params);
   },
 
   /**
-   * Récupérer une franchise par ID
+   * Get a franchise by ID
    */
   async getFranchiseById(id: string) {
     const franchise = await franchiseRepository.findById(id);
@@ -39,26 +39,26 @@ export const franchiseHandler = {
   },
 
   /**
-   * Créer une nouvelle franchise
+   * Create a new franchise
    */
   async createFranchise(data: CreateFranchiseInput) {
-    // Vérifier si l'email existe déjà
+    // Check if email already exists
     await validateEmailUniqueness(franchiseRepository, data.email, "franchise");
 
-    // Valider les coordonnées GPS (franchises always have coordinates)
+    // Validate GPS coordinates (franchises always have coordinates)
     validateGPSCoordinates(data.latitude, data.longitude);
 
     return franchiseRepository.create(data);
   },
 
   /**
-   * Mettre à jour une franchise
+   * Update a franchise
    */
   async updateFranchise(id: string, data: UpdateFranchiseInput) {
-    // Vérifier si la franchise existe
+    // Check if franchise exists
     await ensureExists(franchiseRepository, id, "Franchise");
 
-    // Si l'email est modifié, vérifier qu'il n'existe pas déjà
+    // If email is modified, check that it doesn't already exist
     if (data.email) {
       await validateEmailUniquenessForUpdate(
         franchiseRepository,
@@ -68,7 +68,7 @@ export const franchiseHandler = {
       );
     }
 
-    // Valider les coordonnées GPS si elles sont fournies
+    // Validate GPS coordinates if provided
     if (data.latitude !== undefined || data.longitude !== undefined) {
       const currentFranchise = await franchiseRepository.findById(id);
 
@@ -80,7 +80,7 @@ export const franchiseHandler = {
       const lat = data.latitude ?? currentFranchise.latitude;
       const lon = data.longitude ?? currentFranchise.longitude;
 
-      // Valider les coordonnées GPS
+      // Validate GPS coordinates
       validateGPSCoordinates(lat, lon);
     }
 
@@ -88,30 +88,30 @@ export const franchiseHandler = {
   },
 
   /**
-   * Supprimer une franchise
+   * Delete a franchise
    */
   async deleteFranchise(id: string) {
-    // Vérifier si la franchise existe
+    // Check if franchise exists
     await ensureExists(franchiseRepository, id, "Franchise");
 
     return franchiseRepository.delete(id);
   },
 
   /**
-   * Récupérer le stock d'une franchise
+   * Get stock of a franchise
    */
   async getFranchiseStock(id: string) {
-    // Vérifier si la franchise existe
+    // Check if franchise exists
     await ensureExists(franchiseRepository, id, "Franchise");
 
     return franchiseRepository.getStock(id);
   },
 
   /**
-   * Ajouter ou mettre à jour du stock
+   * Add or update stock
    */
   async upsertFranchiseStock(franchiseId: string, data: UpsertStockInput) {
-    // Vérifier si la franchise et l'ingrédient existent en parallèle
+    // Check if franchise and ingredient exist in parallel
     await Promise.all([
       ensureExists(franchiseRepository, franchiseId, "Franchise"),
       ensureExists(ingredientRepository, data.ingredient_id, "Ingredient"),
@@ -125,14 +125,14 @@ export const franchiseHandler = {
   },
 
   /**
-   * Mettre à jour la quantité en stock
+   * Update stock quantity
    */
   async updateFranchiseStockQuantity(
     franchiseId: string,
     ingredientId: string,
     data: UpdateStockQuantityInput
   ) {
-    // Vérifier si la franchise et l'ingrédient existent en parallèle
+    // Check if franchise and ingredient exist in parallel
     await Promise.all([
       ensureExists(franchiseRepository, franchiseId, "Franchise"),
       ensureExists(ingredientRepository, ingredientId, "Ingredient"),
@@ -154,10 +154,10 @@ export const franchiseHandler = {
   },
 
   /**
-   * Supprimer une entrée de stock
+   * Delete a stock entry
    */
   async deleteFranchiseStock(franchiseId: string, ingredientId: string) {
-    // Vérifier si la franchise et l'ingrédient existent en parallèle
+    // Check if franchise and ingredient exist in parallel
     await Promise.all([
       ensureExists(franchiseRepository, franchiseId, "Franchise"),
       ensureExists(ingredientRepository, ingredientId, "Ingredient"),

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-// Schema de création de fournisseur
+// Schema for creating a supplier
 export const createSupplierSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(255),
   logo_url: z.string().url("Invalid URL format").max(500).optional(),
@@ -10,7 +10,7 @@ export const createSupplierSchema = z.object({
   email: z.email().max(100),
 });
 
-// Schema de mise à jour de fournisseur (tous les champs optionnels)
+// Schema for updating a supplier (all fields optional)
 export const updateSupplierSchema = z.object({
   name: z.string().min(2).max(255).optional(),
   logo_url: z.string().url("Invalid URL format").max(500).optional().nullable(),
@@ -20,19 +20,19 @@ export const updateSupplierSchema = z.object({
   email: z.email().max(100).optional(),
 });
 
-// Schema pour les paramètres de requête (pagination, filtres)
+// Schema for query parameters (pagination, filters)
 export const supplierQuerySchema = z.object({
   page: z.coerce.number().min(1).default(1).optional(),
   limit: z.coerce.number().min(1).max(100).default(10).optional(),
   search: z.string().optional(),
 });
 
-// Schema pour l'ID de fournisseur (validation des params d'URL)
+// Schema for supplier ID (URL params validation)
 export const supplierIdSchema = z.object({
   id: z.uuid("Invalid supplier ID format"),
 });
 
-// Types TypeScript inférés
+// Inferred TypeScript types
 export type CreateSupplierInput = z.infer<typeof createSupplierSchema>;
 export type UpdateSupplierInput = z.infer<typeof updateSupplierSchema>;
 export type SupplierQueryParams = z.infer<typeof supplierQuerySchema>;

@@ -162,8 +162,12 @@ export const franchiseRepository = {
   /**
    * Ajouter ou mettre à jour du stock (upsert)
    */
-  async upsertStock(franchiseId: string, ingredientId: string, quantity: number) {
-    // Vérifier si l'entrée de stock existe
+  async upsertStock(
+    franchiseId: string,
+    ingredientId: string,
+    quantity: number
+  ) {
+    // Check if stock entry exists
     const existingStock = await prisma.stockFranchise.findFirst({
       where: {
         franchise_id: franchiseId,
@@ -172,7 +176,7 @@ export const franchiseRepository = {
     });
 
     if (existingStock) {
-      // Mettre à jour
+      // Update
       return prisma.stockFranchise.update({
         where: { id: existingStock.id },
         data: { quantity },
@@ -186,7 +190,7 @@ export const franchiseRepository = {
       });
     }
 
-    // Créer
+    // Create
     return prisma.stockFranchise.create({
       data: {
         franchise_id: franchiseId,

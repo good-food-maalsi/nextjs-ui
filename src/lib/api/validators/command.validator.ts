@@ -1,13 +1,13 @@
 import { z } from "zod";
 import { CommandStatus } from "@/generated/prisma/client";
 
-// Schema pour un item de commande
+// Schema for a command item
 const commandItemSchema = z.object({
   ingredient_id: z.uuid("Invalid ingredient ID format"),
   quantity: z.number().int().positive("Quantity must be a positive integer"),
 });
 
-// Schema de création de commande
+// Schema for creating a command
 export const createCommandSchema = z.object({
   franchise_id: z.uuid("Invalid franchise ID format"),
   status: z
@@ -28,7 +28,7 @@ export const createCommandSchema = z.object({
     .default([]),
 });
 
-// Schema de mise à jour de commande (tous les champs optionnels)
+// Schema for updating a command (all fields optional)
 export const updateCommandSchema = z.object({
   status: z
     .enum([
@@ -42,7 +42,7 @@ export const updateCommandSchema = z.object({
   user_id: z.uuid("Invalid user ID format").optional(),
 });
 
-// Schema pour les paramètres de requête (pagination, filtres)
+// Schema for query parameters (pagination, filters)
 export const commandQuerySchema = z.object({
   page: z.coerce.number().min(1).default(1).optional(),
   limit: z.coerce.number().min(1).max(100).default(10).optional(),
@@ -59,23 +59,23 @@ export const commandQuerySchema = z.object({
   user_id: z.uuid().optional(),
 });
 
-// Schema pour l'ID de commande (validation des params d'URL)
+// Schema for command ID (URL params validation)
 export const commandIdSchema = z.object({
   id: z.uuid("Invalid command ID format"),
 });
 
-// Schema pour ajouter un ingrédient à une commande
+// Schema for adding an ingredient to a command
 export const addIngredientToCommandSchema = z.object({
   ingredient_id: z.uuid("Invalid ingredient ID format"),
   quantity: z.number().int().positive("Quantity must be a positive integer"),
 });
 
-// Schema pour mettre à jour la quantité d'un ingrédient
+// Schema for updating ingredient quantity
 export const updateCommandIngredientSchema = z.object({
   quantity: z.number().int().positive("Quantity must be a positive integer"),
 });
 
-// Types TypeScript inférés
+// Inferred TypeScript types
 export type CommandItem = z.infer<typeof commandItemSchema>;
 export type CreateCommandInput = z.infer<typeof createCommandSchema>;
 export type UpdateCommandInput = z.infer<typeof updateCommandSchema>;

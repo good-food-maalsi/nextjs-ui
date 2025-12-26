@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-// Schema de création de franchise
+// Schema for creating a franchise
 export const createFranchiseSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(255),
   latitude: z.number().min(-90).max(90),
@@ -14,7 +14,7 @@ export const createFranchiseSchema = z.object({
   phone: z.string().min(1).max(20),
 });
 
-// Schema de mise à jour de franchise (tous les champs optionnels)
+// Schema for updating a franchise (all fields optional)
 export const updateFranchiseSchema = z.object({
   name: z.string().min(2).max(255).optional(),
   latitude: z.number().min(-90).max(90).optional(),
@@ -28,7 +28,7 @@ export const updateFranchiseSchema = z.object({
   phone: z.string().min(1).max(20).optional(),
 });
 
-// Schema pour les paramètres de requête (pagination, filtres)
+// Schema for query parameters (pagination, filters)
 export const franchiseQuerySchema = z.object({
   page: z.coerce.number().min(1).default(1).optional(),
   limit: z.coerce.number().min(1).max(100).default(10).optional(),
@@ -37,12 +37,12 @@ export const franchiseQuerySchema = z.object({
   state: z.string().optional(),
 });
 
-// Schema pour l'ID de franchise (validation des params d'URL)
+// Schema for franchise ID (URL params validation)
 export const franchiseIdSchema = z.object({
   id: z.uuid("Invalid franchise ID format"),
 });
 
-// Types TypeScript inférés
+// Inferred TypeScript types
 export type CreateFranchiseInput = z.infer<typeof createFranchiseSchema>;
 export type UpdateFranchiseInput = z.infer<typeof updateFranchiseSchema>;
 export type FranchiseQueryParams = z.infer<typeof franchiseQuerySchema>;

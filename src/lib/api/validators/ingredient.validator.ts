@@ -1,18 +1,18 @@
 import { z } from "zod";
 
-// Schema pour créer ou lier une catégorie
-const categoryInputSchema = z.object({
-  id: z.uuid().optional(),
-  name: z.string().min(2).max(255).optional(),
-  description: z.string().max(255).optional(),
-}).refine(
-  (data) => data.id !== undefined || data.name !== undefined,
-  {
-    message: "Either 'id' (to link existing) or 'name' (to create new) must be provided",
-  }
-);
+// Schema for creating or linking a category
+const categoryInputSchema = z
+  .object({
+    id: z.uuid().optional(),
+    name: z.string().min(2).max(255).optional(),
+    description: z.string().max(255).optional(),
+  })
+  .refine((data) => data.id !== undefined || data.name !== undefined, {
+    message:
+      "Either 'id' (to link existing) or 'name' (to create new) must be provided",
+  });
 
-// Schema de création d'ingrédient
+// Schema for creating an ingredient
 export const createIngredientSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(255),
   description: z.string().max(255).optional(),
@@ -21,7 +21,7 @@ export const createIngredientSchema = z.object({
   categories: z.array(categoryInputSchema).optional().default([]),
 });
 
-// Schema de mise à jour d'ingrédient (tous les champs optionnels)
+// Schema for updating an ingredient (all fields optional)
 export const updateIngredientSchema = z.object({
   name: z.string().min(2).max(255).optional(),
   description: z.string().max(255).optional().nullable(),
@@ -29,7 +29,7 @@ export const updateIngredientSchema = z.object({
   unit_price: z.number().positive("Unit price must be positive").optional(),
 });
 
-// Schema pour les paramètres de requête (pagination, filtres)
+// Schema for query parameters (pagination, filters)
 export const ingredientQuerySchema = z.object({
   page: z.coerce.number().min(1).default(1).optional(),
   limit: z.coerce.number().min(1).max(100).default(10).optional(),
@@ -38,20 +38,24 @@ export const ingredientQuerySchema = z.object({
   category_id: z.uuid().optional(),
 });
 
-// Schema pour l'ID d'ingrédient (validation des params d'URL)
+// Schema for ingredient ID (URL params validation)
 export const ingredientIdSchema = z.object({
   id: z.uuid("Invalid ingredient ID format"),
 });
 
-// Schema pour ajouter/créer des catégories à un ingrédient
+// Schema for adding/creating categories to an ingredient
 export const addCategoriesToIngredientSchema = z.object({
-  categories: z.array(categoryInputSchema).min(1, "At least one category must be provided"),
+  categories: z
+    .array(categoryInputSchema)
+    .min(1, "At least one category must be provided"),
 });
 
-// Types TypeScript inférés
+// Inferred TypeScript types
 export type CategoryInput = z.infer<typeof categoryInputSchema>;
 export type CreateIngredientInput = z.infer<typeof createIngredientSchema>;
 export type UpdateIngredientInput = z.infer<typeof updateIngredientSchema>;
 export type IngredientQueryParams = z.infer<typeof ingredientQuerySchema>;
 export type IngredientIdParams = z.infer<typeof ingredientIdSchema>;
-export type AddCategoriesToIngredientInput = z.infer<typeof addCategoriesToIngredientSchema>;
+export type AddCategoriesToIngredientInput = z.infer<
+  typeof addCategoriesToIngredientSchema
+>;

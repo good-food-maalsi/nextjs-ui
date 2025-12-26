@@ -13,14 +13,14 @@ import { ensureExists } from "../../utils/validators";
 
 export const commandHandler = {
   /**
-   * Récupérer toutes les commandes
+   * Get all commands
    */
   async getCommands(params: CommandQueryParams) {
     return commandRepository.findAll(params);
   },
 
   /**
-   * Récupérer une commande par ID
+   * Get a command by ID
    */
   async getCommandById(id: string) {
     const command = await commandRepository.findById(id);
@@ -33,17 +33,17 @@ export const commandHandler = {
   },
 
   /**
-   * Créer une nouvelle commande
+   * Create a new command
    */
   async createCommand(data: CreateCommandInput) {
-    // Vérifier si la franchise existe
+    // Check if franchise exists
     await ensureExists(franchiseRepository, data.franchise_id, "Franchise");
 
-    // Valider les items en parallèle si fournis
+    // Validate items in parallel if provided
     if (data.items && data.items.length > 0) {
       const ingredientIds = data.items.map((item) => item.ingredient_id);
 
-      // Vérifier l'existence de tous les ingrédients en parallèle
+      // Check existence of all ingredients in parallel
       await Promise.all(
         ingredientIds.map((id) =>
           ensureExists(ingredientRepository, id, "Ingredient")
@@ -56,43 +56,43 @@ export const commandHandler = {
   },
 
   /**
-   * Mettre à jour une commande
+   * Update a command
    */
   async updateCommand(id: string, data: UpdateCommandInput) {
-    // Vérifier si la commande existe
+    // Check if command exists
     await ensureExists(commandRepository, id, "Command");
 
     return commandRepository.update(id, data);
   },
 
   /**
-   * Supprimer une commande
+   * Delete a command
    */
   async deleteCommand(id: string) {
-    // Vérifier si la commande existe
+    // Check if command exists
     await ensureExists(commandRepository, id, "Command");
 
     return commandRepository.delete(id);
   },
 
   /**
-   * Récupérer les ingrédients d'une commande
+   * Get ingredients of a command
    */
   async getCommandIngredients(commandId: string) {
-    // Vérifier si la commande existe
+    // Check if command exists
     await ensureExists(commandRepository, commandId, "Command");
 
     return commandRepository.getIngredients(commandId);
   },
 
   /**
-   * Ajouter un ingrédient à une commande
+   * Add an ingredient to a command
    */
   async addIngredientToCommand(
     commandId: string,
     data: AddIngredientToCommandInput
   ) {
-    // Vérifier si la commande et l'ingrédient existent en parallèle
+    // Check if command and ingredient exist in parallel
     await Promise.all([
       ensureExists(commandRepository, commandId, "Command"),
       ensureExists(ingredientRepository, data.ingredient_id, "Ingredient"),
@@ -102,14 +102,14 @@ export const commandHandler = {
   },
 
   /**
-   * Mettre à jour la quantité d'un ingrédient dans une commande
+   * Update ingredient quantity in a command
    */
   async updateCommandIngredient(
     commandId: string,
     ingredientId: string,
     data: UpdateCommandIngredientInput
   ) {
-    // Vérifier si la commande et l'ingrédient existent en parallèle
+    // Check if command and ingredient exist in parallel
     await Promise.all([
       ensureExists(commandRepository, commandId, "Command"),
       ensureExists(ingredientRepository, ingredientId, "Ingredient"),
@@ -131,10 +131,10 @@ export const commandHandler = {
   },
 
   /**
-   * Retirer un ingrédient d'une commande
+   * Remove an ingredient from a command
    */
   async removeIngredientFromCommand(commandId: string, ingredientId: string) {
-    // Vérifier si la commande et l'ingrédient existent en parallèle
+    // Check if command and ingredient exist in parallel
     await Promise.all([
       ensureExists(commandRepository, commandId, "Command"),
       ensureExists(ingredientRepository, ingredientId, "Ingredient"),

@@ -10,14 +10,14 @@ import { handleError } from "@/lib/api/errors/error-handler";
 
 /**
  * GET /api/categories
- * Récupérer toutes les catégories avec pagination et filtres
+ * Get all categories with pagination and filters
  */
 export async function GET(request: NextRequest) {
   try {
-    // Vérifier l'authentification
+    // Check authentication
     await authMiddleware(request);
 
-    // Parser et valider les paramètres de requête
+    // Parse and validate query parameters
     const { searchParams } = new URL(request.url);
     const queryParams = categoryQuerySchema.parse({
       page: searchParams.get("page"),
@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
       search: searchParams.get("search"),
     });
 
-    // Récupérer les catégories
+    // Get categories
     const result = await categoryHandler.getCategories(queryParams);
 
     return NextResponse.json(result);
@@ -36,18 +36,18 @@ export async function GET(request: NextRequest) {
 
 /**
  * POST /api/categories
- * Créer une nouvelle catégorie
+ * Create a new category
  */
 export async function POST(request: NextRequest) {
   try {
-    // Vérifier l'authentification
+    // Check authentication
     await authMiddleware(request);
 
-    // Parser et valider le body
+    // Parse and validate body
     const body = await request.json();
     const validatedData = createCategorySchema.parse(body);
 
-    // Créer la catégorie
+    // Create category
     const category = await categoryHandler.createCategory(validatedData);
 
     return NextResponse.json(category, { status: 201 });

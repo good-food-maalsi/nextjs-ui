@@ -3,7 +3,7 @@ import { PrismaClient } from "@/generated/prisma/client";
 let prisma: PrismaClient;
 
 /**
- * Obtenir l'instance Prisma pour les tests
+ * Get Prisma instance for tests
  */
 export function getPrismaTestClient(): PrismaClient {
   if (!prisma) {
@@ -19,7 +19,7 @@ export function getPrismaTestClient(): PrismaClient {
 }
 
 /**
- * Se connecter à la DB de test
+ * Connect to test database
  */
 export async function connectTestDatabase(): Promise<PrismaClient> {
   const client = getPrismaTestClient();
@@ -29,7 +29,7 @@ export async function connectTestDatabase(): Promise<PrismaClient> {
 }
 
 /**
- * Se déconnecter de la DB de test
+ * Disconnect from test database
  */
 export async function disconnectTestDatabase(): Promise<void> {
   if (prisma) {
@@ -39,13 +39,13 @@ export async function disconnectTestDatabase(): Promise<void> {
 }
 
 /**
- * Nettoyer toutes les tables (pour setup de tests)
- * ATTENTION: Supprime TOUTES les données !
+ * Clean all tables (for test setup)
+ * WARNING: Deletes ALL data!
  */
 export async function cleanDatabase(): Promise<void> {
   const client = getPrismaTestClient();
 
-  // Ordre important : supprimer d'abord les tables avec foreign keys
+  // Important order: delete tables with foreign keys first
   await client.commandIngredient.deleteMany();
   await client.command.deleteMany();
   await client.stockFranchise.deleteMany();
@@ -64,7 +64,7 @@ export async function cleanDatabase(): Promise<void> {
 export async function resetSequences(): Promise<void> {
   const client = getPrismaTestClient();
 
-  // PostgreSQL : reset sequences (si nécessaire)
+  // PostgreSQL: reset sequences (if needed)
   await client.$executeRawUnsafe(`
     DO $$
     DECLARE r RECORD;
@@ -80,23 +80,25 @@ export async function resetSequences(): Promise<void> {
 }
 
 /**
- * Wrapper pour exécuter un test dans une transaction (rollback automatique)
- * Utile pour l'isolation complète sans cleanup manuel
+ * Wrapper to run a test in a transaction (automatic rollback)
+ * Useful for complete isolation without manual cleanup
  */
 export async function runInTransaction<T>(
   callback: (tx: PrismaClient) => Promise<T>
 ): Promise<T> {
   const client = getPrismaTestClient();
 
-  return client.$transaction(async (tx) => {
-    await callback(tx as PrismaClient);
-    // Throw pour forcer rollback
-    throw new Error("ROLLBACK_TRANSACTION");
-  }).catch((error) => {
-    if (error.message === "ROLLBACK_TRANSACTION") {
-      // Transaction rollback réussie
-      return undefined as T;
-    }
-    throw error;
-  });
+  return client
+    .$transaction(async (tx) => {
+      await callback(tx as PrismaClient);
+      // Throw to force rollback
+      throw new Error("ROLLBACK_TRANSACTION");
+    })
+    .catch((error) => {
+      if (error.message === "ROLLBACK_TRANSACTION") {
+        // Transaction rollback successful
+        return undefined as T;
+      }
+      throw error;
+    });
 }

@@ -15,12 +15,12 @@ export default defineConfig({
         "**/*.d.ts",
         "**/*.config.*",
         "**/generated/**",
-        "src/app/**", // Exclure les routes Next.js (testées via e2e)
+        "src/app/**", // Exclude Next.js routes (tested via e2e)
       ],
     },
-    // Uniquement les tests backend (lib/api)
+    // Backend tests only (lib/api)
     include: ["src/lib/api/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
-    // Exclure les tests d'intégration (ils ont leur propre config)
+    // Exclude integration tests (they have their own config)
     exclude: ["**/*.integration.test.ts", "node_modules/**"],
   },
   resolve: {

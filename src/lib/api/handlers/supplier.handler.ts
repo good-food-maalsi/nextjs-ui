@@ -14,14 +14,14 @@ import {
 
 export const supplierHandler = {
   /**
-   * Récupérer tous les fournisseurs
+   * Get all suppliers
    */
   async getSuppliers(params: SupplierQueryParams) {
     return supplierRepository.findAll(params);
   },
 
   /**
-   * Récupérer un fournisseur par ID
+   * Get a supplier by ID
    */
   async getSupplierById(id: string) {
     const supplier = await supplierRepository.findById(id);
@@ -34,26 +34,26 @@ export const supplierHandler = {
   },
 
   /**
-   * Créer un nouveau fournisseur
+   * Create a new supplier
    */
   async createSupplier(data: CreateSupplierInput) {
-    // Vérifier si l'email existe déjà
+    // Check if email already exists
     await validateEmailUniqueness(supplierRepository, data.email, "supplier");
 
-    // Valider les coordonnées GPS si elles sont fournies
+    // Validate GPS coordinates if provided
     validateGPSCoordinatesPair(data.latitude, data.longitude);
 
     return supplierRepository.create(data);
   },
 
   /**
-   * Mettre à jour un fournisseur
+   * Update a supplier
    */
   async updateSupplier(id: string, data: UpdateSupplierInput) {
-    // Vérifier si le fournisseur existe
+    // Check if supplier exists
     await ensureExists(supplierRepository, id, "Supplier");
 
-    // Si l'email est modifié, vérifier qu'il n'existe pas déjà
+    // If email is modified, check that it doesn't already exist
     if (data.email) {
       await validateEmailUniquenessForUpdate(
         supplierRepository,
@@ -63,7 +63,7 @@ export const supplierHandler = {
       );
     }
 
-    // Valider les coordonnées GPS si elles sont fournies
+    // Validate GPS coordinates if provided
     if (data.latitude !== undefined || data.longitude !== undefined) {
       const currentSupplier = await supplierRepository.findById(id);
 
@@ -75,7 +75,7 @@ export const supplierHandler = {
       const lat = data.latitude ?? currentSupplier.latitude;
       const lon = data.longitude ?? currentSupplier.longitude;
 
-      // Valider la paire de coordonnées GPS
+      // Validate GPS coordinates pair
       validateGPSCoordinatesPair(lat, lon);
     }
 
@@ -83,10 +83,10 @@ export const supplierHandler = {
   },
 
   /**
-   * Supprimer un fournisseur
+   * Delete a supplier
    */
   async deleteSupplier(id: string) {
-    // Vérifier si le fournisseur existe
+    // Check if supplier exists
     await ensureExists(supplierRepository, id, "Supplier");
 
     return supplierRepository.delete(id);

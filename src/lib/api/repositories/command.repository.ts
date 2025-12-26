@@ -124,12 +124,9 @@ export const commandRepository = {
   /**
    * Créer une nouvelle commande avec items
    */
-  async create(
-    data: Omit<CreateCommandInput, "items">,
-    items: CommandItem[]
-  ) {
+  async create(data: Omit<CreateCommandInput, "items">, items: CommandItem[]) {
     return prisma.$transaction(async (tx) => {
-      // Créer la commande
+      // Create the command
       const command = await tx.command.create({
         data: {
           franchise_id: data.franchise_id,
@@ -138,7 +135,7 @@ export const commandRepository = {
         },
       });
 
-      // Créer les items si fournis
+      // Create items if provided
       if (items.length > 0) {
         await tx.commandIngredient.createMany({
           data: items.map((item) => ({
@@ -149,7 +146,7 @@ export const commandRepository = {
         });
       }
 
-      // Retourner la commande avec ses relations
+      // Return command with its relations
       return tx.command.findUnique({
         where: { id: command.id },
         include: {
@@ -233,7 +230,7 @@ export const commandRepository = {
    * Ajouter un ingrédient à une commande
    */
   async addIngredient(commandId: string, data: AddIngredientToCommandInput) {
-    // Vérifier si l'ingrédient existe déjà dans la commande
+    // Check if ingredient already exists in command
     const existing = await prisma.commandIngredient.findFirst({
       where: {
         command_id: commandId,
@@ -242,7 +239,7 @@ export const commandRepository = {
     });
 
     if (existing) {
-      // Mettre à jour la quantité
+      // Update quantity
       return prisma.commandIngredient.update({
         where: { id: existing.id },
         data: {
@@ -254,7 +251,7 @@ export const commandRepository = {
       });
     }
 
-    // Créer un nouveau CommandIngredient
+    // Create a new CommandIngredient
     return prisma.commandIngredient.create({
       data: {
         command_id: commandId,

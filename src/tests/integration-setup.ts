@@ -1,10 +1,10 @@
 import { config } from "dotenv";
 import path from "path";
 
-// Charger les variables d'environnement de test
+// Load test environment variables
 config({ path: path.resolve(__dirname, "../../.env.test") });
 
-// Vérifier que DATABASE_URL est bien définie
+// Verify that DATABASE_URL is defined
 if (!process.env.DATABASE_URL) {
   throw new Error("DATABASE_URL is not defined in .env.test");
 }

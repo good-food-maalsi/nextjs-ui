@@ -12,14 +12,14 @@ import { ensureExists } from "../../utils/validators";
 
 export const ingredientHandler = {
   /**
-   * Récupérer tous les ingrédients
+   * Get all ingredients
    */
   async getIngredients(params: IngredientQueryParams) {
     return ingredientRepository.findAll(params);
   },
 
   /**
-   * Récupérer un ingrédient par ID
+   * Get an ingredient by ID
    */
   async getIngredientById(id: string) {
     const ingredient = await ingredientRepository.findById(id);
@@ -32,20 +32,20 @@ export const ingredientHandler = {
   },
 
   /**
-   * Créer un nouvel ingrédient
+   * Create a new ingredient
    */
   async createIngredient(data: CreateIngredientInput) {
-    // Vérifier si le supplier existe
+    // Check if supplier exists
     await ensureExists(supplierRepository, data.supplier_id, "Supplier");
 
-    // Valider les catégories en parallèle
+    // Validate categories in parallel
     if (data.categories && data.categories.length > 0) {
-      // Extraire les IDs de catégories existantes
+      // Extract IDs of existing categories
       const categoryIds = data.categories
         .filter((cat) => cat.id)
         .map((cat) => cat.id as string);
 
-      // Vérifier l'existence de toutes les catégories en parallèle
+      // Check existence of all categories in parallel
       if (categoryIds.length > 0) {
         await Promise.all(
           categoryIds.map((id) =>
@@ -54,7 +54,7 @@ export const ingredientHandler = {
         );
       }
 
-      // Valider les noms de nouvelles catégories
+      // Validate names of new categories
       for (const cat of data.categories) {
         if (!cat.id && (!cat.name || cat.name.trim().length < 2)) {
           throw new BadRequestError(
@@ -69,14 +69,16 @@ export const ingredientHandler = {
   },
 
   /**
-   * Mettre à jour un ingrédient
+   * Update an ingredient
    */
   async updateIngredient(id: string, data: UpdateIngredientInput) {
-    // Vérifier si l'ingrédient et le supplier existent en parallèle
+    // Check if ingredient and supplier exist in parallel
     const checks = [ensureExists(ingredientRepository, id, "Ingredient")];
 
     if (data.supplier_id) {
-      checks.push(ensureExists(supplierRepository, data.supplier_id, "Supplier"));
+      checks.push(
+        ensureExists(supplierRepository, data.supplier_id, "Supplier")
+      );
     }
 
     await Promise.all(checks);
@@ -85,48 +87,50 @@ export const ingredientHandler = {
   },
 
   /**
-   * Supprimer un ingrédient
+   * Delete an ingredient
    */
   async deleteIngredient(id: string) {
-    // Vérifier si l'ingrédient existe
+    // Check if ingredient exists
     await ensureExists(ingredientRepository, id, "Ingredient");
 
     return ingredientRepository.delete(id);
   },
 
   /**
-   * Récupérer les catégories d'un ingrédient
+   * Get categories of an ingredient
    */
   async getIngredientCategories(ingredientId: string) {
-    // Vérifier si l'ingrédient existe
+    // Check if ingredient exists
     await ensureExists(ingredientRepository, ingredientId, "Ingredient");
 
     return ingredientRepository.getCategories(ingredientId);
   },
 
   /**
-   * Ajouter/créer des catégories à un ingrédient
+   * Add/create categories to an ingredient
    */
   async addCategoriesToIngredient(
     ingredientId: string,
     data: AddCategoriesToIngredientInput
   ) {
-    // Vérifier si l'ingrédient existe
+    // Check if ingredient exists
     await ensureExists(ingredientRepository, ingredientId, "Ingredient");
 
-    // Extraire les IDs de catégories existantes
+    // Extract IDs of existing categories
     const categoryIds = data.categories
       .filter((cat) => cat.id)
       .map((cat) => cat.id as string);
 
-    // Vérifier l'existence de toutes les catégories en parallèle
+    // Check existence of all categories in parallel
     if (categoryIds.length > 0) {
       await Promise.all(
-        categoryIds.map((id) => ensureExists(categoryRepository, id, "Category"))
+        categoryIds.map((id) =>
+          ensureExists(categoryRepository, id, "Category")
+        )
       );
     }
 
-    // Valider les noms de nouvelles catégories
+    // Validate names of new categories
     for (const cat of data.categories) {
       if (!cat.id && (!cat.name || cat.name.trim().length < 2)) {
         throw new BadRequestError(
@@ -139,10 +143,10 @@ export const ingredientHandler = {
   },
 
   /**
-   * Retirer une catégorie d'un ingrédient
+   * Remove a category from an ingredient
    */
   async removeCategoryFromIngredient(ingredientId: string, categoryId: string) {
-    // Vérifier si l'ingrédient et la catégorie existent en parallèle
+    // Check if ingredient and category exist in parallel
     await Promise.all([
       ensureExists(ingredientRepository, ingredientId, "Ingredient"),
       ensureExists(categoryRepository, categoryId, "Category"),
