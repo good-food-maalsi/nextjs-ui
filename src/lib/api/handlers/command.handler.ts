@@ -33,17 +33,18 @@ export const commandHandler = {
   },
 
   /**
-   * Create a new command
+   * Create a new command.
+   * Le franchise_id résolu (admin = body, utilisateur = token) doit être passé par la route.
    */
-  async createCommand(data: CreateCommandInput) {
-    // Check if franchise exists
-    await ensureExists(franchiseRepository, data.franchise_id, "Franchise");
+  async createCommand(
+    data: CreateCommandInput,
+    context: { franchiseId: string }
+  ) {
+    const { franchiseId } = context;
+    await ensureExists(franchiseRepository, franchiseId, "Franchise");
 
-    // Validate items in parallel if provided
     if (data.items && data.items.length > 0) {
       const ingredientIds = data.items.map((item) => item.ingredient_id);
-
-      // Check existence of all ingredients in parallel
       await Promise.all(
         ingredientIds.map((id) =>
           ensureExists(ingredientRepository, id, "Ingredient")
@@ -51,8 +52,11 @@ export const commandHandler = {
       );
     }
 
-    const { items, ...commandData } = data;
-    return commandRepository.create(commandData, items || []);
+    const { items, ...rest } = data;
+    return commandRepository.create(
+      { ...rest, franchise_id: franchiseId },
+      items || []
+    );
   },
 
   /**

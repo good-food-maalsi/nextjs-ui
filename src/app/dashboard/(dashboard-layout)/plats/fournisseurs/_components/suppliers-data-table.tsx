@@ -110,6 +110,19 @@ export function SuppliersDataTable<TData, TValue>({
     getFacetedUniqueValues: getFacetedUniqueValues(),
   });
 
+  /**
+   * Helper to opt-out of React Compiler memoization for TanStack Table calls.
+   * TanStack Table mutates state in-place; wrapping getHeaderGroups/getRowModel
+   * in useMemo with [table] would yield stale values (table reference never changes).
+   * See: https://github.com/facebook/react/issues/33057#issuecomment-2894450792
+   */
+  const useNoMemo = <const T,>(factory: () => T): T => {
+    "use no memo";
+    return factory();
+  };
+  const headerGroups = useNoMemo(() => table.getHeaderGroups());
+  const rowModel = useNoMemo(() => table.getRowModel());
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -123,7 +136,7 @@ export function SuppliersDataTable<TData, TValue>({
       <div className="rounded-md border overflow-hidden">
         <Table>
           <TableHeader className="bg-primary-200">
-            {table.getHeaderGroups().map((headerGroup) => (
+            {headerGroups.map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
@@ -151,8 +164,8 @@ export function SuppliersDataTable<TData, TValue>({
                   ))}
                 </TableRow>
               ))
-            ) : table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
+            ) : rowModel.rows?.length ? (
+              rowModel.rows.map((row) => (
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}

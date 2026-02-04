@@ -4,12 +4,12 @@ export const stockFranchiseQuerySchema = z.object({
   page: z.coerce.number().min(1).optional().default(1),
   limit: z.coerce.number().min(1).max(100).optional().default(10),
   search: z.string().optional(),
-  franchise_id: z.string().uuid(),
+  franchise_id: z.string().optional(), // Optionnel car résolu dans la route
 });
 
 export const createStockFranchiseSchema = z.object({
-  franchise_id: z.string().uuid(),
-  ingredient_id: z.string().uuid(),
+  franchise_id: z.string().optional(), // Optionnel car résolu dans la route
+  ingredient_id: z.string(),
   quantity: z.number().int().min(0),
 });
 
@@ -18,7 +18,7 @@ export const updateStockFranchiseSchema = z.object({
 });
 
 export const stockFranchiseIdSchema = z.object({
-  id: z.string().uuid(),
+  id: z.string(),
 });
 
 export type StockFranchiseQueryParams = z.infer<

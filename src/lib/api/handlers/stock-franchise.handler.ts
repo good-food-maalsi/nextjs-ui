@@ -11,7 +11,8 @@ import { ensureExists } from "../../utils/validators";
 
 export const stockFranchiseHandler = {
   async getStocks(params: StockFranchiseQueryParams) {
-    await ensureExists(franchiseRepository, params.franchise_id, "Franchise");
+    // Note: franchise_id est maintenant toujours fourni et validé dans la route via resolveFranchiseId()
+    // La validation de l'existence de la franchise n'est plus nécessaire ici
     return stockFranchiseRepository.findAll(params);
   },
 
@@ -25,14 +26,16 @@ export const stockFranchiseHandler = {
 
   async createStock(data: CreateStockFranchiseInput) {
     await Promise.all([
-      ensureExists(franchiseRepository, data.franchise_id, "Franchise"),
+      // Le franchise_id est déjà résolu et forcé par la route via resolveFranchiseId
+      ensureExists(franchiseRepository, data.franchise_id!, "Franchise"),
       ensureExists(ingredientRepository, data.ingredient_id, "Ingredient"),
     ]);
 
-    const existing = await stockFranchiseRepository.findByFranchiseAndIngredient(
-      data.franchise_id,
-      data.ingredient_id
-    );
+    const existing =
+      await stockFranchiseRepository.findByFranchiseAndIngredient(
+        data.franchise_id!,
+        data.ingredient_id
+      );
 
     if (existing) {
       throw new ConflictError(

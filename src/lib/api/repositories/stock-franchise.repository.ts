@@ -65,7 +65,10 @@ export const stockFranchiseRepository = {
     });
   },
 
-  async findByFranchiseAndIngredient(franchiseId: string, ingredientId: string) {
+  async findByFranchiseAndIngredient(
+    franchiseId: string,
+    ingredientId: string,
+  ) {
     return prisma.stockFranchise.findFirst({
       where: {
         franchise_id: franchiseId,
@@ -76,7 +79,11 @@ export const stockFranchiseRepository = {
 
   async create(data: CreateStockFranchiseInput) {
     return prisma.stockFranchise.create({
-      data,
+      data: {
+        franchise_id: data.franchise_id!,
+        ingredient_id: data.ingredient_id,
+        quantity: data.quantity,
+      },
       include: {
         ingredient: {
           include: {

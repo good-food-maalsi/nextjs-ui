@@ -7,6 +7,7 @@ import {
   commandQuerySchema,
 } from "@/lib/api/validators/command.validator";
 import { handleError } from "@/lib/api/errors/error-handler";
+import { resolveFranchiseId } from "@/lib/api/utils/franchise-permissions";
 
 /**
  * GET /api/commands
@@ -15,7 +16,7 @@ import { handleError } from "@/lib/api/errors/error-handler";
 export async function GET(request: NextRequest) {
   try {
     // Vérifier l'authentification
-    await authMiddleware(request);
+    const user = await authMiddleware(request);
 
     // Parser et valider les paramètres de requête
     const { searchParams } = new URL(request.url);
@@ -27,8 +28,14 @@ export async function GET(request: NextRequest) {
       user_id: searchParams.get("user_id"),
     });
 
-    // Récupérer les commandes
-    const result = await commandHandler.getCommands(queryParams);
+    // Résoudre le franchise_id selon le rôle de l'utilisateur
+    const franchiseId = resolveFranchiseId(user, queryParams.franchise_id);
+
+    // Récupérer les commandes avec le franchise_id forcé
+    const result = await commandHandler.getCommands({
+      ...queryParams,
+      franchise_id: franchiseId,
+    });
 
     return NextResponse.json(result);
   } catch (error) {
@@ -43,14 +50,18 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     // Vérifier l'authentification
-    await authMiddleware(request);
+    const user = await authMiddleware(request);
 
     // Parser et valider le body
     const body = await request.json();
     const validatedData = createCommandSchema.parse(body);
 
-    // Créer la commande
-    const command = await commandHandler.createCommand(validatedData);
+    // Résoudre le franchise_id (ignorer celui du body pour utilisateurs normaux)
+    const franchiseId = resolveFranchiseId(user, validatedData.franchise_id);
+
+    const command = await commandHandler.createCommand(validatedData, {
+      franchiseId,
+    });
 
     return NextResponse.json(command, { status: 201 });
   } catch (error) {

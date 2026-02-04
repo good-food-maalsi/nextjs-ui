@@ -68,6 +68,18 @@ export function AccountSettingsDialog({
       profilePicture: [],
     },
   });
+
+  /**
+   * Opt-out of React Compiler memoization for React Hook Form's watch().
+   * watch() returns a value that must not be memoized (stale UI otherwise).
+   * See: https://github.com/facebook/react/issues/33057#issuecomment-2894450792
+   */
+  const useNoMemo = <T,>(factory: () => T): T => {
+    "use no memo";
+    return factory();
+  };
+  const profilePictureValue = useNoMemo(() => form.watch("profilePicture"));
+
   useEffect(() => {
     if (session.picture && !form.getValues("profilePicture")?.length) {
       const pictureUrl = session.picture;
@@ -142,7 +154,7 @@ export function AccountSettingsDialog({
               <div className="space-y-4">
                 <div className="flex items-start gap-6 sm:flex-row flex-col">
                   <FileUpload
-                    value={form.watch("profilePicture")}
+                    value={profilePictureValue}
                     onChange={handleFileUploadChange}
                     size="icon"
                     accept={{ "image/*": [".jpg", ".jpeg", ".png"] }}
@@ -160,7 +172,7 @@ export function AccountSettingsDialog({
                       Taille maximale du fichier : 500ko.
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      {form.watch("profilePicture")?.length === 0
+                      {profilePictureValue?.length === 0
                         ? "Aucun fichier sélectionné"
                         : "Fichier sélectionné"}
                     </p>
@@ -170,7 +182,7 @@ export function AccountSettingsDialog({
                   variant="secondaryOutline"
                   size="sm"
                   onClick={handleUpdateProfilePicture}
-                  disabled={form.watch("profilePicture")?.length === 0}
+                  disabled={profilePictureValue?.length === 0}
                 >
                   Mettre à jour la photo de profil
                 </Button>

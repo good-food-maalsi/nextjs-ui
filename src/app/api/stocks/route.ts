@@ -7,10 +7,11 @@ import {
 } from "@/lib/api/validators/stock-franchise.validator";
 import { handleError } from "@/lib/api/errors/error-handler";
 import { authMiddleware } from "../_middleware/auth.middleware";
+import { resolveFranchiseId } from "@/lib/api/utils/franchise-permissions";
 
 export async function GET(request: NextRequest) {
   try {
-    await authMiddleware(request);
+    const user = await authMiddleware(request);
 
     const { searchParams } = new URL(request.url);
     const params = stockFranchiseQuerySchema.parse({
@@ -20,7 +21,13 @@ export async function GET(request: NextRequest) {
       franchise_id: searchParams.get("franchise_id"),
     });
 
-    const result = await stockFranchiseHandler.getStocks(params);
+    // Résoudre le franchise_id selon le rôle de l'utilisateur
+    const franchiseId = resolveFranchiseId(user, params.franchise_id);
+
+    const result = await stockFranchiseHandler.getStocks({
+      ...params,
+      franchise_id: franchiseId,
+    });
     return NextResponse.json(result);
   } catch (error) {
     return handleError(error);
@@ -29,12 +36,18 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    await authMiddleware(request);
+    const user = await authMiddleware(request);
 
     const body = await request.json();
     const data = createStockFranchiseSchema.parse(body);
 
-    const result = await stockFranchiseHandler.createStock(data);
+    // Résoudre le franchise_id (ignorer celui du body pour utilisateurs normaux)
+    const franchiseId = resolveFranchiseId(user, data.franchise_id);
+
+    const result = await stockFranchiseHandler.createStock({
+      ...data,
+      franchise_id: franchiseId,
+    });
     return NextResponse.json(result, { status: 201 });
   } catch (error) {
     return handleError(error);

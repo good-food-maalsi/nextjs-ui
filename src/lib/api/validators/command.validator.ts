@@ -9,7 +9,7 @@ const commandItemSchema = z.object({
 
 // Schema for creating a command
 export const createCommandSchema = z.object({
-  franchise_id: z.uuid("Invalid franchise ID format"),
+  franchise_id: z.uuid("Invalid franchise ID format").optional(), // Optionnel car résolu dans la route
   status: z
     .enum([
       CommandStatus.draft,

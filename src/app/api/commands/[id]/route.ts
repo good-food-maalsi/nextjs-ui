@@ -7,6 +7,7 @@ import {
   commandIdSchema,
 } from "@/lib/api/validators/command.validator";
 import { handleError } from "@/lib/api/errors/error-handler";
+import { validateFranchiseAccess } from "@/lib/api/utils/franchise-permissions";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -19,7 +20,7 @@ interface RouteParams {
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
     // Vérifier l'authentification
-    await authMiddleware(request);
+    const user = await authMiddleware(request);
 
     // Valider l'ID
     const { id } = await params;
@@ -27,6 +28,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
     // Récupérer la commande
     const command = await commandHandler.getCommandById(validatedParams.id);
+
+    // Vérifier l'accès à cette franchise
+    validateFranchiseAccess(user, command.franchise_id);
 
     return NextResponse.json(command);
   } catch (error) {
@@ -41,11 +45,19 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
     // Vérifier l'authentification
-    await authMiddleware(request);
+    const user = await authMiddleware(request);
 
     // Valider l'ID
     const { id } = await params;
     const validatedParams = commandIdSchema.parse({ id });
+
+    // Récupérer la commande pour vérifier l'accès
+    const existingCommand = await commandHandler.getCommandById(
+      validatedParams.id
+    );
+
+    // Vérifier l'accès à cette franchise
+    validateFranchiseAccess(user, existingCommand.franchise_id);
 
     // Parser et valider le body
     const body = await request.json();
@@ -70,11 +82,19 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
     // Vérifier l'authentification
-    await authMiddleware(request);
+    const user = await authMiddleware(request);
 
     // Valider l'ID
     const { id } = await params;
     const validatedParams = commandIdSchema.parse({ id });
+
+    // Récupérer la commande pour vérifier l'accès
+    const existingCommand = await commandHandler.getCommandById(
+      validatedParams.id
+    );
+
+    // Vérifier l'accès à cette franchise
+    validateFranchiseAccess(user, existingCommand.franchise_id);
 
     // Supprimer la commande
     await commandHandler.deleteCommand(validatedParams.id);

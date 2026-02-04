@@ -3,17 +3,36 @@ import { jwtVerify, importSPKI } from "jose";
 import { UnauthorizedError } from "@/lib/api/errors/api-error";
 import { decodeBase64Key } from "@/lib/utils/token.utils";
 
+/**
+ * [SHARED PACKAGE] @good-food/auth-utils
+ *
+ * Interface représentant le payload d'un JWT.
+ * Ce type sera extrait dans un package npm partagé entre tous les micro-services.
+ *
+ * Champs standards :
+ * - sub, email, role, iat, exp : présents dans tous les micro-services
+ * - franchise_id : spécifique au contexte métier, peut être absent (admins) ou non utilisé par certains micro-services
+ */
 export interface JWTPayload {
   sub: string;
   email: string;
   role?: string;
+  franchise_id?: string; // ID de la franchise (absent pour les admins)
   iat?: number;
   exp?: number;
 }
 
 /**
- * Middleware d'authentification JWT
- * Vérifie le token d'accès et retourne le payload
+ * [SHARED PACKAGE] @good-food/auth-utils
+ *
+ * Middleware d'authentification JWT.
+ * Responsabilité : Valider le JWT et extraire le payload.
+ *
+ * Ce middleware sera extrait dans un package npm partagé entre tous les micro-services.
+ * Il ne contient AUCUNE logique métier d'autorisation - seulement l'authentification.
+ *
+ * Les règles d'accès aux ressources (authorization) sont gérées dans chaque micro-service
+ * selon son domaine métier spécifique.
  */
 export async function authMiddleware(
   request: NextRequest
@@ -24,6 +43,7 @@ export async function authMiddleware(
       sub: "test-user",
       email: "test@example.com",
       role: "admin",
+      franchise_id: undefined, // Admin = pas de franchise_id
     };
   }
 
@@ -48,6 +68,7 @@ export async function authMiddleware(
       sub: payload.sub as string,
       email: payload.email as string,
       role: payload.role as string | undefined,
+      franchise_id: payload.franchise_id as string | undefined,
       iat: payload.iat,
       exp: payload.exp,
     };
