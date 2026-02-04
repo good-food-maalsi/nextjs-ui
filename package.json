@@ -21,7 +21,8 @@
     "test:prepare": "./scripts/test-prepare.sh",
     "test:all": "pnpm test:backend && pnpm test:integration",
     "db:test:up": "docker-compose -f docker-compose.test.yml up -d",
-    "db:test:down": "docker-compose -f docker-compose.test.yml down -v"
+    "db:test:down": "docker-compose -f docker-compose.test.yml down -v",
+    "db:seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
@@ -107,5 +108,8 @@
       "@types/react": "19.2.7",
       "@types/react-dom": "19.2.3"
     }
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   }
 }

@@ -17,6 +17,7 @@ export const serverSession = {
       username: payload?.username,
       picture: payload?.picture,
       email: payload?.email,
+      franchise_id: payload?.franchise_id,
     };
   },
 
