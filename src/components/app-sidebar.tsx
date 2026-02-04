@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { BadgeCheck, ChevronRight, ChevronsUpDown, LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import type { Session } from "@/lib/types/session.types";
@@ -48,13 +48,6 @@ export function AppSidebar({ session }: AppSidebarProps) {
 
   // Check if we're on a Plats page or its sub-pages
   const isOnPlatsPage = pathname.startsWith("/dashboard/plats");
-
-  // Garde les sous-liens ouverts si on est sur la page Plats
-  useEffect(() => {
-    if (isOnPlatsPage) {
-      setIsPlatsExpanded(true);
-    }
-  }, [isOnPlatsPage]);
 
   const firstGroupItems = [
     {

@@ -49,7 +49,7 @@ export function OrdersDataTable<TData, TValue>({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = React.useState("");
@@ -77,7 +77,7 @@ export function OrdersDataTable<TData, TValue>({
       const numero = String(row.getValue("numero") || "").toLowerCase();
       const client = String(row.getValue("client") || "").toLowerCase();
       const id = String(
-        (row.original as { id?: string }).id || ""
+        (row.original as { id?: string }).id || "",
       ).toLowerCase();
 
       return (
@@ -109,7 +109,7 @@ export function OrdersDataTable<TData, TValue>({
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
                   );
@@ -138,7 +138,7 @@ export function OrdersDataTable<TData, TValue>({
                     <TableCell key={cell.id} className="py-3">
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}

@@ -1,12 +1,10 @@
-import { PrismaClient } from "@/generated/prisma/client";
+import { prisma } from "@/lib/db/prisma";
 import type { Prisma } from "@/generated/prisma/client";
 import type {
   CreateSupplierInput,
   UpdateSupplierInput,
   SupplierQueryParams,
 } from "../validators/supplier.validator";
-
-const prisma = new PrismaClient();
 
 export const supplierRepository = {
   /**

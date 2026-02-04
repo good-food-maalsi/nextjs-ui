@@ -1,11 +1,9 @@
-import { PrismaClient } from "@/generated/prisma/client";
+import { prisma } from "@/lib/db/prisma";
 import type {
   StockFranchiseQueryParams,
   CreateStockFranchiseInput,
   UpdateStockFranchiseInput,
 } from "../validators/stock-franchise.validator";
-
-const prisma = new PrismaClient();
 
 export const stockFranchiseRepository = {
   async findAll(params: StockFranchiseQueryParams) {

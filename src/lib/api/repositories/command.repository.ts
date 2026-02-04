@@ -1,4 +1,4 @@
-import { PrismaClient } from "@/generated/prisma/client";
+import { prisma } from "@/lib/db/prisma";
 import type { Prisma } from "@/generated/prisma/client";
 import type {
   CreateCommandInput,
@@ -8,8 +8,6 @@ import type {
   AddIngredientToCommandInput,
   UpdateCommandIngredientInput,
 } from "../validators/command.validator";
-
-const prisma = new PrismaClient();
 
 export const commandRepository = {
   /**
@@ -125,7 +123,7 @@ export const commandRepository = {
    * Créer une nouvelle commande avec items
    */
   async create(data: Omit<CreateCommandInput, "items">, items: CommandItem[]) {
-    return prisma.$transaction(async (tx) => {
+    return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // Create the command
       const command = await tx.command.create({
         data: {

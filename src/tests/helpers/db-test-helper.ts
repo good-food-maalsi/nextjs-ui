@@ -1,4 +1,6 @@
 import { PrismaClient } from "@/generated/prisma/client";
+import { Pool } from "pg";
+import { PrismaPg } from "@prisma/adapter-pg";
 
 let prisma: PrismaClient;
 
@@ -7,12 +9,17 @@ let prisma: PrismaClient;
  */
 export function getPrismaTestClient(): PrismaClient {
   if (!prisma) {
+    const connectionString = process.env.DATABASE_URL;
+
+    if (!connectionString) {
+      throw new Error("DATABASE_URL environment variable is not set");
+    }
+
+    const pool = new Pool({ connectionString });
+    const adapter = new PrismaPg(pool);
+
     prisma = new PrismaClient({
-      datasources: {
-        db: {
-          url: process.env.DATABASE_URL,
-        },
-      },
+      adapter,
     });
   }
   return prisma;

@@ -31,6 +31,9 @@ export default function DataTableMembers({ session }: DataTableMembersProps) {
   const [memberEditedRowId, setMemberEditedRowId] = useState<string | null>(
     null
   );
+  const [selectedMemberName, setSelectedMemberName] = useState<string | null>(
+    null
+  );
   const memberOriginalRow = useRef<User | null>(null);
   const memberEditedRowRef = useRef<EditedUser | null>(null);
   const selectedMemberRef = useRef<User | null>(null);
@@ -55,6 +58,7 @@ export default function DataTableMembers({ session }: DataTableMembersProps) {
 
   const handleDelete = (member: User) => {
     selectedMemberRef.current = member;
+    setSelectedMemberName(member.username);
     setIsModalOpen(true);
   };
 
@@ -273,7 +277,7 @@ export default function DataTableMembers({ session }: DataTableMembersProps) {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onDelete={confirmDelete}
-        siteName={selectedMemberRef.current?.username}
+        siteName={selectedMemberName ?? undefined}
       />
     </>
   );
