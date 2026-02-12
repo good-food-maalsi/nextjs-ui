@@ -133,7 +133,7 @@ export const columns: ColumnDef<Menu>[] = [
       ) as MenuAvailability;
       const isAvailable = availability === "available";
       return (
-        <StatusBadge variant={isAvailable ? "success" : "destructive"}>
+        <StatusBadge variant={isAvailable ? "confirmed" : "cancelled"}>
           {menuAvailabilityLabels[availability]}
         </StatusBadge>
       );

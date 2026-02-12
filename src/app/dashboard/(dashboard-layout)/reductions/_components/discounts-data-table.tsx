@@ -18,6 +18,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import * as React from "react";
+import type { Discount } from "../_types";
 
 import { SimpleDataTablePagination } from "@/components/ui/simple-data-table-pagination";
 import { Input } from "@/components/ui/input";
@@ -74,10 +75,9 @@ export function DiscountsDataTable<TData, TValue>({
       const search = filterValue.toLowerCase();
 
       // Recherche sur nom et description
-      const name = String(row.original.name || "").toLowerCase();
-      const description = String(
-        row.original.description || ""
-      ).toLowerCase();
+      const discount = row.original as unknown as Discount;
+      const name = String(discount.name || "").toLowerCase();
+      const description = String(discount.description || "").toLowerCase();
 
       return name.includes(search) || description.includes(search);
     },
@@ -110,9 +110,9 @@ export function DiscountsDataTable<TData, TValue>({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   );
                 })}
@@ -154,9 +154,8 @@ export function DiscountsDataTable<TData, TValue>({
                   className="h-24 text-center"
                 >
                   <div
-                    className={`text-center ${
-                      isError ? "text-destructive" : "text-muted-foreground"
-                    }`}
+                    className={`text-center ${isError ? "text-destructive" : "text-muted-foreground"
+                      }`}
                   >
                     {isError
                       ? "Une erreur est survenue lors du chargement des réductions."

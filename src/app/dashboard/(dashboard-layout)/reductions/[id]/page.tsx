@@ -63,16 +63,16 @@ const mockDiscountDetail: DiscountDetail = {
 // Fonction pour déterminer la variante du badge de statut
 const getStatusVariant = (
   status: DiscountStatus
-): "success" | "warning" | "default" => {
+): "confirmed" | "pending" | "cancelled" => {
   switch (status) {
     case DiscountStatus.ACTIVE:
-      return "success";
+      return "confirmed";
     case DiscountStatus.SCHEDULED:
-      return "warning";
+      return "pending";
     case DiscountStatus.EXPIRED:
-      return "default";
+      return "cancelled";
     default:
-      return "default";
+      return "cancelled";
   }
 };
 
@@ -134,7 +134,7 @@ export default function DiscountDetailPage() {
             <Button variant="secondaryOutline" size="sm">
               Modifier
             </Button>
-            <Button variant="destructiveOutline" size="sm">
+            <Button variant="destructive" size="sm">
               <Trash2 className="mr-2 h-4 w-4" />
               Supprimer
             </Button>
