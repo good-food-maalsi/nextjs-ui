@@ -38,9 +38,18 @@ export interface Fournisseur {
   adresse: string;
   telephone: string;
   email: string;
+  logo_url: string | null;
 }
 
-export const columns: ColumnDef<Fournisseur>[] = [
+interface ColumnsProps {
+  onEdit: (supplier: Fournisseur) => void;
+  onDelete: (supplier: Fournisseur) => void;
+}
+
+export const createColumns = ({
+  onEdit,
+  onDelete,
+}: ColumnsProps): ColumnDef<Fournisseur>[] => [
   {
     id: FournisseurColumnKey.SELECT,
     header: ({ table }) => (
@@ -117,9 +126,13 @@ export const columns: ColumnDef<Fournisseur>[] = [
               Copier l'ID du fournisseur
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Voir le fournisseur</DropdownMenuItem>
-            <DropdownMenuItem>Modifier le fournisseur</DropdownMenuItem>
-            <DropdownMenuItem className="text-destructive">
+            <DropdownMenuItem onClick={() => onEdit(fournisseur)}>
+              Modifier le fournisseur
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="text-destructive"
+              onClick={() => onDelete(fournisseur)}
+            >
               Supprimer le fournisseur
             </DropdownMenuItem>
           </DropdownMenuContent>

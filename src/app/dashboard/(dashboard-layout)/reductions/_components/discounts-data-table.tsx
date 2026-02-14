@@ -50,7 +50,7 @@ export function DiscountsDataTable<TData, TValue>({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = React.useState("");
@@ -89,6 +89,19 @@ export function DiscountsDataTable<TData, TValue>({
     getFacetedUniqueValues: getFacetedUniqueValues(),
   });
 
+  /**
+   * Helper to opt-out of React Compiler memoization for TanStack Table calls.
+   * TanStack Table mutates state in-place; wrapping getHeaderGroups/getRowModel
+   * in useMemo with [table] would yield stale values (table reference never changes).
+   * See: https://github.com/facebook/react/issues/33057#issuecomment-2894450792
+   */
+  const useNoMemo = <const T,>(factory: () => T): T => {
+    "use no memo";
+    return factory();
+  };
+  const headerGroups = useNoMemo(() => table.getHeaderGroups());
+  const rowModel = useNoMemo(() => table.getRowModel());
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -102,7 +115,7 @@ export function DiscountsDataTable<TData, TValue>({
       <div className="rounded-md border overflow-hidden">
         <Table>
           <TableHeader className="bg-primary-200">
-            {table.getHeaderGroups().map((headerGroup) => (
+            {headerGroups.map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
@@ -110,9 +123,9 @@ export function DiscountsDataTable<TData, TValue>({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
                     </TableHead>
                   );
                 })}
@@ -130,8 +143,8 @@ export function DiscountsDataTable<TData, TValue>({
                   ))}
                 </TableRow>
               ))
-            ) : table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
+            ) : rowModel.rows?.length ? (
+              rowModel.rows.map((row) => (
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
@@ -141,7 +154,7 @@ export function DiscountsDataTable<TData, TValue>({
                     <TableCell key={cell.id} className="py-3">
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}
@@ -154,8 +167,9 @@ export function DiscountsDataTable<TData, TValue>({
                   className="h-24 text-center"
                 >
                   <div
-                    className={`text-center ${isError ? "text-destructive" : "text-muted-foreground"
-                      }`}
+                    className={`text-center ${
+                      isError ? "text-destructive" : "text-muted-foreground"
+                    }`}
                   >
                     {isError
                       ? "Une erreur est survenue lors du chargement des réductions."

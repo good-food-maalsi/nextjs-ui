@@ -4,4 +4,5 @@ export interface Session {
   role?: string;
   picture?: string | null;
   email?: string;
+  franchise_id?: string;
 }

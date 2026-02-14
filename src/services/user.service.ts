@@ -1,4 +1,4 @@
-import api from "@/lib/config/api.config";
+import { gatewayApi } from "@/lib/config/api.config";
 import { userSchema, usersSchema } from "@/lib/schemas/user.schema";
 import type { User } from "@/lib/types/user.types";
 
@@ -10,7 +10,7 @@ interface IUserService {
   updatePassword: (
     id: string,
     currentPassword: string,
-    newPassword: string
+    newPassword: string,
   ) => Promise<User>;
   delete: (id: string) => Promise<void>;
   deleteMany: (targetUserIds: string[]) => Promise<void>;
@@ -28,7 +28,7 @@ const baseURL = "/user";
 
 export const userService: IUserService = {
   async findAll() {
-    const { data } = await api.get(`${baseURL}`);
+    const { data } = await gatewayApi.get(`${baseURL}`);
 
     const users = usersSchema.parse(data);
 
@@ -36,7 +36,9 @@ export const userService: IUserService = {
   },
 
   async updateUsername(id: string, username: string) {
-    const { data } = await api.patch(`${baseURL}/${id}/username`, { username });
+    const { data } = await gatewayApi.patch(`${baseURL}/${id}/username`, {
+      username,
+    });
 
     const user = userSchema.parse(data);
 
@@ -44,7 +46,9 @@ export const userService: IUserService = {
   },
 
   async updateEmail(id: string, email: string) {
-    const { data } = await api.patch(`${baseURL}/${id}/email`, { email });
+    const { data } = await gatewayApi.patch(`${baseURL}/${id}/email`, {
+      email,
+    });
 
     const user = userSchema.parse(data);
 
@@ -52,7 +56,7 @@ export const userService: IUserService = {
   },
 
   async updateRole(id: string, role: string) {
-    const { data } = await api.patch(`${baseURL}/${id}/role`, { role });
+    const { data } = await gatewayApi.patch(`${baseURL}/${id}/role`, { role });
 
     const user = userSchema.parse(data);
 
@@ -62,9 +66,9 @@ export const userService: IUserService = {
   async updatePassword(
     id: string,
     currentPassword: string,
-    newPassword: string
+    newPassword: string,
   ) {
-    const { data } = await api.patch(`${baseURL}/${id}/password`, {
+    const { data } = await gatewayApi.patch(`${baseURL}/${id}/password`, {
       currentPassword,
       newPassword,
     });
@@ -75,17 +79,17 @@ export const userService: IUserService = {
   },
 
   async delete(id: string) {
-    await api.delete(`${baseURL}/${id}`);
+    await gatewayApi.delete(`${baseURL}/${id}`);
   },
 
   async deleteMany(targetUserIds: string[]) {
-    await api.delete(`${baseURL}`, {
+    await gatewayApi.delete(`${baseURL}`, {
       data: { targetUserIds },
     });
   },
 
   async deleteYourself(id: string) {
-    await api.delete(`${baseURL}/${id}/yourself`);
+    await gatewayApi.delete(`${baseURL}/${id}/yourself`);
   },
 
   async updateUserPicture({ file, id }: { file: File; id: string }) {
@@ -93,7 +97,10 @@ export const userService: IUserService = {
     formData.append("file", file);
     formData.append("userId", id);
 
-    const res = await api.patch(`${baseURL}/${id}/update-picture`, formData);
+    const res = await gatewayApi.patch(
+      `${baseURL}/${id}/update-picture`,
+      formData,
+    );
     return res.data.user;
   },
 };

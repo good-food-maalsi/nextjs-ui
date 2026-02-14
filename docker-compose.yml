@@ -1,0 +1,24 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: good-food-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_DB}
+    ports:
+      - "5434:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - good-food-network
+
+volumes:
+  pg_data:
+    driver: local
+
+networks:
+  good-food-network:
+    external: true
+    name: good-food

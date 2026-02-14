@@ -11,11 +11,12 @@ export type User = z.infer<typeof userSchema>;
 
 export type EditedUser = Pick<User, "username" | "role">;
 
+/** Rôles alignés sur auth-service (Prisma) */
 export enum Role {
-  SUPER_ADMIN = "Super-administrateur",
   ADMIN = "Administrateur",
-  EDITOR = "Éditeur",
-  READER = "Lecteur",
+  FRANCHISE_OWNER = "Propriétaire de franchise",
+  STAFF = "Personnel",
+  CUSTOMER = "Client",
 }
 
 export type UserForm = z.infer<typeof userFormSchema>;

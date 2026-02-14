@@ -16,7 +16,7 @@ export const useLogin = () => {
 
   const { mutate, isPending } = useMutation({
     mutationFn: (data: TLoginSchema) =>
-      authService.login(data.email, data.password),
+      authService.login({ email: data.email, password: data.password }),
     onSuccess: () => {
       form.reset();
       toast.success("Connexion réussie");

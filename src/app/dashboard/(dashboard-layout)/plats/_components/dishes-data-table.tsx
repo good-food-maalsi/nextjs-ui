@@ -49,7 +49,7 @@ export function DishesDataTable<TData, TValue>({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = React.useState("");
@@ -76,7 +76,7 @@ export function DishesDataTable<TData, TValue>({
       // Recherche sur nom, menus associés
       const nom = String(row.getValue("nom") || "").toLowerCase();
       const menusAssocies = String(
-        row.getValue("menusAssocies") || ""
+        row.getValue("menusAssocies") || "",
       ).toLowerCase();
 
       return nom.includes(search) || menusAssocies.includes(search);
@@ -88,6 +88,24 @@ export function DishesDataTable<TData, TValue>({
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
   });
+
+  /**
+   * Helper to opt-out of React Compiler memoization for TanStack Table calls.
+   *
+   * TanStack Table mutates state in-place instead of creating new references,
+   * which conflicts with React Compiler's automatic memoization. This causes
+   * stale values when the compiler wraps calls like table.getHeaderGroups()
+   * in useMemo with [table] as dependency (table reference never changes).
+   *
+   * See: https://github.com/facebook/react/issues/33057#issuecomment-2894450792
+   */
+  const useNoMemo = <const T,>(factory: () => T): T => {
+    "use no memo";
+    return factory();
+  };
+
+  const headerGroups = useNoMemo(() => table.getHeaderGroups());
+  const rowModel = useNoMemo(() => table.getRowModel());
 
   return (
     <div className="space-y-4">
@@ -102,7 +120,7 @@ export function DishesDataTable<TData, TValue>({
       <div className="rounded-md border overflow-hidden">
         <Table>
           <TableHeader className="bg-primary-200">
-            {table.getHeaderGroups().map((headerGroup) => (
+            {headerGroups.map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
@@ -111,7 +129,7 @@ export function DishesDataTable<TData, TValue>({
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
                   );
@@ -130,8 +148,8 @@ export function DishesDataTable<TData, TValue>({
                   ))}
                 </TableRow>
               ))
-            ) : table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
+            ) : rowModel.rows?.length ? (
+              rowModel.rows.map((row) => (
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
@@ -141,7 +159,7 @@ export function DishesDataTable<TData, TValue>({
                     <TableCell key={cell.id} className="py-3">
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}

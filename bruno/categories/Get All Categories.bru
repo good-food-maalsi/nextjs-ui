@@ -1,0 +1,75 @@
+meta {
+  name: Get All Categories
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{apiUrl}}/categories?page=1&limit=10
+  body: none
+  auth: inherit
+}
+
+params:query {
+  page: 1
+  limit: 10
+  ~search: viande
+}
+
+docs {
+  # Get All Categories
+
+  Récupère toutes les catégories avec pagination et filtres optionnels.
+
+  ## Query Parameters
+
+  - `page` (number, default: 1): Numéro de page
+  - `limit` (number, default: 10, max: 100): Nombre d'éléments par page
+  - `search` (string, optional): Recherche dans nom et description
+
+  ## Response (200 OK)
+
+  ```json
+  {
+    "data": [
+      {
+        "id": "uuid",
+        "name": "Viandes",
+        "description": "Produits carnés",
+        "created_at": "2025-01-01T00:00:00.000Z",
+        "updated_at": "2025-01-01T00:00:00.000Z",
+        "_count": {
+          "ingredient_categories": 5
+        }
+      }
+    ],
+    "meta": {
+      "total": 15,
+      "page": 1,
+      "limit": 10,
+      "totalPages": 2
+    }
+  }
+  ```
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Response has data array", function() {
+    const body = res.getBody();
+    expect(body).to.have.property('data');
+    expect(body.data).to.be.an('array');
+  });
+
+  test("Response has meta pagination", function() {
+    const body = res.getBody();
+    expect(body).to.have.property('meta');
+    expect(body.meta).to.have.property('total');
+    expect(body.meta).to.have.property('page');
+    expect(body.meta).to.have.property('limit');
+    expect(body.meta).to.have.property('totalPages');
+  });
+}

@@ -1,0 +1,47 @@
+meta {
+  name: Delete Stock
+  type: http
+  seq: 9
+}
+
+delete {
+  url: {{apiUrl}}/franchises/{{franchiseId}}/stock/{{ingredientId}}
+  body: none
+  auth: inherit
+}
+
+docs {
+  # Delete Stock Entry
+
+  Supprime une entrée de stock (retire complètement l'ingrédient du stock de la franchise).
+
+  **Note**: Pour mettre la quantité à 0, préférer PUT avec `quantity: 0`.
+
+  ## Path Parameters
+
+  - `id` (uuid): ID de la franchise
+  - `ingredientId` (uuid): ID de l'ingrédient
+
+  ## Response (200 OK)
+
+  ```json
+  {
+    "message": "Stock entry deleted successfully"
+  }
+  ```
+
+  ## Error Responses
+
+  - `404 Not Found`: Franchise ou ingrédient non trouvé
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Response has success message", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('message');
+  });
+}

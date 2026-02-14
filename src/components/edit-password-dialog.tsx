@@ -60,14 +60,14 @@ export function EditPasswordDialog({
         confirmPassword: "",
       });
     }
-  }, [open, reset]);
+  }, [open, form, reset]);
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (data: EditPasswordForm) =>
       await userService.updatePassword(
         userId,
         data.currentPassword,
-        data.newPassword
+        data.newPassword,
       ),
     onSuccess: () => {
       toast.success("Mot de passe modifié avec succès");

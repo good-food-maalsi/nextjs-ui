@@ -1,0 +1,63 @@
+meta {
+  name: Delete Supplier
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{apiUrl}}/suppliers/{{supplierId}}
+  body: none
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+vars:pre-request {
+  supplierId: 550e8400-e29b-41d4-a716-446655440000
+}
+
+docs {
+  # Delete Supplier
+
+  Supprime un fournisseur du système. Cette action supprimera également en cascade :
+  - Tous les ingrédients du fournisseur
+  - Toutes les relations associées (stocks, catégories d'ingrédients, etc.)
+
+  ## URL Parameters
+
+  - `id` (uuid): ID du fournisseur à supprimer
+
+  ## Response (200 OK)
+
+  ```json
+  {
+    "message": "Supplier deleted successfully"
+  }
+  ```
+
+  ## Error Responses
+
+  - `400 Bad Request`: Format d'ID invalide
+  - `404 Not Found`: Fournisseur non trouvé
+
+  ## ⚠️ Attention
+
+  Cette opération est **irréversible** et supprime toutes les données associées en cascade.
+  Tous les ingrédients liés au fournisseur seront également supprimés, ce qui peut affecter :
+  - Les stocks des franchises
+  - Les commandes existantes
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Response has success message", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('message');
+    expect(data.message).to.include('deleted successfully');
+  });
+}

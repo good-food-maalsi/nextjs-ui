@@ -2,7 +2,7 @@
 
 import { Trash2, Upload, X } from "lucide-react";
 import Image from "next/image";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import type { FileRejection } from "react-dropzone";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
@@ -30,6 +30,19 @@ export const FileUpload = ({
   accept,
 }: FileUploadProps) => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  const handleImageChange = useCallback((files: File[] | null) => {
+    if (files && files.length > 0) {
+      const file = files[0];
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setImagePreview(null);
+    }
+  }, []);
 
   const onDrop = useCallback(
     (acceptedFiles: File[], fileRejections: FileRejection[]) => {
@@ -69,7 +82,7 @@ export const FileUpload = ({
       onChange?.(newFiles);
       if (size === "icon") handleImageChange(newFiles);
     },
-    [value, maxFiles, maxSize, onChange, size]
+    [value, maxFiles, maxSize, onChange, size, handleImageChange]
   );
 
   const removeFile = (fileToRemove: File) => {
@@ -84,27 +97,6 @@ export const FileUpload = ({
     noClick: false,
     noKeyboard: false,
   });
-
-  useEffect(() => {
-    if (size === "icon" && value.length > 0) {
-      handleImageChange(value);
-    } else {
-      setImagePreview(null);
-    }
-  }, [value, size]);
-
-  const handleImageChange = (files: File[] | null) => {
-    if (files && files.length > 0) {
-      const file = files[0];
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    } else {
-      setImagePreview(null);
-    }
-  };
 
   return (
     <div className="relative h-full">
