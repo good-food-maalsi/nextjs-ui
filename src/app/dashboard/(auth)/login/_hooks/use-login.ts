@@ -1,37 +1,42 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
+import { useLoginGateway } from "@/hooks/use-auth-gateway";
 import { loginSchema, type TLoginSchema } from "@/lib/schemas/auth.schema";
-import { authService } from "@/services/auth.service";
+
+const DASHBOARD_ROLES = ["ADMIN", "FRANCHISE_OWNER", "STAFF"];
 
 export const useLogin = () => {
   const router = useRouter();
+  const loginMutation = useLoginGateway();
 
   const form = useForm<TLoginSchema>({
     resolver: zodResolver(loginSchema),
   });
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: (data: TLoginSchema) =>
-      authService.login(data.email, data.password),
-    onSuccess: () => {
-      form.reset();
-      toast.success("Connexion réussie");
-      router.push("/");
-    },
-    onError: () => {
-      toast.error("Informations de connexion incorrectes");
-    },
-  });
-
-  const onSubmit = (data: TLoginSchema) => mutate(data);
+  const onSubmit = (data: TLoginSchema) => {
+    loginMutation.mutate(
+      { email: data.email, password: data.password },
+      {
+        onSuccess: (response) => {
+          form.reset();
+          toast.success("Connexion réussie");
+          const roles = response?.user?.roles ?? [];
+          const hasDashboardRole = roles.some((r) => DASHBOARD_ROLES.includes(r));
+          router.push(hasDashboardRole ? "/dashboard" : "/");
+        },
+        onError: () => {
+          toast.error("Informations de connexion incorrectes");
+        },
+      }
+    );
+  };
 
   return {
     form,
-    isPending,
+    isPending: loginMutation.isPending,
     onSubmit,
   };
 };

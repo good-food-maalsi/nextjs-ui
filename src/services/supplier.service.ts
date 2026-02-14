@@ -1,4 +1,4 @@
-import api from "@/lib/config/api.config";
+import { gatewayApi } from "@/lib/config/api.config";
 import type {
   Supplier,
   SuppliersResponse,
@@ -18,30 +18,30 @@ interface ISupplierService {
   delete: (id: string) => Promise<void>;
 }
 
-const baseURL = "/suppliers";
+const baseURL = "/franchise/suppliers";
 
 export const supplierService: ISupplierService = {
   async findAll(params = {}) {
-    const { data } = await api.get(baseURL, { params });
+    const { data } = await gatewayApi.get(baseURL, { params });
     return data;
   },
 
   async findById(id: string) {
-    const { data } = await api.get(`${baseURL}/${id}`);
+    const { data } = await gatewayApi.get(`${baseURL}/${id}`);
     return data;
   },
 
   async create(supplierData: CreateSupplierInput) {
-    const { data } = await api.post(baseURL, supplierData);
+    const { data } = await gatewayApi.post(baseURL, supplierData);
     return data;
   },
 
   async update(id: string, supplierData: UpdateSupplierInput) {
-    const { data } = await api.put(`${baseURL}/${id}`, supplierData);
+    const { data } = await gatewayApi.put(`${baseURL}/${id}`, supplierData);
     return data;
   },
 
   async delete(id: string) {
-    await api.delete(`${baseURL}/${id}`);
+    await gatewayApi.delete(`${baseURL}/${id}`);
   },
 };

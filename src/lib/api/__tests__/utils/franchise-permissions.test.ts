@@ -4,7 +4,7 @@ import {
   resolveFranchiseId,
   validateFranchiseAccess,
 } from "../../utils/franchise-permissions";
-import type { JWTPayload } from "@/app/api/_middleware/auth.middleware";
+import type { JWTPayload } from "@/lib/types/auth.types";
 import { ForbiddenError } from "../../errors/api-error";
 
 describe("Franchise Permissions Utils", () => {

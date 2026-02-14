@@ -5,7 +5,7 @@ export const userSchema = z.object({
   username: z.string(),
   email: z.string(),
   picture: z.string().nullable(),
-  role: z.enum(["SUPER_ADMIN", "ADMIN", "EDITOR", "READER"]),
+  role: z.enum(["ADMIN", "FRANCHISE_OWNER", "STAFF", "CUSTOMER"]),
   createdAt: z.string(),
   status: z.string(),
 });
@@ -46,7 +46,7 @@ export const memberFormSchema = z.object({
   profilePicture: z.array(z.any()).optional(),
   username: z.string().nonempty("Le nom d'utilisateur est requis"),
   email: z.string().email("L'adresse e-mail n'est pas valide"),
-  role: z.enum(["SUPER_ADMIN", "ADMIN", "EDITOR", "READER"], {
+  role: z.enum(["ADMIN", "FRANCHISE_OWNER", "STAFF", "CUSTOMER"], {
     message: "Le rôle est requis",
   }),
   password: z.string().optional(),

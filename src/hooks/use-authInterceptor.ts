@@ -1,7 +1,8 @@
 import { useRouter } from "next/navigation";
 import { useLayoutEffect } from "react";
 
-import api from "@/lib/config/api.config";
+import { gatewayApi } from "@/lib/config/api.config";
+import { sessionState } from "@/lib/config/session.config";
 import type { ConfigAxios } from "@/lib/types/axios";
 
 import { authService } from "../services/auth.service";
@@ -10,35 +11,54 @@ export const useAuthInterceptors = () => {
   const router = useRouter();
 
   useLayoutEffect(() => {
-    const refreshInterceptor = api.interceptors.response.use(
-      (response) => response,
-      async (error) => {
-        const originalRequest: ConfigAxios = error.config;
+    const requestInterceptor = gatewayApi.interceptors.request.use(
+      (config) => {
+        if (config.url?.includes("/franchise/")) {
+          const franchiseId = sessionState.get()?.franchise_id;
+          if (franchiseId) {
+            config.headers.set("X-Franchise-Id", franchiseId);
+          }
+        }
+        return config;
+      },
+      (error) => Promise.reject(error),
+    );
+
+    const createInterceptor = (axiosInstance: typeof gatewayApi) => {
+      return async (error: {
+        response?: { status?: number; data?: unknown };
+        config: ConfigAxios;
+      }) => {
+        const originalRequest = error.config;
+        const is401 = error.response?.status === 401;
 
         if (
-          error.response?.status === 401 &&
-          error.response?.data.message.error === "Unauthorized" &&
+          is401 &&
           !originalRequest._retry &&
           !originalRequest.url?.includes("/auth/refresh")
         ) {
           try {
-            await api.post("/auth/refresh");
-
+            await gatewayApi.post("/auth/refresh");
             originalRequest._retry = true;
-            return api(originalRequest);
+            return axiosInstance(originalRequest);
           } catch (refreshError) {
-            // Sentry.captureException(refreshError);
             await authService.logout();
-
-            router.push("/login");
+            router.push("/dashboard/login");
             return Promise.reject(refreshError);
           }
         }
-
         return Promise.reject(error);
-      }
+      };
+    };
+
+    const responseInterceptor = gatewayApi.interceptors.response.use(
+      (response) => response,
+      createInterceptor(gatewayApi),
     );
 
-    return () => api.interceptors.response.eject(refreshInterceptor);
+    return () => {
+      gatewayApi.interceptors.request.eject(requestInterceptor);
+      gatewayApi.interceptors.response.eject(responseInterceptor);
+    };
   }, [router]);
 };

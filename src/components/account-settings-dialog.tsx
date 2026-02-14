@@ -1,7 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
 import { ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -24,8 +23,8 @@ import { userFormSchema } from "@/lib/schemas/user.schema";
 import { sessionStore } from "@/lib/session/session-store";
 import type { UserForm } from "@/lib/types/user.types";
 
+import { useLogoutGateway } from "@/hooks/use-auth-gateway";
 import { BASE_URL } from "../lib/constants/global.constants";
-import { authService } from "../services/auth.service";
 import { EditEmailDialog } from "./edit-email-dialog";
 import { EditPasswordDialog } from "./edit-password-dialog";
 import { EditUsernameDialog } from "./edit-username-dialog";
@@ -97,15 +96,14 @@ export function AccountSettingsDialog({
 
   const router = useRouter();
 
-  const { mutate } = useMutation({
-    mutationFn: authService.logout,
-    onSuccess: () => {
-      router.push("/login");
-    },
-    onError: () => {
-      toast.error("Une erreur est survenue lors de la déconnexion");
-    },
-  });
+  const logoutMutation = useLogoutGateway();
+  const mutate = () => {
+    logoutMutation.mutate(undefined, {
+      onSuccess: () => router.push("/dashboard/login"),
+      onError: () =>
+        toast.error("Une erreur est survenue lors de la déconnexion"),
+    });
+  };
 
   const { mutate: deleteMember } = useDeleteYourself();
 
@@ -117,7 +115,7 @@ export function AccountSettingsDialog({
           onSuccess: () => {
             mutate();
           },
-        }
+        },
       );
       setActiveDialog(null);
     }

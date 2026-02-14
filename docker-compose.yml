@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
       POSTGRES_DB: ${DATABASE_DB}
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "5434:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
     networks:
@@ -20,4 +20,5 @@ volumes:
 
 networks:
   good-food-network:
-    driver: bridge
+    external: true
+    name: good-food

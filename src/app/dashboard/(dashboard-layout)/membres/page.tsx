@@ -7,7 +7,7 @@ import FormMembers from "./_components/form-members";
 export default async function Members() {
   const session = await serverSession.getServerSession();
 
-  // if (session.role !== "SUPER_ADMIN" && session.role !== "ADMIN") {
+  // if (session.role !== "ADMIN" && session.role !== "FRANCHISE_OWNER") {
   //   return redirect("/");
   // }
 

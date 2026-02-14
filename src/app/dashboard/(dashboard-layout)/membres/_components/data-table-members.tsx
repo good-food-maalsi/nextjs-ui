@@ -27,7 +27,7 @@ interface DataTableMembersProps {
 }
 
 export default function DataTableMembers({ session }: DataTableMembersProps) {
-  const isUnauthorized = session.role === "READER";
+  const isUnauthorized = session.role === "CUSTOMER";
   const [memberEditedRowId, setMemberEditedRowId] = useState<string | null>(
     null
   );

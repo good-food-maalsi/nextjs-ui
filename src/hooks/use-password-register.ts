@@ -20,7 +20,7 @@ export const useFormMutation = (magicToken: string, successMessage: string) => {
 
   const { mutate, isPending } = useMutation({
     mutationFn: (data: TpasswordRegisterSchema) =>
-      authService.register(magicToken, data.password),
+      authService.registerWithMagicToken(magicToken, data.password),
     onSuccess: () => {
       form.reset();
       toast.success(successMessage);

@@ -16,7 +16,7 @@
  * L'autorisation (qui peut accéder à quoi) est toujours spécifique au domaine.
  */
 
-import type { JWTPayload } from "@/app/api/_middleware/auth.middleware";
+import type { JWTPayload } from "@/lib/types/auth.types";
 import { ForbiddenError } from "../errors/api-error";
 
 /**

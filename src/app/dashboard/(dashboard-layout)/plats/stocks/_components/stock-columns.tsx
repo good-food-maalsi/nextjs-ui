@@ -77,9 +77,7 @@ export const createStockColumns = ({
   {
     accessorKey: StockColumnKey.SUPPLIER_NOM,
     header: stockColumnLabels[StockColumnKey.SUPPLIER_NOM],
-    cell: ({ row }) => (
-      <div>{row.getValue(StockColumnKey.SUPPLIER_NOM)}</div>
-    ),
+    cell: ({ row }) => <div>{row.getValue(StockColumnKey.SUPPLIER_NOM)}</div>,
     enableSorting: false,
   },
   {
@@ -104,8 +102,9 @@ export const createStockColumns = ({
     accessorKey: StockColumnKey.PRIX_UNITAIRE,
     header: stockColumnLabels[StockColumnKey.PRIX_UNITAIRE],
     cell: ({ row }) => {
-      const price = row.getValue(StockColumnKey.PRIX_UNITAIRE) as number;
-      return <div>{price.toFixed(2)} €</div>;
+      const raw = row.getValue(StockColumnKey.PRIX_UNITAIRE);
+      const price = parseFloat(String(raw ?? null));
+      return <div>{isNaN(price) ? "-" : `${price.toFixed(2)} €`}</div>;
     },
     enableSorting: false,
   },

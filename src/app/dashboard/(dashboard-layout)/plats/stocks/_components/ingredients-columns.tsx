@@ -94,8 +94,9 @@ export const createIngredientsColumns = ({
     accessorKey: IngredientColumnKey.PRIX_UNITAIRE,
     header: ingredientColumnLabels[IngredientColumnKey.PRIX_UNITAIRE],
     cell: ({ row }) => {
-      const price = row.getValue(IngredientColumnKey.PRIX_UNITAIRE) as number;
-      return <div>{price.toFixed(2)} €</div>;
+      const raw = row.getValue(IngredientColumnKey.PRIX_UNITAIRE);
+      const price = parseFloat(String(raw ?? null));
+      return <div>{isNaN(price) ? "-" : `${price.toFixed(2)} €`}</div>;
     },
     enableSorting: false,
   },
