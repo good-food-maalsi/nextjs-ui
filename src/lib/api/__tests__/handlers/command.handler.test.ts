@@ -78,17 +78,19 @@ describe("Command Handler", () => {
       vi.mocked(ingredientRepository.exists).mockResolvedValue(true);
       vi.mocked(commandRepository.create).mockResolvedValue(mockCommand);
 
-      const result = await commandHandler.createCommand({
-        franchise_id: mockFranchise.id,
-        user_id: "550e8400-e29b-41d4-a716-446655440010",
-        status: CommandStatus.draft,
-        items: [
-          {
-            ingredient_id: mockIngredient.id,
-            quantity: 10,
-          },
-        ],
-      });
+      const result = await commandHandler.createCommand(
+        {
+          user_id: "550e8400-e29b-41d4-a716-446655440010",
+          status: CommandStatus.draft,
+          items: [
+            {
+              ingredient_id: mockIngredient.id,
+              quantity: 10,
+            },
+          ],
+        },
+        { franchiseId: mockFranchise.id }
+      );
 
       expect(result).toEqual(mockCommand);
       expect(franchiseRepository.exists).toHaveBeenCalledWith(mockFranchise.id);
@@ -100,11 +102,13 @@ describe("Command Handler", () => {
       vi.mocked(franchiseRepository.exists).mockResolvedValue(false);
 
       await expect(
-        commandHandler.createCommand({
-          franchise_id: "non-existent-id",
-          user_id: "550e8400-e29b-41d4-a716-446655440010",
-          items: [],
-        })
+        commandHandler.createCommand(
+          {
+            user_id: "550e8400-e29b-41d4-a716-446655440010",
+            items: [],
+          },
+          { franchiseId: "non-existent-id" }
+        )
       ).rejects.toThrow(NotFoundError);
 
       expect(commandRepository.create).not.toHaveBeenCalled();
@@ -115,16 +119,18 @@ describe("Command Handler", () => {
       vi.mocked(ingredientRepository.exists).mockResolvedValue(false);
 
       await expect(
-        commandHandler.createCommand({
-          franchise_id: "550e8400-e29b-41d4-a716-446655440000",
-          user_id: "550e8400-e29b-41d4-a716-446655440010",
-          items: [
-            {
-              ingredient_id: "non-existent-ingredient",
-              quantity: 10,
-            },
-          ],
-        })
+        commandHandler.createCommand(
+          {
+            user_id: "550e8400-e29b-41d4-a716-446655440010",
+            items: [
+              {
+                ingredient_id: "non-existent-ingredient",
+                quantity: 10,
+              },
+            ],
+          },
+          { franchiseId: "550e8400-e29b-41d4-a716-446655440000" }
+        )
       ).rejects.toThrow(NotFoundError);
 
       expect(commandRepository.create).not.toHaveBeenCalled();
@@ -140,11 +146,13 @@ describe("Command Handler", () => {
       vi.mocked(franchiseRepository.exists).mockResolvedValue(true);
       vi.mocked(commandRepository.create).mockResolvedValue(mockCommand);
 
-      const result = await commandHandler.createCommand({
-        franchise_id: "550e8400-e29b-41d4-a716-446655440000",
-        user_id: "550e8400-e29b-41d4-a716-446655440010",
-        items: [],
-      });
+      const result = await commandHandler.createCommand(
+        {
+          user_id: "550e8400-e29b-41d4-a716-446655440010",
+          items: [],
+        },
+        { franchiseId: "550e8400-e29b-41d4-a716-446655440000" }
+      );
 
       expect(result).toEqual(mockCommand);
     });

@@ -1,12 +1,10 @@
-import { PrismaClient } from "@/generated/prisma/client";
+import { prisma } from "@/lib/db/prisma";
 import type { Prisma } from "@/generated/prisma/client";
 import type {
   CreateCategoryInput,
   UpdateCategoryInput,
   CategoryQueryParams,
 } from "../validators/category.validator";
-
-const prisma = new PrismaClient();
 
 export const categoryRepository = {
   /**

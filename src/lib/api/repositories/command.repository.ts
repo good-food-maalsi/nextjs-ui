@@ -1,4 +1,4 @@
-import { PrismaClient } from "@/generated/prisma/client";
+import { prisma } from "@/lib/db/prisma";
 import type { Prisma } from "@/generated/prisma/client";
 import type {
   CreateCommandInput,
@@ -8,8 +8,12 @@ import type {
   AddIngredientToCommandInput,
   UpdateCommandIngredientInput,
 } from "../validators/command.validator";
+import { CommandStatus } from "@/generated/prisma/client";
 
-const prisma = new PrismaClient();
+/** Payload pour create : franchise_id requis (résolu par la route). */
+type CreateCommandData = Omit<CreateCommandInput, "items"> & {
+  franchise_id: string;
+};
 
 export const commandRepository = {
   /**
@@ -124,13 +128,12 @@ export const commandRepository = {
   /**
    * Créer une nouvelle commande avec items
    */
-  async create(data: Omit<CreateCommandInput, "items">, items: CommandItem[]) {
-    return prisma.$transaction(async (tx) => {
-      // Create the command
+  async create(data: CreateCommandData, items: CommandItem[]) {
+    return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const command = await tx.command.create({
         data: {
           franchise_id: data.franchise_id,
-          status: data.status,
+          status: data.status ?? CommandStatus.draft,
           user_id: data.user_id,
         },
       });
@@ -270,7 +273,7 @@ export const commandRepository = {
   async updateIngredientQuantity(
     commandId: string,
     ingredientId: string,
-    data: UpdateCommandIngredientInput
+    data: UpdateCommandIngredientInput,
   ) {
     const commandIngredient = await prisma.commandIngredient.findFirst({
       where: {

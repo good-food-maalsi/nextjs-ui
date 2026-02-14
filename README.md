@@ -41,7 +41,7 @@ L'application sera disponible sur [http://localhost:3000](http://localhost:3000)
 DATABASE_URL="postgresql://user:password@localhost:5432/goodfood"
 JWT_PUBLIC_KEY="votre_clé_publique"
 JWT_PRIVATE_KEY="votre_clé_privée"
-NEXT_PUBLIC_API_URL="http://localhost:3001"
+NEXT_PUBLIC_API_URL="http://localhost:3000/api"
 ```
 
 ## Architecture du Projet

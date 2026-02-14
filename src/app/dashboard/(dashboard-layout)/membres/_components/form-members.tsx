@@ -33,7 +33,7 @@ import { authService } from "@/services/auth.service";
 
 export default function FormMembers() {
   const [selectedRole, setSelectedRole] = useState<
-    "SUPER_ADMIN" | "ADMIN" | "EDITOR" | "READER" | undefined
+    "ADMIN" | "FRANCHISE_OWNER" | "STAFF" | "CUSTOMER" | undefined
   >(undefined);
 
   const form = useForm<MemberForm>({
@@ -135,10 +135,10 @@ export default function FormMembers() {
                     field.onChange(value);
                     setSelectedRole(
                       value as
-                        | "SUPER_ADMIN"
                         | "ADMIN"
-                        | "EDITOR"
-                        | "READER"
+                        | "FRANCHISE_OWNER"
+                        | "STAFF"
+                        | "CUSTOMER"
                         | undefined
                     );
                   }}
@@ -150,8 +150,11 @@ export default function FormMembers() {
                   </FormControl>
                   <SelectContent>
                     <SelectItem value="ADMIN">Administrateur</SelectItem>
-                    <SelectItem value="EDITOR">Éditeur</SelectItem>
-                    <SelectItem value="READER">Lecteur</SelectItem>
+                    <SelectItem value="FRANCHISE_OWNER">
+                      Propriétaire de franchise
+                    </SelectItem>
+                    <SelectItem value="STAFF">Personnel</SelectItem>
+                    <SelectItem value="CUSTOMER">Client</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />

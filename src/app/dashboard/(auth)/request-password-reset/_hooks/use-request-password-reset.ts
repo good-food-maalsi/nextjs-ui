@@ -20,7 +20,7 @@ export const useRequestPasswordReset = () => {
 
   const { mutate, isPending } = useMutation({
     mutationFn: (data: TrequestPasswordResetSchema) =>
-      authService.requestPasswordReset(data),
+      authService.requestPasswordReset(data.email),
     onSuccess: () => {
       form.reset();
       toast.success(

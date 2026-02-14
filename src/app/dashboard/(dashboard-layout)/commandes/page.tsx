@@ -8,71 +8,45 @@ import { PageHeaderActions } from "@/components/ui/page-header-actions";
 
 import { columns } from "./_components/columns";
 import type { Order } from "./_types";
-import {
-  PaymentStatus,
-  OrderStatus,
-  DeliveryStatus,
-} from "./_types";
+import { PaymentStatus, OrderStatus, DeliveryStatus } from "./_types";
+import { useCommands } from "@/hooks/use-commands";
+import type { Command } from "@good-food/contracts/franchise";
 
-// Données de test avec variété pour tester les filtres
-const statutsPaiement: PaymentStatus[] = [
-  PaymentStatus.PENDING,
-  PaymentStatus.COMPLETED,
-  PaymentStatus.FAILED,
-  PaymentStatus.REFUND,
-];
-const statutsCommande: OrderStatus[] = [
-  OrderStatus.DRAFT,
-  OrderStatus.CONFIRMED,
-  OrderStatus.PREPARATION,
-  OrderStatus.READY,
-  OrderStatus.CANCELED,
-];
-const statutsLivraison: DeliveryStatus[] = [
-  DeliveryStatus.AWAITING,
-  DeliveryStatus.COMMAND_RETRIEVED,
-  DeliveryStatus.DELIVERED,
-  DeliveryStatus.UNABLE_TO_DELIVER,
-];
-const clients = [
-  "Alexandre KAKAL",
-  "Marie DUPONT",
-  "Jean MARTIN",
-  "Sophie BERNARD",
-  "Lucas PETIT",
-];
-const dates = [
-  "Aujourd'hui à 14:30",
-  "Hier à 7:10",
-  "Il y a 2 jours",
-  "Il y a 3 jours",
-  "Il y a 1 semaine",
-];
+function mapCommandToOrder(command: Command): Order {
+  const statusMap: Record<string, OrderStatus> = {
+    draft: OrderStatus.DRAFT,
+    confirmed: OrderStatus.CONFIRMED,
+    in_progress: OrderStatus.PREPARATION,
+    delivered: OrderStatus.READY,
+    canceled: OrderStatus.CANCELED,
+  };
 
-const mockOrders: Order[] = Array.from({ length: 25 }, (_, i) => ({
-  id: `order-${i + 1}`,
-  numero: `#${1542 + i}`,
-  date: dates[i % dates.length],
-  client: clients[i % clients.length],
-  total: `${(Math.random() * 200 + 50).toFixed(2)} €`,
-  statutPaiement: statutsPaiement[i % statutsPaiement.length],
-  statutCommande: statutsCommande[i % statutsCommande.length],
-  articles: Math.floor(Math.random() * 5) + 1,
-  statutLivraison: statutsLivraison[i % statutsLivraison.length],
-}));
+  const date = new Date(command.created_at);
+  const formattedDate = date.toLocaleDateString("fr-FR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  return {
+    id: command.id,
+    numero: `#${command.id.slice(-6).toUpperCase()}`,
+    date: formattedDate,
+    client: command.user_id,
+    total: "N/A",
+    statutPaiement: PaymentStatus.PENDING,
+    statutCommande: statusMap[command.status] ?? OrderStatus.DRAFT,
+    articles: 0,
+    statutLivraison: DeliveryStatus.AWAITING,
+  };
+}
 
 export default function CommandesPage() {
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [isError] = React.useState(false);
+  const { data, isLoading, isError } = useCommands({ page: 1, limit: 50 });
 
-  // Simulation du chargement
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, []);
+  const orders: Order[] = (data?.data ?? []).map(mapCommandToOrder);
 
   return (
     <div className="container mx-auto py-6">
@@ -98,7 +72,7 @@ export default function CommandesPage() {
 
       <OrdersDataTable
         columns={columns}
-        data={mockOrders}
+        data={orders}
         isLoading={isLoading}
         isError={isError}
       />

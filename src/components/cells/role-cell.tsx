@@ -19,15 +19,6 @@ interface RoleCellProps {
 
 const getRoleButton = (role: string) => {
   switch (role) {
-    case "SUPER_ADMIN":
-      return (
-        <Button
-          size="sm"
-          className="bg-primary-400 text-sm hover:bg-primary-400/80"
-        >
-          Super-administrateur
-        </Button>
-      );
     case "ADMIN":
       return (
         <Button
@@ -37,22 +28,31 @@ const getRoleButton = (role: string) => {
           Administrateur
         </Button>
       );
-    case "EDITOR":
+    case "FRANCHISE_OWNER":
+      return (
+        <Button
+          size="sm"
+          className="bg-primary-400 text-sm hover:bg-primary-400/80"
+        >
+          Propriétaire de franchise
+        </Button>
+      );
+    case "STAFF":
       return (
         <Button
           size="sm"
           className="bg-tertiary-100 text-sm hover:bg-tertiary-100/80"
         >
-          Éditeur
+          Personnel
         </Button>
       );
-    case "READER":
+    case "CUSTOMER":
       return (
         <Button
           size="sm"
           className="bg-secondary-400 text-sm hover:bg-secondary-400/80"
         >
-          Lecteur
+          Client
         </Button>
       );
     default:
@@ -95,11 +95,14 @@ const RoleCell = ({ role, isEditing, onRoleChange }: RoleCellProps) => {
             <DropdownMenuRadioItem value="ADMIN">
               Administrateur
             </DropdownMenuRadioItem>
-            <DropdownMenuRadioItem value="EDITOR">
-              Éditeur
+            <DropdownMenuRadioItem value="FRANCHISE_OWNER">
+              Propriétaire de franchise
             </DropdownMenuRadioItem>
-            <DropdownMenuRadioItem value="READER">
-              Lecteur
+            <DropdownMenuRadioItem value="STAFF">
+              Personnel
+            </DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value="CUSTOMER">
+              Client
             </DropdownMenuRadioItem>
           </DropdownMenuRadioGroup>
         </DropdownMenuContent>

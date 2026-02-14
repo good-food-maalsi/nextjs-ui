@@ -1,10 +1,6 @@
 import axios from "axios";
 
-import { BASE_URL } from "../constants/global.constants";
-
-const api = axios.create({
-  baseURL: BASE_URL,
+export const gatewayApi = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_GATEWAY_URL || "http://localhost:8080",
   withCredentials: true,
 });
-
-export default api;

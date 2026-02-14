@@ -1,4 +1,4 @@
-import { PrismaClient } from "@/generated/prisma/client";
+import { prisma } from "@/lib/db/prisma";
 import type { Prisma } from "@/generated/prisma/client";
 import type {
   CreateIngredientInput,
@@ -6,8 +6,6 @@ import type {
   IngredientQueryParams,
   CategoryInput,
 } from "../validators/ingredient.validator";
-
-const prisma = new PrismaClient();
 
 export const ingredientRepository = {
   /**
@@ -110,7 +108,7 @@ export const ingredientRepository = {
     data: Omit<CreateIngredientInput, "categories">,
     categories: CategoryInput[]
   ) {
-    return prisma.$transaction(async (tx) => {
+    return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // Create the ingredient
       const ingredient = await tx.ingredient.create({
         data: {
@@ -218,14 +216,14 @@ export const ingredientRepository = {
       },
     });
 
-    return result.map((ic) => ic.category);
+    return result.map((ic: { category: unknown }) => ic.category);
   },
 
   /**
    * Ajouter/créer des catégories à un ingrédient
    */
   async addCategories(ingredientId: string, categories: CategoryInput[]) {
-    return prisma.$transaction(async (tx) => {
+    return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const categoryIds: string[] = [];
 
       for (const cat of categories) {

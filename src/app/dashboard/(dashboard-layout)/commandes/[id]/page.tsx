@@ -1,81 +1,46 @@
 "use client";
 
-import { Edit, Printer } from "lucide-react";
-import Link from "next/link";
+import { Printer } from "lucide-react";
+import { useParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { useCommand, useUpdateCommand } from "@/hooks/use-commands";
+import type { CommandWithItems } from "@good-food/contracts/franchise";
 
-interface OrderDetailPageProps {
-  params: Promise<{ id: string }>;
+const statusLabels: Record<string, string> = {
+  draft: "Brouillon",
+  confirmed: "Confirmée",
+  in_progress: "En préparation",
+  delivered: "Livrée",
+  canceled: "Annulée",
+};
+
+const statusVariants: Record<string, "default" | "pending" | "paid" | "failed"> = {
+  draft: "pending",
+  confirmed: "default",
+  in_progress: "pending",
+  delivered: "paid",
+  canceled: "failed",
+};
+
+function formatDate(value: string | Date): string {
+  const date = new Date(value as string | Date);
+  return date.toLocaleDateString("fr-FR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
-export default function OrderDetailPage({
-  params: _params,
-}: OrderDetailPageProps) {
-  // En production, on fetcherait les donnees avec l'id
-  // const { id } = await params;
+function CommandDetailContent({ command }: { command: CommandWithItems }) {
+  const updateCommand = useUpdateCommand();
 
-  // Donnees mockees pour la demo
-  const order = {
-    id: "1542",
-    date: "7 mars 2025 a 07:48",
-    location: "Rouen",
-    statutPaiement: "Payee",
-    statutCommande: "Non traitee",
-    livreur: {
-      nom: "Jean Blondion",
-    },
-    articles: [
-      {
-        id: "1",
-        nom: "Toast oeuf avocat",
-        sku: "SKU : IF-TOAST-OA",
-        image: "/placeholder-dish.jpg",
-        prix: 8.5,
-        quantite: 1,
-        total: 8.5,
-      },
-      {
-        id: "2",
-        nom: "Burger Normand",
-        sku: "SKU : IF-BURGER-NO",
-        image: "/placeholder-dish.jpg",
-        prix: 11.5,
-        quantite: 2,
-        total: 23.0,
-      },
-    ],
-    sousTotal: 31.5,
-    livraison: {
-      methode: "Velo, Jean Blondion (6.5km en 13min)",
-      cout: 3.5,
-    },
-    taxes: 5.83,
-    total: 35.0,
-    client: {
-      nom: "Guillaume Deman",
-      email: "guillaume.deman@vidaobe.fr",
-      adresse: {
-        rue: "17 rue des Bons Enfants",
-        codePostal: "76000",
-        ville: "Rouen",
-        pays: "France",
-      },
-      telephone: "+33 6 00 00 00 00",
-    },
-    historique: [
-      {
-        evenement:
-          "Un paiement de 35,00 EUR effectue avec une carte Visa se terminant par 1240 a ete traite",
-        heure: "07:48",
-      },
-      {
-        evenement: "Guillaume Deman a passe cette commande",
-        heure: "07:48",
-      },
-    ],
+  const handleUpdateStatus = (status: CommandWithItems["status"]) => {
+    updateCommand.mutate({ id: command.id, dto: { status } });
   };
 
   return (
@@ -86,24 +51,19 @@ export default function OrderDetailPage({
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1 space-y-3">
               <div className="flex items-center gap-3">
-                <h1 className="text-2xl font-semibold">Commande #{order.id}</h1>
-                <StatusBadge variant="paid">{order.statutPaiement}</StatusBadge>
-                <StatusBadge variant="pending">
-                  {order.statutCommande}
+                <h1 className="text-2xl font-semibold">
+                  Commande #{command.id.slice(-6).toUpperCase()}
+                </h1>
+                <StatusBadge variant={statusVariants[command.status] ?? "default"}>
+                  {statusLabels[command.status] ?? command.status}
                 </StatusBadge>
               </div>
               <p className="text-sm text-muted-foreground">
-                {order.date} • {order.location}
+                {formatDate(command.created_at)}
               </p>
             </div>
 
             <div className="flex gap-2">
-              <Button variant="secondaryOutline" size="sm">
-                Rembourser
-              </Button>
-              <Button variant="secondaryOutline" size="sm">
-                Modifier
-              </Button>
               <Button variant="secondaryOutline" size="sm">
                 <Printer className="h-4 w-4" />
                 Imprimer
@@ -114,152 +74,130 @@ export default function OrderDetailPage({
       </div>
 
       {/* Contenu principal */}
-
       <div className="mx-auto py-4 max-w-6xl flex gap-7 flex-col xl:flex-row">
         {/* Colonne principale */}
         <div className="space-y-7 flex-1">
-          {/* Carte commande non traitee */}
+          {/* Carte articles */}
           <Card>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <StatusBadge variant="pending">Non traite (2)</StatusBadge>
-                </div>
+                <StatusBadge variant={statusVariants[command.status] ?? "default"}>
+                  {statusLabels[command.status] ?? command.status} ({command.items.length})
+                </StatusBadge>
               </div>
-              {/* Table structure - Livreur + Articles */}
+
               <div className="border rounded-[16px] overflow-hidden">
-                {/* Premiere ligne - Livreur */}
-                <div className="border-b bg-muted/50 p-4">
-                  <p className="text-sm font-medium">Livreur</p>
-                  <p className="text-sm text-muted-foreground">
-                    {order.livreur.nom}
-                  </p>
-                </div>
-
-                {/* Lignes suivantes - Articles */}
-                {order.articles.map((article) => (
-                  <div
-                    key={article.id}
-                    className="flex items-center gap-4 border-b p-4 last:border-b-0"
-                  >
-                    <div className="relative h-12 w-12 overflow-hidden rounded-md bg-muted">
-                      {/* Placeholder pour l'image */}
-                      <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
-                        IMG
+                {command.items.length === 0 ? (
+                  <div className="p-4 text-sm text-muted-foreground">
+                    Aucun article dans cette commande.
+                  </div>
+                ) : (
+                  command.items.map((item) => (
+                    <div
+                      key={item.id}
+                      className="flex items-center gap-4 border-b p-4 last:border-b-0"
+                    >
+                      <div className="relative h-12 w-12 overflow-hidden rounded-md bg-muted">
+                        <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
+                          IMG
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="flex-1">
-                      <p className="font-medium">{article.nom}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {article.sku}
-                      </p>
-                    </div>
-
-                    <div className="flex items-center gap-4 text-sm">
-                      <span className="text-muted-foreground">
-                        {article.prix.toFixed(2)} EUR
-                      </span>
-                      <span className="text-muted-foreground">
-                        x {article.quantite}
-                      </span>
-                      <span className="min-w-[80px] text-right font-medium">
-                        {article.total.toFixed(2)} EUR
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Boutons d'action */}
-              <div className="flex justify-end gap-2">
-                <Button variant="secondaryOutline">Annuler la commande</Button>
-                <Button variant="secondary">Confirmer la preparation</Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Carte paiement */}
-          <Card>
-            <CardContent className="space-y-4">
-              <StatusBadge variant="paid">Payee</StatusBadge>
-              <div className="border rounded-[16px] overflow-hidden">
-                {/* Première cellule - Sous-total, Livraison, Taxes */}
-                <div className="border-b p-4 space-y-3">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Sous-total</span>
-                    <div className="text-right">
-                      <span className="text-muted-foreground">
-                        {order.articles.length} articles
-                      </span>
-                      <span className="ml-4 font-medium">
-                        {order.sousTotal.toFixed(2)} EUR
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Livraison</span>
-                    <div className="text-right">
-                      <span className="text-muted-foreground">
-                        {order.livraison.methode}
-                      </span>
-                      <span className="ml-4 font-medium">
-                        {order.livraison.cout.toFixed(2)} EUR
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Taxes</span>
-                    <div className="text-right">
-                      <span className="text-muted-foreground">
-                        FR TVA 20% (inclus)
-                      </span>
-                      <span className="ml-4 font-medium">
-                        {order.taxes.toFixed(2)} EUR
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Deuxième cellule - Total */}
-                <div className="flex justify-between p-4 font-semibold">
-                  <span>Total</span>
-                  <span>{order.total.toFixed(2)} EUR</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Calendrier */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Calendrier</CardTitle>
-            </CardHeader>
-
-            <CardContent>
-              <div className="space-y-4">
-                <div className="text-sm font-medium">Aujourd'hui</div>
-
-                <div className="space-y-4">
-                  {order.historique.map((event, index) => (
-                    <div key={index} className="flex gap-3">
-                      <div className="flex flex-col items-center">
-                        <div className="h-2 w-2 rounded-full bg-foreground" />
-                        {index < order.historique.length - 1 && (
-                          <div className="w-px flex-1 bg-border" />
-                        )}
-                      </div>
-                      <div className="flex-1 pb-4">
-                        <p className="text-sm">{event.evenement}</p>
+                      <div className="flex-1">
+                        <p className="font-medium">
+                          {item.ingredient?.name ?? item.ingredient_id}
+                        </p>
                         <p className="text-sm text-muted-foreground">
-                          {event.heure}
+                          ID: {item.ingredient_id.slice(0, 8)}...
                         </p>
                       </div>
+
+                      <div className="flex items-center gap-4 text-sm">
+                        <span className="text-muted-foreground">
+                          x {item.quantity}
+                        </span>
+                      </div>
                     </div>
-                  ))}
+                  ))
+                )}
+              </div>
+
+              {/* Actions de statut */}
+              <div className="flex justify-end gap-2">
+                {command.status !== "canceled" && (
+                  <Button
+                    variant="secondaryOutline"
+                    onClick={() => handleUpdateStatus("canceled")}
+                    disabled={updateCommand.isPending}
+                  >
+                    Annuler la commande
+                  </Button>
+                )}
+                {command.status === "draft" && (
+                  <Button
+                    variant="secondary"
+                    onClick={() => handleUpdateStatus("confirmed")}
+                    disabled={updateCommand.isPending}
+                  >
+                    Confirmer
+                  </Button>
+                )}
+                {command.status === "confirmed" && (
+                  <Button
+                    variant="secondary"
+                    onClick={() => handleUpdateStatus("in_progress")}
+                    disabled={updateCommand.isPending}
+                  >
+                    Démarrer la préparation
+                  </Button>
+                )}
+                {command.status === "in_progress" && (
+                  <Button
+                    variant="secondary"
+                    onClick={() => handleUpdateStatus("delivered")}
+                    disabled={updateCommand.isPending}
+                  >
+                    Marquer comme livrée
+                  </Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Carte historique */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Historique</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex gap-3">
+                  <div className="flex flex-col items-center">
+                    <div className="h-2 w-2 rounded-full bg-foreground" />
+                    <div className="w-px flex-1 bg-border" />
+                  </div>
+                  <div className="flex-1 pb-4">
+                    <p className="text-sm">Commande créée</p>
+                    <p className="text-sm text-muted-foreground">
+                      {formatDate(command.created_at)}
+                    </p>
+                  </div>
                 </div>
+                {command.updated_at !== command.created_at && (
+                  <div className="flex gap-3">
+                    <div className="flex flex-col items-center">
+                      <div className="h-2 w-2 rounded-full bg-foreground" />
+                    </div>
+                    <div className="flex-1 pb-4">
+                      <p className="text-sm">
+                        Statut mis à jour : {statusLabels[command.status] ?? command.status}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {formatDate(command.updated_at)}
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -267,83 +205,62 @@ export default function OrderDetailPage({
 
         {/* Sidebar */}
         <div className="space-y-7 min-w-[290px] xl:min-w-[380px]">
-          {/* Notes */}
-          <Card>
-            <div className="flex items-center justify-between px-5">
-              <CardTitle>Notes</CardTitle>
-              <Button variant="ghost" size="icon" className="h-6 w-6">
-                <Edit className="h-4 w-4" />
-              </Button>
-            </div>
-
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Aucun commentaire du client
-              </p>
-            </CardContent>
-          </Card>
-
           <Card className="px-5">
             <div>
-              <CardTitle>Client</CardTitle>
-
-              <div className="flex items-center justify-between mt-1.5">
-                <Link
-                  href="#"
-                  className="text-secondary text-sm hover:underline"
-                >
-                  {order.client.nom}
-                </Link>
-              </div>
+              <CardTitle>Informations</CardTitle>
             </div>
-
-            <div className="flex flex-col">
-              <div className="flex items-center justify-between">
-                <CardTitle>Informations de contact</CardTitle>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <Edit className="h-4 w-4" />
-                </Button>
+            <CardContent className="px-0 space-y-3">
+              <div>
+                <p className="text-sm text-muted-foreground">ID Commande</p>
+                <p className="text-sm font-mono">{command.id}</p>
               </div>
-
-              <Link
-                href={`mailto:${order.client.email}`}
-                className="text-sm text-secondary hover:underline"
-              >
-                {order.client.email}
-              </Link>
-              <Link
-                href={`tel:${order.client.telephone}`}
-                className="text-sm text-secondary hover:underline"
-              >
-                {order.client.telephone}
-              </Link>
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between">
-                <CardTitle>Adresse de livraison</CardTitle>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <Edit className="h-4 w-4" />
-                </Button>
+              <div>
+                <p className="text-sm text-muted-foreground">Franchise</p>
+                <p className="text-sm font-mono">{command.franchise_id}</p>
               </div>
-              <div className="text-sm">
-                <p>{order.client.adresse.rue}</p>
-                <p>
-                  {order.client.adresse.codePostal} {order.client.adresse.ville}
-                </p>
-                <p>{order.client.adresse.pays}</p>
+              <div>
+                <p className="text-sm text-muted-foreground">Client (ID)</p>
+                <p className="text-sm font-mono">{command.user_id}</p>
               </div>
-
-              <Button
-                variant="link"
-                className="h-auto p-0 text-sm text-secondary"
-              >
-                Voir la carte
-              </Button>
-            </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Articles</p>
+                <p className="text-sm font-medium">{command.items.length} article(s)</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Dernière mise à jour</p>
+                <p className="text-sm">{formatDate(command.updated_at)}</p>
+              </div>
+            </CardContent>
           </Card>
         </div>
       </div>
     </div>
   );
+}
+
+export default function OrderDetailPage() {
+  const params = useParams();
+  const id = params.id as string;
+
+  const { data: command, isLoading, isError } = useCommand(id);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <p className="text-muted-foreground">Chargement de la commande...</p>
+      </div>
+    );
+  }
+
+  if (isError || !command) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <p className="text-destructive">
+          Commande introuvable ou erreur lors du chargement.
+        </p>
+      </div>
+    );
+  }
+
+  return <CommandDetailContent command={command} />;
 }
