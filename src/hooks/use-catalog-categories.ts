@@ -4,7 +4,7 @@ import { catalogCategoryService } from "@/services/catalog-category.service";
 import type {
   CatalogCategory,
   UpdateCatalogCategoryInput,
-} from "@good-food/contracts/catalog";
+} from "@good-food-maalsi/contracts/catalog";
 
 // Query keys
 export const catalogCategoryKeys = {

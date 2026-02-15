@@ -6,7 +6,7 @@ import type {
   UpdateDishInput,
   CreateDishIngredientInput,
   UpdateDishIngredientInput,
-} from "@good-food/contracts/catalog";
+} from "@good-food-maalsi/contracts/catalog";
 
 // Query keys
 export const dishKeys = {

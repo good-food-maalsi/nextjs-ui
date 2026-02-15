@@ -3,7 +3,7 @@ import type {
   Menu,
   CreateMenuInput,
   UpdateMenuInput,
-} from "@good-food/contracts/catalog";
+} from "@good-food-maalsi/contracts/catalog";
 
 async function findAll(): Promise<Menu[]> {
   const response = await catalogClient.menus.getAll({});

@@ -3,7 +3,7 @@ import type {
   Supplier,
   CreateSupplierInput,
   UpdateSupplierInput,
-} from "@good-food/contracts/franchise";
+} from "@good-food-maalsi/contracts/franchise";
 
 interface SuppliersResponse {
   data: Supplier[];

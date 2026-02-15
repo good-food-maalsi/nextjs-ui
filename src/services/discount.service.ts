@@ -3,7 +3,7 @@ import type {
   Discount,
   CreateDiscountInput,
   UpdateDiscountInput,
-} from "@good-food/contracts/catalog";
+} from "@good-food-maalsi/contracts/catalog";
 
 async function findAll(): Promise<Discount[]> {
   const response = await catalogClient.discounts.getAll({});

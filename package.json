@@ -22,7 +22,8 @@
     "test:all": "pnpm test:backend && pnpm test:integration",
     "db:test:up": "docker-compose -f docker-compose.test.yml up -d",
     "db:test:down": "docker-compose -f docker-compose.test.yml down -v",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:seed": "tsx prisma/seed.ts",
+    "install:with-auth": "node -e \"const fs=require('fs'),path=require('path');const p=path.join(process.cwd(),'.env');if(fs.existsSync(p)){fs.readFileSync(p,'utf8').split(/\\\\n/).forEach(l=>{const m=l.match(/^NPM_TOKEN=(.*)$/);if(m)process.env.NPM_TOKEN=m[1].trim().replace(/^['\\\"]|['\\\"]$/g,'');});}require('child_process').spawnSync('pnpm',['install','--no-frozen-lockfile'],{stdio:'inherit',env:process.env});\""
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -43,7 +44,7 @@
     "@tanstack/react-query": "^5.90.20",
     "@tanstack/react-query-devtools": "^5.91.3",
     "@tanstack/react-table": "^8.21.3",
-    "@good-food/contracts": "file:../good-food-contracts",
+    "@good-food-maalsi/contracts": "^1.0.0",
     "@ts-rest/core": "^3.52.1",
     "@ts-rest/react-query": "^3.52.1",
     "axios": "^1.13.4",

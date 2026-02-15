@@ -6,7 +6,7 @@ import type {
   DishIngredient,
   CreateDishIngredientInput,
   UpdateDishIngredientInput,
-} from "@good-food/contracts/catalog";
+} from "@good-food-maalsi/contracts/catalog";
 
 async function findAll(params: { menuId?: string } = {}): Promise<Dish[]> {
   const response = await catalogClient.dishes.getAll({ query: params });

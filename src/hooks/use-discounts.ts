@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { discountService } from "@/services/discount.service";
-import type { Discount, UpdateDiscountInput } from "@good-food/contracts/catalog";
+import type { Discount, UpdateDiscountInput } from "@good-food-maalsi/contracts/catalog";
 
 // Query keys
 export const discountKeys = {

@@ -1,7 +1,7 @@
 import { initClient } from "@ts-rest/core";
-import { franchiseContract } from "@good-food/contracts/franchise";
-import { authContract } from "@good-food/contracts/auth";
-import { catalogContract } from "@good-food/contracts/catalog";
+import { franchiseContract } from "@good-food-maalsi/contracts/franchise";
+import { authContract } from "@good-food-maalsi/contracts/auth";
+import { catalogContract } from "@good-food-maalsi/contracts/catalog";
 
 const gatewayUrl =
   process.env.NEXT_PUBLIC_GATEWAY_URL || "http://localhost:8080";

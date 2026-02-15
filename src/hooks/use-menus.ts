@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { menuService } from "@/services/menu.service";
-import type { Menu, UpdateMenuInput } from "@good-food/contracts/catalog";
+import type { Menu, UpdateMenuInput } from "@good-food-maalsi/contracts/catalog";
 
 // Query keys
 export const menuKeys = {

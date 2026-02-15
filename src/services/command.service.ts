@@ -5,7 +5,7 @@ import type {
   CreateCommandInput,
   UpdateCommandInput,
   CommandQueryParams,
-} from "@good-food/contracts/franchise";
+} from "@good-food-maalsi/contracts/franchise";
 
 const baseURL = "/franchise/commands";
 

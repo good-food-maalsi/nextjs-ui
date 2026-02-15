@@ -3,7 +3,7 @@ import type {
   CatalogCategory,
   CreateCatalogCategoryInput,
   UpdateCatalogCategoryInput,
-} from "@good-food/contracts/catalog";
+} from "@good-food-maalsi/contracts/catalog";
 
 async function findAll(): Promise<CatalogCategory[]> {
   const response = await catalogClient.categories.getAll({});

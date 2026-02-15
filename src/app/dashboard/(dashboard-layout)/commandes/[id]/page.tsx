@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { useCommand, useUpdateCommand } from "@/hooks/use-commands";
-import type { CommandWithItems } from "@good-food/contracts/franchise";
+import type { CommandWithItems } from "@good-food-maalsi/contracts/franchise";
 
 const statusLabels: Record<string, string> = {
   draft: "Brouillon",
