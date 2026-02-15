@@ -1,13 +1,19 @@
 import { importSPKI, jwtVerify } from "jose";
 import type { NextResponse } from "next/server";
+import axios from "axios";
 
 import { gatewayApi } from "@/lib/config/api.config";
 import { SESSION_MAX_AGE } from "@/lib/constants/auth.constants";
 import type { TrequestPasswordResetSchema } from "@/lib/schemas/auth.schema";
 import type { MemberForm } from "@/lib/types/user.types";
 import { decodeBase64Key } from "@/lib/utils/token.utils";
-
 import { DOCKER_SERVICE_BASE_URL } from "../lib/constants/global.constants";
+
+/** Client pour les appels same-origin (cookies sur 3000) */
+const nextApi = axios.create({
+  baseURL: "",
+  withCredentials: true,
+});
 
 // DTOs et types de réponse (auth via gateway)
 export interface LoginDto {
@@ -33,16 +39,16 @@ export interface AuthResponse {
 
 export const authService = {
   /**
-   * Login via auth-service (gateway).
-   * Les cookies accessToken/refreshToken sont gérés côté backend.
+   * Login via API Next.js (proxy) pour que les cookies soient sur la même origine.
+   * Sans ce proxy, les cookies du gateway (8080) ne sont pas envoyés au dashboard (3000).
    */
   login: async (dto: LoginDto): Promise<AuthResponse> => {
-    const { data } = await gatewayApi.post("/auth/login", dto);
+    const { data } = await nextApi.post("/api/auth/login", dto);
     return data;
   },
 
   logout: async (): Promise<{ message: string }> => {
-    const { data } = await gatewayApi.get("/auth/logout");
+    const { data } = await nextApi.get("/api/auth/logout");
     return data;
   },
 
@@ -84,10 +90,10 @@ export const authService = {
   },
 
   /**
-   * Refresh du token d'accès (cookies envoyés automatiquement).
+   * Refresh du token d'accès (cookies same-origin envoyés automatiquement).
    */
   refresh: async (): Promise<AuthResponse> => {
-    const { data } = await gatewayApi.post("/auth/refresh");
+    const { data } = await nextApi.post("/api/auth/refresh");
     return data;
   },
 

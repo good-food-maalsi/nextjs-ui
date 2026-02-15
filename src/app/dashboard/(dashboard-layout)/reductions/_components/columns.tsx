@@ -45,16 +45,16 @@ export const discountColumnLabels: Record<string, string> = {
 };
 
 // Fonction pour déterminer la variante du badge de statut
-const getStatusVariant = (status: DiscountStatus): "success" | "warning" | "default" => {
+const getStatusVariant = (status: DiscountStatus): "confirmed" | "pending" | "cancelled" => {
   switch (status) {
     case "active":
-      return "success";
+      return "confirmed";
     case "scheduled":
-      return "warning";
+      return "pending";
     case "expired":
-      return "default";
+      return "cancelled";
     default:
-      return "default";
+      return "cancelled";
   }
 };
 

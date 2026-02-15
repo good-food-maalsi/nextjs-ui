@@ -1,44 +1,17 @@
-export interface Ingredient {
-  id: string;
-  name: string;
-  description: string | null;
-  supplier_id: string;
-  unit_price: number;
-  created_at: string;
-  updated_at: string;
-  supplier: {
-    id: string;
-    name: string;
-    email: string;
-  };
-}
+// Backend types — re-exported from contracts (single source of truth)
+export type {
+  CreateIngredientInput,
+  Ingredient,
+  IngredientQueryParams,
+  IngredientWithCategories,
+  UpdateIngredientInput,
+} from "@good-food-maalsi/contracts/franchise";
 
+// Frontend display type (French labels for UI) — UI-specific, not in contracts
 export interface IngredientDisplay {
   id: string;
   nom: string;
   description: string | null;
   fournisseur: string;
   prix_unitaire: number;
-}
-
-export interface CreateIngredientInput {
-  name: string;
-  description?: string;
-  supplier_id: string;
-  unit_price: number;
-}
-
-export interface UpdateIngredientInput {
-  name?: string;
-  description?: string;
-  supplier_id?: string;
-  unit_price?: number;
-}
-
-export interface IngredientsResponse {
-  data: Ingredient[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
 }

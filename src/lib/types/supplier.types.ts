@@ -1,17 +1,12 @@
-// Backend API response type (English field names)
-export interface Supplier {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  logo_url: string | null;
-  latitude: number | null;
-  longitude: number | null;
-  created_at: string;
-  updated_at: string;
-}
+// Backend types — re-exported from contracts (single source of truth)
+export type {
+  CreateSupplierInput,
+  Supplier,
+  SupplierQueryParams,
+  UpdateSupplierInput,
+} from "@good-food-maalsi/contracts/franchise";
 
-// Frontend display type (French labels for UI)
+// Frontend display type (French labels for UI) — UI-specific, not in contracts
 export interface SupplierDisplay {
   id: string;
   nom: string; // from name
@@ -19,25 +14,4 @@ export interface SupplierDisplay {
   telephone: string; // from phone
   email: string;
   logo_url: string | null;
-}
-
-// API request types
-export interface CreateSupplierInput {
-  name: string;
-  email: string;
-  phone: string;
-  logo_url?: string;
-  latitude?: number;
-  longitude?: number;
-}
-
-export type UpdateSupplierInput = Partial<CreateSupplierInput>;
-
-// API response with pagination
-export interface SuppliersResponse {
-  data: Supplier[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
 }

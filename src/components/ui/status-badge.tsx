@@ -65,7 +65,7 @@ const statusBadgeVariants = cva(
     defaultVariants: {
       variant: "processed",
     },
-  }
+  },
 );
 
 export type StatusBadgeVariant = VariantProps<
@@ -73,7 +73,8 @@ export type StatusBadgeVariant = VariantProps<
 >["variant"];
 
 interface StatusBadgeProps
-  extends React.ComponentProps<"span">,
+  extends
+    React.ComponentProps<"span">,
     VariantProps<typeof statusBadgeVariants> {}
 
 function StatusBadge({ className, variant, ...props }: StatusBadgeProps) {
@@ -106,6 +107,9 @@ export function getStatusVariant(status: string): StatusBadgeVariant {
     command_retrieved: "retrieved",
     delivered: "delivered",
     unable_to_deliver: "undeliverable",
+    // Generic availability
+    available: "completed",
+    unavailable: "cancelled",
   };
 
   return statusMap[status.toLowerCase()] || "processed";

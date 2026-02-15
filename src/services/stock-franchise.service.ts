@@ -1,51 +1,67 @@
-import { gatewayApi } from "@/lib/config/api.config";
+import { franchiseClient } from "@/lib/config/ts-rest-client";
 import type {
-  StockFranchise,
-  StockFranchiseResponse,
+  StockWithIngredient,
   CreateStockFranchiseInput,
   UpdateStockFranchiseInput,
-} from "@/lib/types/stock-franchise.types";
+} from "@good-food-maalsi/contracts/franchise";
 
-interface IStockFranchiseService {
-  findAll: (params: {
-    page?: number;
-    limit?: number;
-    search?: string;
-    franchise_id: string;
-  }) => Promise<StockFranchiseResponse>;
-  findById: (id: string) => Promise<StockFranchise>;
-  create: (data: CreateStockFranchiseInput) => Promise<StockFranchise>;
-  update: (
-    id: string,
-    data: UpdateStockFranchiseInput,
-  ) => Promise<StockFranchise>;
-  delete: (id: string) => Promise<void>;
+interface StockFranchiseResponse {
+  data: StockWithIngredient[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
 }
 
-const baseURL = "/franchise/stocks";
+async function findAll(params: {
+  page?: number;
+  limit?: number;
+  search?: string;
+  franchise_id: string;
+}): Promise<StockFranchiseResponse> {
+  const response = await franchiseClient.stocks.getAll({ query: params });
+  if (response.status !== 200) throw new Error("Failed to fetch stocks");
+  return response.body as StockFranchiseResponse;
+}
 
-export const stockFranchiseService: IStockFranchiseService = {
-  async findAll(params) {
-    const { data } = await gatewayApi.get(baseURL, { params });
-    return data;
-  },
+async function findById(id: string): Promise<StockWithIngredient> {
+  const response = await franchiseClient.stocks.getById({ params: { id } });
+  if (response.status !== 200) throw new Error("Stock not found");
+  return response.body as StockWithIngredient;
+}
 
-  async findById(id: string) {
-    const { data } = await gatewayApi.get(`${baseURL}/${id}`);
-    return data;
-  },
+async function create(
+  data: CreateStockFranchiseInput,
+): Promise<StockWithIngredient> {
+  const response = await franchiseClient.stocks.create({ body: data });
+  if (response.status !== 201) throw new Error("Failed to create stock");
+  return response.body as StockWithIngredient;
+}
 
-  async create(stockData: CreateStockFranchiseInput) {
-    const { data } = await gatewayApi.post(baseURL, stockData);
-    return data;
-  },
+async function update(
+  id: string,
+  data: UpdateStockFranchiseInput,
+): Promise<StockWithIngredient> {
+  const response = await franchiseClient.stocks.update({
+    params: { id },
+    body: data,
+  });
+  if (response.status !== 200) throw new Error("Failed to update stock");
+  return response.body as StockWithIngredient;
+}
 
-  async update(id: string, stockData: UpdateStockFranchiseInput) {
-    const { data } = await gatewayApi.put(`${baseURL}/${id}`, stockData);
-    return data;
-  },
+async function deleteStock(id: string): Promise<void> {
+  const response = await franchiseClient.stocks.delete({
+    params: { id },
+    body: {},
+  });
+  if (response.status !== 200) throw new Error("Failed to delete stock");
+}
 
-  async delete(id: string) {
-    await gatewayApi.delete(`${baseURL}/${id}`);
-  },
+export const stockFranchiseService = {
+  findAll,
+  findById,
+  create,
+  update,
+  delete: deleteStock,
 };

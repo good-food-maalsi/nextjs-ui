@@ -1,47 +1,66 @@
-import { gatewayApi } from "@/lib/config/api.config";
+import { franchiseClient } from "@/lib/config/ts-rest-client";
 import type {
   Supplier,
-  SuppliersResponse,
   CreateSupplierInput,
   UpdateSupplierInput,
-} from "@/lib/types/supplier.types";
+} from "@good-food-maalsi/contracts/franchise";
 
-interface ISupplierService {
-  findAll: (params?: {
+interface SuppliersResponse {
+  data: Supplier[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+async function findAll(
+  params: {
     page?: number;
     limit?: number;
     search?: string;
-  }) => Promise<SuppliersResponse>;
-  findById: (id: string) => Promise<Supplier>;
-  create: (data: CreateSupplierInput) => Promise<Supplier>;
-  update: (id: string, data: UpdateSupplierInput) => Promise<Supplier>;
-  delete: (id: string) => Promise<void>;
+  } = {},
+): Promise<SuppliersResponse> {
+  const response = await franchiseClient.suppliers.getAll({ query: params });
+  if (response.status !== 200) throw new Error("Failed to fetch suppliers");
+  return response.body as SuppliersResponse;
 }
 
-const baseURL = "/franchise/suppliers";
+async function findById(id: string): Promise<Supplier> {
+  const response = await franchiseClient.suppliers.getById({ params: { id } });
+  if (response.status !== 200) throw new Error("Supplier not found");
+  return response.body as Supplier;
+}
 
-export const supplierService: ISupplierService = {
-  async findAll(params = {}) {
-    const { data } = await gatewayApi.get(baseURL, { params });
-    return data;
-  },
+async function create(data: CreateSupplierInput): Promise<Supplier> {
+  const response = await franchiseClient.suppliers.create({ body: data });
+  if (response.status !== 201) throw new Error("Failed to create supplier");
+  return response.body as Supplier;
+}
 
-  async findById(id: string) {
-    const { data } = await gatewayApi.get(`${baseURL}/${id}`);
-    return data;
-  },
+async function update(
+  id: string,
+  data: UpdateSupplierInput,
+): Promise<Supplier> {
+  const response = await franchiseClient.suppliers.update({
+    params: { id },
+    body: data,
+  });
+  if (response.status !== 200) throw new Error("Failed to update supplier");
+  return response.body as Supplier;
+}
 
-  async create(supplierData: CreateSupplierInput) {
-    const { data } = await gatewayApi.post(baseURL, supplierData);
-    return data;
-  },
+async function deleteSupplier(id: string): Promise<void> {
+  const response = await franchiseClient.suppliers.delete({
+    params: { id },
+    body: {},
+  });
+  if (response.status !== 200) throw new Error("Failed to delete supplier");
+}
 
-  async update(id: string, supplierData: UpdateSupplierInput) {
-    const { data } = await gatewayApi.put(`${baseURL}/${id}`, supplierData);
-    return data;
-  },
-
-  async delete(id: string) {
-    await gatewayApi.delete(`${baseURL}/${id}`);
-  },
+export const supplierService = {
+  findAll,
+  findById,
+  create,
+  update,
+  delete: deleteSupplier,
 };

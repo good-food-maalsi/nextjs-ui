@@ -2,10 +2,17 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ingredientService } from "@/services/ingredient.service";
 import type {
-  Ingredient,
-  IngredientsResponse,
+  IngredientWithCategories,
   UpdateIngredientInput,
-} from "@/lib/types/ingredient.types";
+} from "@good-food-maalsi/contracts/franchise";
+
+interface IngredientsResponse {
+  data: IngredientWithCategories[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
 
 // Query keys structure
 export const ingredientKeys = {
@@ -66,17 +73,17 @@ export function useCreateIngredient() {
                 description: newIngredient.description || null,
                 created_at: new Date().toISOString(),
                 updated_at: new Date().toISOString(),
-                supplier: {
-                  id: newIngredient.supplier_id,
-                  name: "Loading...",
-                  email: "",
-                },
+                categories: (newIngredient.categories ?? []).map((c) =>
+                  "id" in c
+                    ? { id: c.id ?? "", name: "" }
+                    : { id: "", name: c.name ?? "" },
+                ),
               },
               ...old.data,
             ],
             total: old.total + 1,
           };
-        }
+        },
       );
 
       return { previousIngredients };
@@ -109,14 +116,16 @@ export function useUpdateIngredient() {
       await queryClient.cancelQueries({ queryKey: ingredientKeys.lists() });
 
       const previousIngredient = queryClient.getQueryData(
-        ingredientKeys.detail(id)
+        ingredientKeys.detail(id),
       );
       const previousLists = queryClient.getQueriesData({
         queryKey: ingredientKeys.lists(),
       });
 
-      queryClient.setQueryData<Ingredient>(ingredientKeys.detail(id), (old) =>
-        old ? { ...old, ...data, updated_at: new Date().toISOString() } : old
+      queryClient.setQueryData<IngredientWithCategories>(
+        ingredientKeys.detail(id),
+        (old) =>
+          old ? { ...old, ...data, updated_at: new Date().toISOString() } : old,
       );
 
       queryClient.setQueriesData<IngredientsResponse>(
@@ -127,11 +136,15 @@ export function useUpdateIngredient() {
             ...old,
             data: old.data.map((ingredient) =>
               ingredient.id === id
-                ? { ...ingredient, ...data, updated_at: new Date().toISOString() }
-                : ingredient
+                ? {
+                    ...ingredient,
+                    ...data,
+                    updated_at: new Date().toISOString(),
+                  }
+                : ingredient,
             ),
           };
-        }
+        },
       );
 
       return { previousIngredient, previousLists };
@@ -143,7 +156,7 @@ export function useUpdateIngredient() {
       if (context?.previousIngredient) {
         queryClient.setQueryData(
           ingredientKeys.detail(id),
-          context.previousIngredient
+          context.previousIngredient,
         );
       }
       if (context?.previousLists) {
@@ -181,7 +194,7 @@ export function useDeleteIngredient() {
             data: old.data.filter((ingredient) => ingredient.id !== id),
             total: old.total - 1,
           };
-        }
+        },
       );
 
       return { previousLists };

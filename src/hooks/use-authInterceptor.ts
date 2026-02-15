@@ -35,10 +35,11 @@ export const useAuthInterceptors = () => {
         if (
           is401 &&
           !originalRequest._retry &&
-          !originalRequest.url?.includes("/auth/refresh")
+          !originalRequest.url?.includes("/auth/refresh") &&
+          !originalRequest.url?.includes("/api/auth/")
         ) {
           try {
-            await gatewayApi.post("/auth/refresh");
+            await authService.refresh();
             originalRequest._retry = true;
             return axiosInstance(originalRequest);
           } catch (refreshError) {

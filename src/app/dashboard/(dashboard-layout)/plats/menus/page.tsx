@@ -9,62 +9,31 @@ import { MenusDataTable } from "./_components/menus-data-table";
 import { columns } from "./_components/columns";
 import type { Menu } from "./_types";
 import { MenuAvailability } from "./_types";
+import { useMenus } from "@/hooks/use-menus";
 
-// Données mockées pour la démo
-const menuNames = [
-  "Menu Big King",
-  "Menu WHOPPER",
-  "Menu Chicken Louisiane",
-  "Menu Master Cantal Bacon",
-  "Menu Double Steakhouse",
-  "Menu Crispy Chicken",
-  "Menu Big Fish",
-  "Menu Végétarien",
-  "Menu Kids",
-  "Menu Petit Déjeuner",
-];
-
-const categories = [
-  "Menu Signature",
-  "Menu Classique",
-  "Menu Premium",
-  "Menu Enfant",
-  "Menu Petit Déjeuner",
-];
-
-const descriptions = [
-  "Un menu complet avec frites et boisson",
-  "Notre menu phare avec des ingrédients de qualité",
-  "Un menu gourmand pour les grands appétits",
-  "Menu adapté pour les enfants",
-  "Commencez bien la journée avec ce menu",
-];
-
-// Génération des données mockées
-const mockMenus: Menu[] = Array.from({ length: 25 }, (_, i) => ({
-  id: `menu-${i + 1}`,
-  name: menuNames[i % menuNames.length],
-  description: descriptions[i % descriptions.length],
-  category: categories[i % categories.length],
-  availability:
-    i % 5 === 0 ? MenuAvailability.UNAVAILABLE : MenuAvailability.AVAILABLE,
-  dishCount: Math.floor(Math.random() * 5) + 2,
-  discountCount: i % 3 === 0 ? Math.floor(Math.random() * 2) + 1 : 0,
-  createdAt: "08/03/2025",
-}));
+function formatDate(date: string | Date | undefined): string {
+  if (!date) return "-";
+  return new Date(date).toLocaleDateString("fr-FR");
+}
 
 export default function MenusPage() {
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [isError] = React.useState(false);
+  const { data: apiMenus, isLoading, isError } = useMenus();
 
-  // Simulation du chargement
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, []);
+  const menus: Menu[] = React.useMemo(() => {
+    if (!apiMenus) return [];
+    return apiMenus.map((m) => ({
+      id: m.id,
+      name: m.name,
+      description: m.description ?? "-",
+      category: "-",
+      availability: (m.availability ?? true)
+        ? MenuAvailability.AVAILABLE
+        : MenuAvailability.UNAVAILABLE,
+      dishCount: 0,
+      discountCount: 0,
+      createdAt: formatDate(m.createdAt),
+    }));
+  }, [apiMenus]);
 
   return (
     <div className="container mx-auto py-6">
@@ -91,7 +60,7 @@ export default function MenusPage() {
 
       <MenusDataTable
         columns={columns}
-        data={mockMenus}
+        data={menus}
         isLoading={isLoading}
         isError={isError}
       />

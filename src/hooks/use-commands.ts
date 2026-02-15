@@ -7,7 +7,7 @@ import type {
   CommandQueryParams,
   Command,
   CommandWithItems,
-} from "@good-food/contracts/franchise";
+} from "@good-food-maalsi/contracts/franchise";
 
 // Query keys
 export const commandKeys = {

@@ -1,53 +1,34 @@
+/**
+ * Base API error with HTTP status code
+ */
 export class ApiError extends Error {
   constructor(
-    public statusCode: number,
     message: string,
-    public code?: string
+    public readonly statusCode: number
   ) {
     super(message);
-    this.name = "ApiError";
-    Error.captureStackTrace(this, this.constructor);
+    this.name = this.constructor.name;
+    Object.setPrototypeOf(this, new.target.prototype);
   }
 }
 
+/** 400 Bad Request */
 export class BadRequestError extends ApiError {
-  constructor(message: string = "Bad Request", code?: string) {
-    super(400, message, code);
-    this.name = "BadRequestError";
+  constructor(message: string) {
+    super(message, 400);
   }
 }
 
-export class UnauthorizedError extends ApiError {
-  constructor(message: string = "Unauthorized", code?: string) {
-    super(401, message, code);
-    this.name = "UnauthorizedError";
-  }
-}
-
-export class ForbiddenError extends ApiError {
-  constructor(message: string = "Forbidden", code?: string) {
-    super(403, message, code);
-    this.name = "ForbiddenError";
-  }
-}
-
+/** 404 Not Found */
 export class NotFoundError extends ApiError {
-  constructor(message: string = "Resource not found", code?: string) {
-    super(404, message, code);
-    this.name = "NotFoundError";
+  constructor(message: string) {
+    super(message, 404);
   }
 }
 
+/** 409 Conflict */
 export class ConflictError extends ApiError {
-  constructor(message: string = "Conflict", code?: string) {
-    super(409, message, code);
-    this.name = "ConflictError";
-  }
-}
-
-export class InternalServerError extends ApiError {
-  constructor(message: string = "Internal Server Error", code?: string) {
-    super(500, message, code);
-    this.name = "InternalServerError";
+  constructor(message: string) {
+    super(message, 409);
   }
 }

@@ -3,9 +3,16 @@ import { toast } from "sonner";
 import { supplierService } from "@/services/supplier.service";
 import type {
   Supplier,
-  SuppliersResponse,
   UpdateSupplierInput,
-} from "@/lib/types/supplier.types";
+} from "@good-food-maalsi/contracts/franchise";
+
+interface SuppliersResponse {
+  data: Supplier[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
 
 // Query keys structure
 export const supplierKeys = {
@@ -73,7 +80,7 @@ export function useCreateSupplier() {
             ],
             total: old.total + 1,
           };
-        }
+        },
       );
 
       return { previousSuppliers };
@@ -106,14 +113,14 @@ export function useUpdateSupplier() {
       await queryClient.cancelQueries({ queryKey: supplierKeys.lists() });
 
       const previousSupplier = queryClient.getQueryData(
-        supplierKeys.detail(id)
+        supplierKeys.detail(id),
       );
       const previousLists = queryClient.getQueriesData({
         queryKey: supplierKeys.lists(),
       });
 
       queryClient.setQueryData<Supplier>(supplierKeys.detail(id), (old) =>
-        old ? { ...old, ...data, updated_at: new Date().toISOString() } : old
+        old ? { ...old, ...data, updated_at: new Date().toISOString() } : old,
       );
 
       queryClient.setQueriesData<SuppliersResponse>(
@@ -125,10 +132,10 @@ export function useUpdateSupplier() {
             data: old.data.map((supplier) =>
               supplier.id === id
                 ? { ...supplier, ...data, updated_at: new Date().toISOString() }
-                : supplier
+                : supplier,
             ),
           };
-        }
+        },
       );
 
       return { previousSupplier, previousLists };
@@ -140,7 +147,7 @@ export function useUpdateSupplier() {
       if (context?.previousSupplier) {
         queryClient.setQueryData(
           supplierKeys.detail(id),
-          context.previousSupplier
+          context.previousSupplier,
         );
       }
       if (context?.previousLists) {
@@ -178,7 +185,7 @@ export function useDeleteSupplier() {
             data: old.data.filter((supplier) => supplier.id !== id),
             total: old.total - 1,
           };
-        }
+        },
       );
 
       return { previousLists };

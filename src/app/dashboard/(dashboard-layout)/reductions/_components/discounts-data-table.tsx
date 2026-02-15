@@ -18,6 +18,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import * as React from "react";
+import type { Discount } from "../_types";
 
 import { SimpleDataTablePagination } from "@/components/ui/simple-data-table-pagination";
 import { Input } from "@/components/ui/input";
@@ -49,7 +50,7 @@ export function DiscountsDataTable<TData, TValue>({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = React.useState("");
@@ -74,9 +75,9 @@ export function DiscountsDataTable<TData, TValue>({
       const search = filterValue.toLowerCase();
 
       // Recherche sur nom et description
-      const original = row.original as Record<string, unknown>;
-      const name = String(original.name || "").toLowerCase();
-      const description = String(original.description || "").toLowerCase();
+      const discount = row.original as unknown as Discount;
+      const name = String(discount.name || "").toLowerCase();
+      const description = String(discount.description || "").toLowerCase();
 
       return name.includes(search) || description.includes(search);
     },
@@ -123,7 +124,7 @@ export function DiscountsDataTable<TData, TValue>({
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
                   );
@@ -153,7 +154,7 @@ export function DiscountsDataTable<TData, TValue>({
                     <TableCell key={cell.id} className="py-3">
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}
