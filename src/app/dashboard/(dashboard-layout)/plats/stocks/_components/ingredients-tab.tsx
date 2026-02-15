@@ -17,8 +17,8 @@ function mapIngredientToDisplay(ingredient: Ingredient): IngredientDisplay {
   return {
     id: ingredient.id,
     nom: ingredient.name,
-    description: ingredient.description,
-    fournisseur: ingredient.supplier.name,
+    description: ingredient.description ?? null,
+    fournisseur: ingredient.supplier?.name ?? "",
     prix_unitaire: ingredient.unit_price,
   };
 }

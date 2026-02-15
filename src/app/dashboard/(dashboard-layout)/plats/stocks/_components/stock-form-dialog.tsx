@@ -143,7 +143,7 @@ export function StockFormDialog({
                       <SelectContent>
                         {ingredientsData?.data.map((ingredient) => (
                           <SelectItem key={ingredient.id} value={ingredient.id}>
-                            {ingredient.name} - {ingredient.supplier.name}
+                            {ingredient.name} - {ingredient.supplier?.name ?? ""}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -160,7 +160,7 @@ export function StockFormDialog({
                   Ingrédient : {stock.ingredient.name}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Fournisseur : {stock.ingredient.supplier.name}
+                  Fournisseur : {stock.ingredient.supplier?.name ?? ""}
                 </p>
               </div>
             )}

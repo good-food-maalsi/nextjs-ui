@@ -21,7 +21,7 @@ function mapSupplierToFournisseur(supplier: Supplier): Fournisseur {
         : "Position non définie",
     telephone: supplier.phone,
     email: supplier.email,
-    logo_url: supplier.logo_url,
+    logo_url: supplier.logo_url ?? null,
   };
 }
 

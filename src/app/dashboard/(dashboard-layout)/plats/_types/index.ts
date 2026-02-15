@@ -30,5 +30,5 @@ export interface Dish {
   disponibilite: DishAvailability;
   menusAssocies: string;
   dateCreation: string;
-  statut: DishStatus;
+  statut?: DishStatus;
 }

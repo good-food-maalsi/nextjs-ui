@@ -18,7 +18,7 @@ function mapStockToDisplay(stock: StockFranchise): StockFranchiseDisplay {
   return {
     id: stock.id,
     ingredient_nom: stock.ingredient.name,
-    supplier_nom: stock.ingredient.supplier.name,
+    supplier_nom: stock.ingredient.supplier?.name ?? "",
     quantite: stock.quantity,
     prix_unitaire: stock.ingredient.unit_price,
   };

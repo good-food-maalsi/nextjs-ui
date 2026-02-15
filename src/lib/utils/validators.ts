@@ -1,4 +1,8 @@
-import { BadRequestError, NotFoundError, ConflictError } from "../api/errors/api-error";
+import {
+  BadRequestError,
+  ConflictError,
+  NotFoundError,
+} from "@/lib/api/errors/api-error";
 
 /**
  * Validates GPS coordinates

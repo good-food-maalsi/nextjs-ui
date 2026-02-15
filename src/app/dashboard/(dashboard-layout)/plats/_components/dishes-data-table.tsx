@@ -30,20 +30,38 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+interface ColumnsProps<TData> {
+  onEdit: (row: TData) => void;
+  onDelete: (row: TData) => void;
+}
+
 interface DishesDataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
+  columns:
+    | ColumnDef<TData, TValue>[]
+    | ((props: ColumnsProps<TData>) => ColumnDef<TData, TValue>[]);
   data: TData[];
   isLoading?: boolean;
   isError?: boolean;
+  onEdit?: (row: TData) => void;
+  onDelete?: (row: TData) => void;
 }
 
 export function DishesDataTable<TData, TValue>({
-  columns,
+  columns: columnsOrFactory,
   data,
   isLoading = false,
   isError = false,
+  onEdit,
+  onDelete,
 }: DishesDataTableProps<TData, TValue>) {
   const safeData = data ?? [];
+
+  const columns =
+    typeof columnsOrFactory === "function" && onEdit && onDelete
+      ? columnsOrFactory({ onEdit, onDelete })
+      : Array.isArray(columnsOrFactory)
+        ? columnsOrFactory
+        : [];
 
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =

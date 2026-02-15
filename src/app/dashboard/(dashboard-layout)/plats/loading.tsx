@@ -1,10 +1,4 @@
-"use client";
-
-import { Suspense } from "react";
-
-import { PlatsPageContent } from "./_components/plats-page-content";
-
-function PlatsPageFallback() {
+export default function PlatsLoading() {
   return (
     <div className="container mx-auto py-6">
       <div className="mb-6 flex items-start justify-between">
@@ -24,13 +18,5 @@ function PlatsPageFallback() {
         <div className="h-[400px] animate-pulse rounded-md border bg-muted/30" />
       </div>
     </div>
-  );
-}
-
-export default function PlatsPage() {
-  return (
-    <Suspense fallback={<PlatsPageFallback />}>
-      <PlatsPageContent />
-    </Suspense>
   );
 }

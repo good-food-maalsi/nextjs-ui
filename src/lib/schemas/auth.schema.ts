@@ -1,23 +1,14 @@
 import { z } from "zod";
 
 export const loginSchema = z.object({
-  email: z.email({
-    error: (issue) =>
-      issue.input === undefined
-        ? "Le champs est requis"
-        : "L'email n'est pas valide",
-  }),
-  password: z.string({
-    error: "Le mot de passe n'est pas requis",
-  }),
+  email: z.string().email("L'email n'est pas valide").min(1, "Le champs est requis"),
+  password: z.string().min(1, "Le mot de passe n'est pas requis"),
 });
 
 export const passwordRegisterSchema = z
   .object({
     password: z
-      .string({
-        error: "Le mot de passe est requis",
-      })
+      .string()
       .min(12, "Le mot de passe doit contenir au moins 12 caractères")
       .regex(
         /[a-z]/,
@@ -32,9 +23,7 @@ export const passwordRegisterSchema = z
         /[^A-Za-z0-9]/,
         "Le mot de passe doit contenir au moins un caractère spécial"
       ),
-    passwordConfirmation: z.string({
-      error: "La confirmation du mot de passe est requise",
-    }),
+    passwordConfirmation: z.string().min(1, "La confirmation du mot de passe est requise"),
   })
   .refine((data) => data.password === data.passwordConfirmation, {
     message: "Les mots de passe ne correspondent pas",
@@ -42,7 +31,7 @@ export const passwordRegisterSchema = z
   });
 
 export const requestPasswordResetSchema = z.object({
-  email: z.email("L'adresse e-mail n'est pas valide"),
+  email: z.string().email("L'adresse e-mail n'est pas valide"),
 });
 
 export type TLoginSchema = z.infer<typeof loginSchema>;

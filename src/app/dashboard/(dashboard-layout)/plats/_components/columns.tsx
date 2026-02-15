@@ -18,6 +18,11 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import type { Dish, DishAvailability } from "../_types";
 import { dishAvailabilityLabels } from "../_types";
 
+interface ColumnsProps {
+  onEdit: (dish: Dish) => void;
+  onDelete: (dish: Dish) => void;
+}
+
 // Enum pour les clés des colonnes
 export enum DishColumnKey {
   SELECT = "select",
@@ -38,7 +43,10 @@ export const dishColumnLabels: Record<string, string> = {
   [DishColumnKey.DATE_CREATION]: "Date de création",
 };
 
-export const columns: ColumnDef<Dish>[] = [
+export const createColumns = ({
+  onEdit,
+  onDelete,
+}: ColumnsProps): ColumnDef<Dish>[] => [
   {
     id: DishColumnKey.SELECT,
     header: ({ table }) => (
@@ -129,9 +137,13 @@ export const columns: ColumnDef<Dish>[] = [
               Copier l'ID du plat
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Voir le plat</DropdownMenuItem>
-            <DropdownMenuItem>Modifier le plat</DropdownMenuItem>
-            <DropdownMenuItem className="text-destructive">
+            <DropdownMenuItem onClick={() => onEdit(dish)}>
+              Modifier le plat
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="text-destructive"
+              onClick={() => onDelete(dish)}
+            >
               Supprimer le plat
             </DropdownMenuItem>
           </DropdownMenuContent>

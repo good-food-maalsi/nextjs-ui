@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -10,6 +10,7 @@ const DASHBOARD_ROLES = ["ADMIN", "FRANCHISE_OWNER", "STAFF"];
 
 export const useLogin = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const loginMutation = useLoginGateway();
 
   const form = useForm<TLoginSchema>({
@@ -25,7 +26,11 @@ export const useLogin = () => {
           toast.success("Connexion réussie");
           const roles = response?.user?.roles ?? [];
           const hasDashboardRole = roles.some((r) => DASHBOARD_ROLES.includes(r));
-          router.push(hasDashboardRole ? "/dashboard" : "/");
+          const redirect = searchParams.get("redirect");
+          const destination = hasDashboardRole
+            ? (redirect ?? "/dashboard")
+            : "/";
+          router.push(destination);
         },
         onError: () => {
           toast.error("Informations de connexion incorrectes");

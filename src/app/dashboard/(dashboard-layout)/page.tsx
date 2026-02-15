@@ -10,9 +10,9 @@ export default async function Dashboard(props: {
 }) {
   await props.searchParams;
   const session = await serverSession.getServerSession();
-  const franchise = await currentFranchiseService.getCurrentUserFranchise(
-    session
-  );
+  const franchise =
+    await currentFranchiseService.getCurrentUserFranchise(session);
+  console.log("🚀 ~ Dashboard ~ franchise:", franchise);
 
   return (
     <div className="flex flex-col space-y-8">

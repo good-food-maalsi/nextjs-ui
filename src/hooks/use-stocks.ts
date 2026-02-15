@@ -2,11 +2,17 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { stockFranchiseService } from "@/services/stock-franchise.service";
 import type {
-  StockFranchise,
-  StockFranchiseResponse,
+  StockWithIngredient,
   UpdateStockFranchiseInput,
-  // CreateStockFranchiseInput,
-} from "@/lib/types/stock-franchise.types";
+} from "@good-food/contracts/franchise";
+
+interface StockFranchiseResponse {
+  data: StockWithIngredient[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
 
 // Query keys structure
 export const stockKeys = {
@@ -69,22 +75,15 @@ export function useCreateStock() {
             data: [
               {
                 id: `temp-${Date.now()}`,
-                ...newStock,
+                franchise_id: newStock.franchise_id ?? "",
+                ingredient_id: newStock.ingredient_id,
+                quantity: newStock.quantity,
                 created_at: new Date().toISOString(),
                 updated_at: new Date().toISOString(),
                 ingredient: {
                   id: newStock.ingredient_id,
                   name: "Loading...",
-                  description: null,
                   unit_price: 0,
-                  supplier: {
-                    id: "",
-                    name: "Loading...",
-                  },
-                },
-                franchise: {
-                  id: newStock.franchise_id,
-                  name: "Loading...",
                 },
               },
               ...old.data,
@@ -133,8 +132,10 @@ export function useUpdateStock() {
         queryKey: stockKeys.lists(),
       });
 
-      queryClient.setQueryData<StockFranchise>(stockKeys.detail(id), (old) =>
-        old ? { ...old, ...data, updated_at: new Date().toISOString() } : old,
+      queryClient.setQueryData<StockWithIngredient>(
+        stockKeys.detail(id),
+        (old) =>
+          old ? { ...old, ...data, updated_at: new Date().toISOString() } : old,
       );
 
       queryClient.setQueriesData<StockFranchiseResponse>(
