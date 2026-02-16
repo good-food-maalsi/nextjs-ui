@@ -30,26 +30,44 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+interface ColumnsProps<TData> {
+  onEdit: (row: TData) => void;
+  onDelete: (row: TData) => void;
+}
+
 interface MenusDataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
+  columns:
+    | ColumnDef<TData, TValue>[]
+    | ((props: ColumnsProps<TData>) => ColumnDef<TData, TValue>[]);
   data: TData[];
   isLoading?: boolean;
   isError?: boolean;
+  onEdit?: (row: TData) => void;
+  onDelete?: (row: TData) => void;
 }
 
 export function MenusDataTable<TData, TValue>({
-  columns,
+  columns: columnsOrFactory,
   data,
   isLoading = false,
   isError = false,
+  onEdit,
+  onDelete,
 }: MenusDataTableProps<TData, TValue>) {
   const safeData = data ?? [];
+
+  const columns =
+    typeof columnsOrFactory === "function" && onEdit && onDelete
+      ? columnsOrFactory({ onEdit, onDelete })
+      : Array.isArray(columnsOrFactory)
+        ? columnsOrFactory
+        : [];
 
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = React.useState("");
@@ -72,19 +90,11 @@ export function MenusDataTable<TData, TValue>({
     onGlobalFilterChange: setGlobalFilter,
     globalFilterFn: (row, _columnId, filterValue) => {
       const search = filterValue.toLowerCase();
-
-      // Recherche sur nom, description, catégorie
       const name = String(row.getValue("name") || "").toLowerCase();
       const description = String(
-        row.getValue("description") || ""
+        row.getValue("description") || "",
       ).toLowerCase();
-      const category = String(row.getValue("category") || "").toLowerCase();
-
-      return (
-        name.includes(search) ||
-        description.includes(search) ||
-        category.includes(search)
-      );
+      return name.includes(search) || description.includes(search);
     },
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -96,8 +106,6 @@ export function MenusDataTable<TData, TValue>({
 
   /**
    * Helper to opt-out of React Compiler memoization for TanStack Table calls.
-   * TanStack Table mutates state in-place; wrapping getHeaderGroups/getRowModel
-   * in useMemo with [table] would yield stale values (table reference never changes).
    * See: https://github.com/facebook/react/issues/33057#issuecomment-2894450792
    */
   const useNoMemo = <const T,>(factory: () => T): T => {
@@ -111,7 +119,7 @@ export function MenusDataTable<TData, TValue>({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <Input
-          placeholder="Rechercher (nom, description, catégorie)..."
+          placeholder="Rechercher (nom, description)..."
           value={globalFilter}
           onChange={(event) => table.setGlobalFilter(event.target.value)}
           className="h-8 w-[400px]"
@@ -129,7 +137,7 @@ export function MenusDataTable<TData, TValue>({
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
                   );
@@ -159,7 +167,7 @@ export function MenusDataTable<TData, TValue>({
                     <TableCell key={cell.id} className="py-3">
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}
