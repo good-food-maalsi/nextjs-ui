@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -45,6 +46,7 @@ export function DishFormDialog({
   onOpenChange,
   dishId = null,
 }: DishFormDialogProps) {
+  const router = useRouter();
   const franchiseId = useFranchiseId();
   const createMutation = useCreateDish();
   const updateMutation = useUpdateDish();
@@ -119,7 +121,7 @@ export function DishFormDialog({
     }
 
     try {
-      await createMutation.mutateAsync({
+      const created = await createMutation.mutateAsync({
         franchiseId,
         name: data.name,
         description: data.description,
@@ -129,6 +131,7 @@ export function DishFormDialog({
         ...(data.imageUrl ? { imageUrl: data.imageUrl } : {}),
       });
       onOpenChange(false);
+      router.push(`/dashboard/plats/${created.id}`);
     } catch {
       // Error handled by mutation hook (toast)
     }
