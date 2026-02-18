@@ -1,33 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import type { Restaurant } from "@/services/restaurant.service";
-import { restaurantService } from "@/services/restaurant.service";
-import { RestaurantCard } from "./_components/RestaurantCard";
-
+import { useState } from "react";
+import { useFranchises } from "@/hooks/use-franchises";
+import { FranchiseCard } from "./_components/FranchiseCard";
 import { SearchInput } from "@/components/ui/search-input";
 
 export default function RestaurantsPage() {
-    const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
-    const [loading, setLoading] = useState(true);
+    const { data, isLoading, isError } = useFranchises({ limit: 50 });
 
-    useEffect(() => {
-        const fetchRestaurants = async () => {
-            try {
-                const data = await restaurantService.getRestaurants();
-                setRestaurants(data);
-            } catch (error) {
-                console.error("Failed to fetch restaurants:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const franchises = (data?.data ?? []).filter((franchise) => {
+        const query = searchQuery.toLowerCase();
+        return (
+            franchise.name.toLowerCase().includes(query) ||
+            franchise.city.toLowerCase().includes(query)
+        );
+    });
 
-        fetchRestaurants();
-    }, []);
-
-    if (loading) {
+    if (isLoading) {
         return (
             <div className="container mx-auto px-4 py-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -39,13 +29,13 @@ export default function RestaurantsPage() {
         );
     }
 
-    const filteredRestaurants = restaurants.filter((restaurant) => {
-        const query = searchQuery.toLowerCase();
+    if (isError) {
         return (
-            restaurant.name.toLowerCase().includes(query) ||
-            restaurant.categories.some((cat) => cat.name.toLowerCase().includes(query))
+            <div className="container mx-auto px-4 py-8">
+                <p className="text-destructive">Impossible de charger les restaurants.</p>
+            </div>
         );
-    });
+    }
 
     return (
         <div className="container mx-auto px-4 py-8 min-h-screen">
@@ -61,11 +51,15 @@ export default function RestaurantsPage() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {filteredRestaurants.map((restaurant) => (
-                    <RestaurantCard key={restaurant.id} restaurant={restaurant} />
-                ))}
-            </div>
+            {franchises.length === 0 ? (
+                <p className="text-black-400">Aucun restaurant trouvé.</p>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {franchises.map((franchise) => (
+                        <FranchiseCard key={franchise.id} franchise={franchise} />
+                    ))}
+                </div>
+            )}
         </div>
     );
 }

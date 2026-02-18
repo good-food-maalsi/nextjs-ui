@@ -5,8 +5,16 @@ import type {
   UpdateMenuInput,
 } from "@good-food-maalsi/contracts/catalog";
 
-async function findAll(): Promise<Menu[]> {
-  const response = await catalogClient.menus.getAll({});
+async function findAll(params: {
+  categoryId?: string;
+  franchiseId?: string;
+} = {}): Promise<Menu[]> {
+  const query: { categoryId?: string; franchiseId?: string } = {};
+  if (params.categoryId != null) query.categoryId = params.categoryId;
+  if (params.franchiseId != null) query.franchiseId = params.franchiseId;
+  const response = await catalogClient.menus.getAll(
+    Object.keys(query).length > 0 ? { query } : {},
+  );
   if (response.status !== 200) throw new Error("Failed to fetch menus");
   return response.body.data;
 }

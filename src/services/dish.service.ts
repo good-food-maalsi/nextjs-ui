@@ -8,8 +8,19 @@ import type {
   UpdateDishIngredientInput,
 } from "@good-food-maalsi/contracts/catalog";
 
-async function findAll(params: { menuId?: string } = {}): Promise<Dish[]> {
-  const response = await catalogClient.dishes.getAll({ query: params });
+async function findAll(params: {
+  menuId?: string;
+  categoryId?: string;
+  franchiseId?: string;
+  search?: string;
+} = {}): Promise<Dish[]> {
+  const query: { menuId?: string; categoryId?: string; franchiseId?: string } = {};
+  if (params.menuId != null) query.menuId = params.menuId;
+  if (params.categoryId != null) query.categoryId = params.categoryId;
+  if (params.franchiseId != null) query.franchiseId = params.franchiseId;
+  const response = await catalogClient.dishes.getAll(
+    Object.keys(query).length > 0 ? { query } : {},
+  );
   if (response.status !== 200) throw new Error("Failed to fetch dishes");
   return response.body.data;
 }

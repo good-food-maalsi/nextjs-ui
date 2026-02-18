@@ -1,5 +1,4 @@
 export { ClientHeader } from "./ClientHeader";
-export { ExclusiveDeals } from "./ExclusiveDeals";
 export { Footer } from "./Footer";
 export { HeroBanner } from "./HeroBanner";
 export { JoinUs } from "./JoinUs";

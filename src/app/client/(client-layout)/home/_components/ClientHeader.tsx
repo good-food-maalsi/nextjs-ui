@@ -4,19 +4,21 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icons } from "@/components/icons";
 import { cn } from "@/lib/utils";
-import { User, ShoppingBag } from 'lucide-react';
+import { User, ShoppingBag } from "lucide-react";
 import { useSelector } from "@legendapp/state/react";
 import { cartState$ } from "@/lib/store/cart.store";
 
 export function ClientHeader() {
   const pathname = usePathname();
   const cartItems = useSelector(cartState$.items);
-  const totalItems = (cartItems || []).reduce((acc, item) => acc + (item?.quantity || 0), 0);
+  const totalItems = (cartItems || []).reduce(
+    (acc, item) => acc + (item?.quantity || 0),
+    0,
+  );
 
   const navItems = [
     { label: "Home", href: "/client/home" },
-    { label: "Parcourir le menu", href: "/client/menu" },
-    { label: "Offres spéciales", href: "/client/offers" },
+    // { label: "Offres spéciales", href: "/client/offers" },
     { label: "Restaurants", href: "/client/restaurants" },
     { label: "Suivre la commande", href: "/client/track" },
   ];
@@ -31,7 +33,7 @@ export function ClientHeader() {
           </Link>
 
           {/* Navigation */}
-          <nav className="flex items-center gap-2 hidden md:flex">
+          <nav className="flex items-center gap-2 md:flex">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
               return (
@@ -42,7 +44,7 @@ export function ClientHeader() {
                     "px-4 py-2 rounded-full font-medium transition-colors text-sm",
                     isActive
                       ? "bg-secondary-500 text-white"
-                      : "bg-transparent text-black-500 hover:bg-secondary-100"
+                      : "bg-transparent text-black-500 hover:bg-secondary-100",
                   )}
                 >
                   {item.label}
@@ -54,7 +56,10 @@ export function ClientHeader() {
           {/* Actions */}
           <div className="flex items-center gap-4">
             {/* Cart Button */}
-            <Link href="/client/cart" className="relative p-2 hover:bg-gray-100 rounded-full transition-colors">
+            <Link
+              href="/client/cart"
+              className="relative p-2 hover:bg-gray-100 rounded-full transition-colors"
+            >
               <ShoppingBag className="w-6 h-6 text-black-500" />
               {totalItems > 0 && (
                 <span className="absolute -top-1 -right-1 bg-primary-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
