@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Minus, Plus, Trash2 } from "lucide-react";
+import { ImageIcon, Minus, Plus, Trash2 } from "lucide-react";
 import { cartActions } from "@/lib/store/cart.store";
 import type { CartItem as CartItemType } from "@/lib/store/cart.store";
 
@@ -12,13 +12,17 @@ interface CartItemProps {
 export function CartItem({ item }: CartItemProps) {
     return (
         <div className="bg-white p-4 rounded-xl shadow-sm flex gap-4 items-center">
-            <div className="relative w-20 h-20 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
-                <Image
-                    src={item.image}
-                    alt={item.name}
-                    fill
-                    className="object-cover"
-                />
+            <div className="relative w-20 h-20 shrink-0 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
+                {item.image ? (
+                    <Image
+                        src={item.image}
+                        alt={item.name}
+                        fill
+                        className="object-cover"
+                    />
+                ) : (
+                    <ImageIcon className="w-10 h-10 text-gray-400" />
+                )}
             </div>
 
             <div className="flex-1">
