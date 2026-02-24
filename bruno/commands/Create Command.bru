@@ -1,0 +1,106 @@
+meta {
+  name: Create Command
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{apiUrl}}/commands
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "franchise_id": "{{franchiseId}}",
+    "user_id": "550e8400-e29b-41d4-a716-446655440000",
+    "status": "draft",
+    "items": [
+      {
+        "ingredient_id": "{{ingredientId}}",
+        "quantity": 10
+      },
+      {
+        "ingredient_id": "{{ingredientId2}}",
+        "quantity": 5
+      }
+    ]
+  }
+}
+
+docs {
+  # Create Command
+
+  Crée une nouvelle commande avec items atomiquement.
+
+  ## Required Fields
+
+  - `franchise_id` (uuid): ID de la franchise (doit exister)
+  - `user_id` (uuid): ID de l'utilisateur qui passe la commande
+
+  ## Optional Fields
+
+  - `status` (enum, default: "draft"): Statut initial
+    - Valeurs: draft, confirmed, in_progress, delivered, canceled
+  - `items` (array, default: []): Liste d'items de commande
+    - `ingredient_id` (uuid): ID de l'ingrédient (doit exister)
+    - `quantity` (number, positive int): Quantité commandée
+
+  **Note**: Les ingrédients doivent exister (pas de création à la volée).
+
+  ## Response (201 Created)
+
+  ```json
+  {
+    "id": "uuid",
+    "franchise_id": "uuid",
+    "status": "draft",
+    "user_id": "uuid",
+    "created_at": "2025-01-01T00:00:00.000Z",
+    "updated_at": "2025-01-01T00:00:00.000Z",
+    "franchise": {...},
+    "command_ingredients": [
+      {
+        "id": "uuid",
+        "quantity": 10,
+        "ingredient": {
+          "id": "uuid",
+          "name": "Poulet fermier",
+          "unit_price": "12.50"
+        }
+      }
+    ]
+  }
+  ```
+
+  ## Error Responses
+
+  - `404 Not Found`: Franchise ou ingrédient non trouvé
+  - `400 Bad Request`: Données invalides
+}
+
+tests {
+  test("Status code is 201", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+
+  test("Response has command ID", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('id');
+  });
+
+  test("Has franchise info", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('franchise');
+  });
+
+  // Save command ID for subsequent requests
+  if (res.getStatus() === 201) {
+    const data = res.getBody();
+    bru.setVar("commandId", data.id);
+  }
+}

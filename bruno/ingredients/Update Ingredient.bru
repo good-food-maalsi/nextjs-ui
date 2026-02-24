@@ -1,0 +1,72 @@
+meta {
+  name: Update Ingredient
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{apiUrl}}/ingredients/{{ingredientId}}
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "Poulet fermier Label Rouge Premium",
+    "unit_price": 14.50
+  }
+}
+
+docs {
+  # Update Ingredient
+
+  Met à jour un ingrédient existant.
+
+  **Note**: Pour modifier les catégories, utiliser les endpoints dédiés `/ingredients/:id/categories`.
+
+  ## Path Parameters
+
+  - `id` (uuid): ID de l'ingrédient
+
+  ## Optional Fields
+
+  - `name` (string, 2-255 chars): Nouveau nom
+  - `description` (string, max 255 chars, nullable): Nouvelle description
+  - `supplier_id` (uuid): Nouveau fournisseur
+  - `unit_price` (number, positive): Nouveau prix
+
+  ## Response (200 OK)
+
+  ```json
+  {
+    "id": "uuid",
+    "name": "Poulet fermier Label Rouge Premium",
+    "description": "Poulet élevé en plein air",
+    "supplier_id": "uuid",
+    "unit_price": "14.50",
+    "created_at": "2025-01-01T00:00:00.000Z",
+    "updated_at": "2025-01-01T00:30:00.000Z",
+    "supplier": {...},
+    "ingredient_categories": [...]
+  }
+  ```
+
+  ## Error Responses
+
+  - `404 Not Found`: Ingrédient ou fournisseur non trouvé
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Price was updated", function() {
+    const data = res.getBody();
+    expect(parseFloat(data.unit_price)).to.equal(14.50);
+  });
+}

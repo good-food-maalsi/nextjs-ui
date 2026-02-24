@@ -1,0 +1,45 @@
+meta {
+  name: Remove Ingredient from Command
+  type: http
+  seq: 9
+}
+
+delete {
+  url: {{apiUrl}}/commands/{{commandId}}/ingredients/{{ingredientId}}
+  body: none
+  auth: inherit
+}
+
+docs {
+  # Remove Ingredient from Command
+
+  Retire un ingrédient d'une commande (supprime l'item).
+
+  ## Path Parameters
+
+  - `id` (uuid): ID de la commande
+  - `ingredientId` (uuid): ID de l'ingrédient à retirer
+
+  ## Response (200 OK)
+
+  ```json
+  {
+    "message": "Ingredient removed successfully"
+  }
+  ```
+
+  ## Error Responses
+
+  - `404 Not Found`: Commande ou ingrédient non trouvé
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Response has success message", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('message');
+  });
+}

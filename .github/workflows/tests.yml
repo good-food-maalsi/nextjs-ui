@@ -1,0 +1,119 @@
+name: Lint & Build CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  # --- Tests (à réactiver plus tard) ---
+  # unit-tests:
+  #   name: Unit Tests
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+  #     - name: Setup pnpm
+  #       uses: pnpm/action-setup@v2
+  #       with:
+  #         version: 9
+  #     - name: Setup Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: "20"
+  #         cache: "pnpm"
+  #     - name: Install dependencies
+  #       run: pnpm install --frozen-lockfile
+  #     - name: Run unit tests
+  #       run: pnpm test:backend
+  #     - name: Upload coverage
+  #       uses: codecov/codecov-action@v3
+  #       with:
+  #         files: ./coverage/coverage-final.json
+  #         flags: unittests
+  #       if: always()
+
+  # integration-tests:
+  #   name: Integration Tests
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+  #   services:
+  #     postgres:
+  #       image: postgres:16-alpine
+  #       env:
+  #         POSTGRES_USER: postgres
+  #         POSTGRES_PASSWORD: postgres
+  #         POSTGRES_DB: goodfood_test
+  #       options: >-
+  #         --health-cmd pg_isready
+  #         --health-interval 10s
+  #         --health-timeout 5s
+  #         --health-retries 5
+  #       ports:
+  #         - 5433:5432
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+  #     - name: Setup pnpm
+  #       uses: pnpm/action-setup@v2
+  #       with:
+  #         version: 9
+  #     - name: Setup Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: "20"
+  #         cache: "pnpm"
+  #     - name: Install dependencies
+  #       run: pnpm install --frozen-lockfile
+  #     - name: Run migrations
+  #       env:
+  #         DATABASE_URL: postgresql://postgres:postgres@localhost:5433/goodfood_test?schema=public
+  #       run: pnpm prisma migrate deploy
+  #     - name: Run integration tests
+  #       env:
+  #         DATABASE_URL: postgresql://postgres:postgres@localhost:5433/goodfood_test?schema=public
+  #         JWT_SECRET: test-secret-key
+  #       run: pnpm vitest run --config vitest.integration.config.ts
+  #     - name: Upload integration test results
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: integration-test-results
+  #         path: coverage/
+  #       if: always()
+
+  lint-and-build:
+    name: Lint & Build
+    runs-on: ubuntu-latest
+    env:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run ESLint
+        run: pnpm lint
+
+      - name: Run TypeScript type check
+        run: pnpm typecheck
+
+      - name: Build
+        run: pnpm build

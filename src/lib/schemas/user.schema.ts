@@ -5,7 +5,7 @@ export const userSchema = z.object({
   username: z.string(),
   email: z.string(),
   picture: z.string().nullable(),
-  role: z.enum(["SUPER_ADMIN", "ADMIN", "EDITOR", "READER"]),
+  role: z.enum(["ADMIN", "FRANCHISE_OWNER", "STAFF", "CUSTOMER"]),
   createdAt: z.string(),
   status: z.string(),
 });
@@ -14,18 +14,16 @@ export const usersSchema = z.array(userSchema);
 
 // Base schema for field picking
 export const baseUserFormSchema = z.object({
-  username: z.string({ message: "Le nom d'utilisateur est requis" }),
-  email: z.email("Adresse email invalide"),
+  username: z.string().min(1, "Le nom d'utilisateur est requis"),
+  email: z.string().email("Adresse email invalide"),
   profilePicture: z.array(z.instanceof(File)).optional(),
   pictureUrl: z.string().optional(),
   currentPassword: z
     .string()
-    .nonempty("Le mot de passe actuel est requis pour changer le mot de passe"),
+    .min(1, "Le mot de passe actuel est requis pour changer le mot de passe"),
   newPassword: z
     .string()
-    .nonempty(
-      "Le nouveau mot de passe est requis pour changer le mot de passe"
-    ),
+    .min(1, "Le nouveau mot de passe est requis pour changer le mot de passe"),
 });
 
 // Full user schema with refinements
@@ -44,9 +42,9 @@ export const userFormSchema = baseUserFormSchema.refine(
 
 export const memberFormSchema = z.object({
   profilePicture: z.array(z.any()).optional(),
-  username: z.string().nonempty("Le nom d'utilisateur est requis"),
+  username: z.string().min(1, "Le nom d'utilisateur est requis"),
   email: z.string().email("L'adresse e-mail n'est pas valide"),
-  role: z.enum(["SUPER_ADMIN", "ADMIN", "EDITOR", "READER"], {
+  role: z.enum(["ADMIN", "FRANCHISE_OWNER", "STAFF", "CUSTOMER"], {
     message: "Le rôle est requis",
   }),
   password: z.string().optional(),

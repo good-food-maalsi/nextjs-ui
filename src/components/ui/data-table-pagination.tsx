@@ -4,7 +4,7 @@ import type { Table } from "@tanstack/react-table";
 import { useState } from "react";
 import { createPortal } from "react-dom";
 
-import { useDeleteManyMembers } from "@/app/(dashboard)/membres/_hooks/use-delete-members";
+import { useDeleteManyMembers } from "@/app/dashboard/(dashboard-layout)/membres/_hooks/use-delete-members";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -102,7 +102,7 @@ export function DataTablePagination<TData>({
         </div>
         <div className="text-center text-muted-foreground max-sm:space-y-3 sm:space-x-3">
           <Button
-            variant="outline"
+            variant="secondaryOutline"
             size="sm"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
@@ -110,7 +110,7 @@ export function DataTablePagination<TData>({
             Précédent
           </Button>
           <Button
-            variant="outline"
+            variant="secondaryOutline"
             size="sm"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
@@ -134,7 +134,7 @@ export function DataTablePagination<TData>({
               </p>
               <br />
               <div className="flex justify-end mt-4 space-x-2">
-                <Button onClick={closeModal} variant="outline">
+                <Button onClick={closeModal} variant="secondaryOutline">
                   Annuler
                 </Button>
                 <Button

@@ -1,0 +1,45 @@
+meta {
+  name: Remove Category from Ingredient
+  type: http
+  seq: 8
+}
+
+delete {
+  url: {{apiUrl}}/ingredients/{{ingredientId}}/categories/{{categoryId}}
+  body: none
+  auth: inherit
+}
+
+docs {
+  # Remove Category from Ingredient
+
+  Retire une catégorie d'un ingrédient (supprime la relation uniquement).
+
+  ## Path Parameters
+
+  - `id` (uuid): ID de l'ingrédient
+  - `categoryId` (uuid): ID de la catégorie à retirer
+
+  ## Response (200 OK)
+
+  ```json
+  {
+    "message": "Category removed successfully"
+  }
+  ```
+
+  ## Error Responses
+
+  - `404 Not Found`: Ingrédient ou catégorie non trouvé
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Response has success message", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('message');
+  });
+}

@@ -1,10 +1,19 @@
 "use client";
 
+import * as React from "react";
 import type { Table } from "@tanstack/react-table";
 import { X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  paymentStatusLabels,
+  orderStatusLabels,
+  deliveryStatusLabels,
+  PaymentStatus,
+  OrderStatus,
+  DeliveryStatus,
+} from "@/app/dashboard/(dashboard-layout)/commandes/columns";
 
 import { DataTableFacetedFilter } from "./data-table-faceted-filter";
 import { DataTableDateFilter } from "./data-table-filter-date";
@@ -13,38 +22,14 @@ interface DataTableToolbarProps<TData> {
   table: Table<TData>;
 }
 
-interface RowData {
-  categories: Array<{ category: { name: string } }>;
-}
-
 export function DataTableToolbar<TData>({
   table,
 }: DataTableToolbarProps<TData>) {
-  const isFiltered = table.getState().columnFilters.length > 0;
-  const firstColumn = table.getAllColumns()[1];
+  const isFiltered =
+    table.getState().columnFilters.length > 0 || table.getState().globalFilter;
+  const globalFilter = table.getState().globalFilter ?? "";
 
-  const getAllCategories = () => {
-    const uniqueNames = new Set<string>();
-    const rows = table.getCoreRowModel().rows;
-    rows.forEach((row) => {
-      const categories = (row.original as RowData).categories;
-
-      if (categories && Array.isArray(categories)) {
-        categories.forEach((cat) => {
-          if (cat?.category?.name) {
-            uniqueNames.add(cat.category.name);
-          }
-        });
-      }
-    });
-
-    return Array.from(uniqueNames).map((name) => ({
-      label: name,
-      value: name,
-    }));
-  };
-
-  const values = [
+  const dateFilterValues = [
     "Aujourd'hui",
     "Cette semaine",
     "Ce mois",
@@ -57,94 +42,75 @@ export function DataTableToolbar<TData>({
       <div className="space-y-5">
         <div className="flex flex-wrap items-start gap-2 sm:flex-row">
           <Input
-            placeholder="Rechercher..."
-            value={(firstColumn.getFilterValue() as string) ?? ""}
-            onChange={(event) => firstColumn.setFilterValue(event.target.value)}
+            placeholder="Rechercher (n°, client, ID)..."
+            value={globalFilter}
+            onChange={(event) => table.setGlobalFilter(event.target.value)}
             className="h-8 w-[250px]"
           />
-          {table
-            .getAllColumns()
-            .filter((column) => column.getCanFilter())
-            .map((column) => {
-              if (column.id === "categories") {
-                return (
-                  <DataTableFacetedFilter
-                    key={column.id}
-                    table={table}
-                    column={column}
-                    title={
-                      typeof column.columnDef.header === "string"
-                        ? column.columnDef.header
-                        : ""
-                    }
-                    options={getAllCategories()}
-                    canMultipleSlection={true}
-                  />
-                );
-              }
-              if (column.id === "author") {
-                return (
-                  <DataTableFacetedFilter
-                    key={column.id}
-                    table={table}
-                    column={column}
-                    title={
-                      typeof column.columnDef.header === "string"
-                        ? column.columnDef.header
-                        : ""
-                    }
-                    options={Array.from(
-                      column.getFacetedUniqueValues().keys()
-                    ).map((value: string) => ({
-                      label: value,
-                      value,
-                    }))}
-                    canMultipleSlection={false}
-                  />
-                );
-              }
-              if (column.id === "createdAt") {
-                return (
-                  <DataTableDateFilter
-                    key={column.id}
-                    table={table}
-                    column={column}
-                    title={
-                      typeof column.columnDef.header === "string"
-                        ? column.columnDef.header
-                        : ""
-                    }
-                    options={values.map((value: string) => ({
-                      label: value,
-                      value,
-                    }))}
-                    canMultipleSlection={false}
-                  />
-                );
-              }
-              return (
-                <DataTableFacetedFilter
-                  key={column.id}
-                  table={table}
-                  column={column}
-                  title={
-                    typeof column.columnDef.header === "string"
-                      ? column.columnDef.header
-                      : ""
-                  }
-                  options={Array.from(
-                    column.getFacetedUniqueValues().keys()
-                  ).map((value: string) => ({
-                    label: value,
-                    value,
-                  }))}
-                />
-              );
-            })}
+
+          {/* Filtre Statut du paiement */}
+          {table.getColumn("statutPaiement") && (
+            <DataTableFacetedFilter
+              table={table}
+              column={table.getColumn("statutPaiement")!}
+              title="Paiement"
+              options={Object.values(PaymentStatus).map((value) => ({
+                label: paymentStatusLabels[value],
+                value,
+              }))}
+              canMultipleSlection={true}
+            />
+          )}
+
+          {/* Filtre Statut de commande */}
+          {table.getColumn("statutCommande") && (
+            <DataTableFacetedFilter
+              table={table}
+              column={table.getColumn("statutCommande")!}
+              title="Commande"
+              options={Object.values(OrderStatus).map((value) => ({
+                label: orderStatusLabels[value],
+                value,
+              }))}
+              canMultipleSlection={true}
+            />
+          )}
+
+          {/* Filtre Statut de livraison */}
+          {table.getColumn("statutLivraison") && (
+            <DataTableFacetedFilter
+              table={table}
+              column={table.getColumn("statutLivraison")!}
+              title="Livraison"
+              options={Object.values(DeliveryStatus).map((value) => ({
+                label: deliveryStatusLabels[value],
+                value,
+              }))}
+              canMultipleSlection={true}
+            />
+          )}
+
+          {/* Filtre Date */}
+          {table.getColumn("date") && (
+            <DataTableDateFilter
+              table={table}
+              column={table.getColumn("date")!}
+              title="Date"
+              options={dateFilterValues.map((value: string) => ({
+                label: value,
+                value,
+              }))}
+              canMultipleSlection={false}
+            />
+          )}
+
           {isFiltered && (
             <Button
               variant="ghost"
-              onClick={() => table.resetColumnFilters()}
+              onClick={() => {
+                table.resetColumnFilters();
+                table.setGlobalFilter("");
+              }}
               className="h-8 px-2 lg:px-3"
             >
               Réinitialiser

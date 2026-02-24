@@ -1,0 +1,70 @@
+meta {
+  name: Update Command Ingredient
+  type: http
+  seq: 8
+}
+
+put {
+  url: {{apiUrl}}/commands/{{commandId}}/ingredients/{{ingredientId}}
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "quantity": 15
+  }
+}
+
+docs {
+  # Update Command Ingredient
+
+  Met à jour la quantité d'un ingrédient dans une commande.
+
+  ## Path Parameters
+
+  - `id` (uuid): ID de la commande
+  - `ingredientId` (uuid): ID de l'ingrédient
+
+  ## Request Body
+
+  - `quantity` (number, positive int, required): Nouvelle quantité
+
+  ## Response (200 OK)
+
+  ```json
+  {
+    "id": "uuid",
+    "command_id": "uuid",
+    "ingredient_id": "uuid",
+    "quantity": 15,
+    "created_at": "2025-01-01T00:00:00.000Z",
+    "updated_at": "2025-01-01T00:30:00.000Z",
+    "ingredient": {
+      "id": "uuid",
+      "name": "Poulet fermier",
+      "unit_price": "12.50"
+    }
+  }
+  ```
+
+  ## Error Responses
+
+  - `404 Not Found`: Commande, ingrédient, ou item non trouvé
+  - `400 Bad Request`: Données invalides
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Quantity was updated", function() {
+    const data = res.getBody();
+    expect(data.quantity).to.equal(15);
+  });
+}

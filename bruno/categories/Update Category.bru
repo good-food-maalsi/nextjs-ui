@@ -1,0 +1,65 @@
+meta {
+  name: Update Category
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{apiUrl}}/categories/{{categoryId}}
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "Viandes et Volailles",
+    "description": "Produits carnés, volailles et gibiers"
+  }
+}
+
+docs {
+  # Update Category
+
+  Met à jour une catégorie existante.
+
+  ## Path Parameters
+
+  - `id` (uuid): ID de la catégorie
+
+  ## Optional Fields
+
+  - `name` (string, 2-255 chars): Nouveau nom
+  - `description` (string, max 255 chars, nullable): Nouvelle description
+
+  ## Response (200 OK)
+
+  ```json
+  {
+    "id": "uuid",
+    "name": "Viandes et Volailles",
+    "description": "Produits carnés, volailles et gibiers",
+    "created_at": "2025-01-01T00:00:00.000Z",
+    "updated_at": "2025-01-01T00:30:00.000Z"
+  }
+  ```
+
+  ## Error Responses
+
+  - `404 Not Found`: Catégorie non trouvée
+  - `409 Conflict`: Nom déjà utilisé par une autre catégorie
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Name was updated", function() {
+    const data = res.getBody();
+    expect(data.name).to.equal('Viandes et Volailles');
+  });
+}

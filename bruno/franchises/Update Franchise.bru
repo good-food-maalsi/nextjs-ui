@@ -1,0 +1,94 @@
+meta {
+  name: Update Franchise
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{apiUrl}}/franchises/{{franchiseId}}
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+vars:pre-request {
+  franchiseId: 550e8400-e29b-41d4-a716-446655440000
+}
+
+body:json {
+  {
+    "name": "Good Food Lyon - Centre",
+    "phone": "+33 4 12 34 56 99",
+    "street": "50 Rue de la République"
+  }
+}
+
+docs {
+  # Update Franchise
+
+  Met à jour une franchise existante. Tous les champs sont optionnels.
+
+  ## URL Parameters
+
+  - `id` (uuid): ID de la franchise
+
+  ## Optional Fields
+
+  - `name` (string, 2-255 chars): Nom de la franchise
+  - `latitude` (number, -90 to 90): Latitude GPS
+  - `longitude` (number, -180 to 180): Longitude GPS
+  - `street` (string, 1-255 chars): Adresse de rue
+  - `city` (string, 1-100 chars): Ville
+  - `state` (string, 1-50 chars): État/Région
+  - `zip` (string, 1-10 chars): Code postal
+  - `owner_id` (uuid): ID du propriétaire
+  - `email` (string, email, max 100 chars): Email (doit être unique)
+  - `phone` (string, 1-20 chars): Numéro de téléphone
+
+  ## Response (200 OK)
+
+  ```json
+  {
+    "id": "uuid",
+    "name": "Good Food Lyon - Centre",
+    "latitude": 45.764043,
+    "longitude": 4.835659,
+    "street": "50 Rue de la République",
+    "city": "Lyon",
+    "state": "Auvergne-Rhône-Alpes",
+    "zip": "69002",
+    "owner_id": "uuid",
+    "email": "lyon@goodfood.com",
+    "phone": "+33 4 12 34 56 99",
+    "created_at": "2025-01-01T00:00:00.000Z",
+    "updated_at": "2025-01-01T12:00:00.000Z"
+  }
+  ```
+
+  ## Error Responses
+
+  - `400 Bad Request`: Données invalides (ex: coordonnées GPS hors limites)
+  - `404 Not Found`: Franchise non trouvée
+  - `409 Conflict`: Email déjà utilisé par une autre franchise
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Response has updated fields", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('id');
+    expect(data.name).to.equal('Good Food Lyon - Centre');
+  });
+
+  test("Updated_at is modified", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('updated_at');
+    expect(new Date(data.updated_at).getTime()).to.be.greaterThan(new Date(data.created_at).getTime());
+  });
+}

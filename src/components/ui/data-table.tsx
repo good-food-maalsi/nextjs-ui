@@ -1,10 +1,5 @@
 "use client";
 
-import type {
-  ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState} from "@tanstack/react-table";
 import {
   flexRender,
   getCoreRowModel,
@@ -14,11 +9,13 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
+  type Row,
+  type ColumnDef,
 } from "@tanstack/react-table";
 import * as React from "react";
 
-import { DataTablePagination } from "@/components/ui/data-table-pagination";
-import { DataTableToolbar } from "@/components/ui/data-table-toolbar";
+import { useTableState } from "@/hooks/use-table-state";
+import { SimpleDataTablePagination } from "@/components/ui/simple-data-table-pagination";
 import {
   Table,
   TableBody,
@@ -27,45 +24,64 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { MutationTypeEnum } from "@/lib/types/enum";
+import { TABLE_CONFIG } from "@/lib/config/table-config";
+import { cn } from "@/lib/utils";
+
+interface SearchConfig<TData> {
+  placeholder?: string;
+  searchFn?: (
+    row: Row<TData>,
+    columnId: string,
+    filterValue: string
+  ) => boolean;
+}
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  isError: boolean;
-  mutationType: MutationTypeEnum;
+  isLoading?: boolean;
+  isError?: boolean;
+  errorMessage?: string;
+  emptyMessage?: string;
+  searchConfig?: SearchConfig<TData>;
+  toolbar?: React.ReactNode;
+  headerClassName?: string;
+  rowClassName?: string;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
-  isError,
-  mutationType,
+  isLoading = false,
+  isError = false,
+  errorMessage = "Une erreur est survenue lors du chargement des données.",
+  emptyMessage = "Aucune donnée trouvée",
+  searchConfig,
+  toolbar,
+  headerClassName,
+  rowClassName,
 }: DataTableProps<TData, TValue>) {
   const safeData = data ?? [];
 
-  const [rowSelection, setRowSelection] = React.useState({});
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  );
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const tableState = useTableState();
 
   const table = useReactTable({
     data: safeData,
     columns,
     state: {
-      sorting,
-      columnVisibility,
-      rowSelection,
-      columnFilters,
+      sorting: tableState.sorting,
+      columnVisibility: tableState.columnVisibility,
+      rowSelection: tableState.rowSelection,
+      columnFilters: tableState.columnFilters,
+      globalFilter: tableState.globalFilter,
     },
     enableRowSelection: true,
-    onRowSelectionChange: setRowSelection,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: tableState.setRowSelection,
+    onSortingChange: tableState.setSorting,
+    onColumnFiltersChange: tableState.setColumnFilters,
+    onColumnVisibilityChange: tableState.setColumnVisibility,
+    onGlobalFilterChange: tableState.setGlobalFilter,
+    globalFilterFn: searchConfig?.searchFn,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -74,13 +90,32 @@ export function DataTable<TData, TValue>({
     getFacetedUniqueValues: getFacetedUniqueValues(),
   });
 
+  /**
+   * Helper to opt-out of React Compiler memoization for TanStack Table calls.
+   *
+   * TanStack Table mutates state in-place instead of creating new references,
+   * which conflicts with React Compiler's automatic memoization. This causes
+   * stale values when the compiler wraps calls like table.getHeaderGroups()
+   * in useMemo with [table] as dependency (table reference never changes).
+   *
+   * See: https://github.com/facebook/react/issues/33057#issuecomment-2894450792
+   */
+  const useNoMemo = <const T,>(factory: () => T): T => {
+    "use no memo";
+    return factory();
+  };
+
+  // Extract table state reads with React Compiler opt-out to prevent stale values
+  const headerGroups = useNoMemo(() => table.getHeaderGroups());
+  const rowModel = useNoMemo(() => table.getRowModel());
+
   return (
     <div className="space-y-4">
-      <DataTableToolbar table={table} />
-      <div className="rounded-md border">
+      {toolbar}
+      <div className="rounded-md border overflow-hidden">
         <Table>
-          <TableHeader className="bg-tertiary-200">
-            {table.getHeaderGroups().map((headerGroup) => (
+          <TableHeader className={cn(headerClassName)}>
+            {headerGroups.map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
@@ -98,17 +133,27 @@ export function DataTable<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
+            {isLoading ? (
+              Array.from({ length: TABLE_CONFIG.LOADING_ROWS }).map(
+                (_, index) => (
+                  <TableRow key={index}>
+                    {columns.map((_, cellIndex) => (
+                      <TableCell key={cellIndex}>
+                        <div className="h-4 bg-muted animate-pulse rounded" />
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                )
+              )
+            ) : rowModel.rows?.length ? (
+              rowModel.rows.map((row) => (
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  className={cn("hover:bg-muted/50", rowClassName)}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      className="w-fit h-auto min-h-[1.5em] leading-[1.4] align-middle overflow-visible"
-                    >
+                    <TableCell key={cell.id} className="py-3">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -124,11 +169,11 @@ export function DataTable<TData, TValue>({
                   className="h-24 text-center"
                 >
                   <div
-                    className={`text-center ${isError ? "text-red-500" : ""}`}
+                    className={`text-center ${
+                      isError ? "text-destructive" : "text-muted-foreground"
+                    }`}
                   >
-                    {isError
-                      ? "Une erreur est survenue lors du chargement de vos données."
-                      : "Pas de données"}
+                    {isError ? errorMessage : emptyMessage}
                   </div>
                 </TableCell>
               </TableRow>
@@ -136,7 +181,7 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <DataTablePagination table={table} mutationType={mutationType} />
+      <SimpleDataTablePagination table={table} />
     </div>
   );
 }

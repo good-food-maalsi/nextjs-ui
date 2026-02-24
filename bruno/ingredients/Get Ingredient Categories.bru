@@ -1,0 +1,60 @@
+meta {
+  name: Get Ingredient Categories
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{apiUrl}}/ingredients/{{ingredientId}}/categories
+  body: none
+  auth: inherit
+}
+
+docs {
+  # Get Ingredient Categories
+
+  Récupère toutes les catégories associées à un ingrédient.
+
+  ## Path Parameters
+
+  - `id` (uuid): ID de l'ingrédient
+
+  ## Response (200 OK)
+
+  ```json
+  {
+    "data": [
+      {
+        "id": "uuid",
+        "name": "Viandes",
+        "description": "Produits carnés",
+        "created_at": "2025-01-01T00:00:00.000Z",
+        "updated_at": "2025-01-01T00:00:00.000Z"
+      },
+      {
+        "id": "uuid",
+        "name": "Bio",
+        "description": "Produits biologiques",
+        "created_at": "2025-01-01T00:00:00.000Z",
+        "updated_at": "2025-01-01T00:00:00.000Z"
+      }
+    ]
+  }
+  ```
+
+  ## Error Responses
+
+  - `404 Not Found`: Ingrédient non trouvé
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Response has data array", function() {
+    const body = res.getBody();
+    expect(body).to.have.property('data');
+    expect(body.data).to.be.an('array');
+  });
+}

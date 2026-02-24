@@ -1,0 +1,91 @@
+meta {
+  name: Update Supplier
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{apiUrl}}/suppliers/{{supplierId}}
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+vars:pre-request {
+  supplierId: 550e8400-e29b-41d4-a716-446655440000
+}
+
+body:json {
+  {
+    "name": "Fresh Produce Co. - Premium",
+    "phone": "+33 1 23 45 67 99",
+    "logo_url": "https://example.com/new-logo.png"
+  }
+}
+
+docs {
+  # Update Supplier
+
+  Met à jour un fournisseur existant. Tous les champs sont optionnels.
+
+  ## URL Parameters
+
+  - `id` (uuid): ID du fournisseur
+
+  ## Optional Fields
+
+  - `name` (string, 2-255 chars): Nom du fournisseur
+  - `logo_url` (string, url, max 500 chars, nullable): URL du logo
+  - `latitude` (number, -90 to 90, nullable): Latitude GPS (doit être fournie avec longitude)
+  - `longitude` (number, -180 to 180, nullable): Longitude GPS (doit être fournie avec latitude)
+  - `phone` (string, 1-100 chars): Numéro de téléphone
+  - `email` (string, email, max 100 chars): Email (doit être unique)
+
+  ## Response (200 OK)
+
+  ```json
+  {
+    "id": "uuid",
+    "name": "Fresh Produce Co. - Premium",
+    "logo_url": "https://example.com/new-logo.png",
+    "latitude": 48.8566,
+    "longitude": 2.3522,
+    "phone": "+33 1 23 45 67 99",
+    "email": "contact@freshproduce.com",
+    "created_at": "2025-01-01T00:00:00.000Z",
+    "updated_at": "2025-01-01T12:00:00.000Z"
+  }
+  ```
+
+  ## Error Responses
+
+  - `400 Bad Request`: Données invalides (ex: coordonnées GPS hors limites, URL invalide)
+  - `404 Not Found`: Fournisseur non trouvé
+  - `409 Conflict`: Email déjà utilisé par un autre fournisseur
+
+  ## Notes
+
+  - Les coordonnées GPS doivent être fournies ensemble ou définies à null ensemble
+  - Pour supprimer le logo, définir `logo_url` à `null`
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Response has updated fields", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('id');
+    expect(data.name).to.equal('Fresh Produce Co. - Premium');
+  });
+
+  test("Updated_at is modified", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('updated_at');
+    expect(new Date(data.updated_at).getTime()).to.be.greaterThan(new Date(data.created_at).getTime());
+  });
+}

@@ -1,15 +1,14 @@
 import { Role } from "@/lib/types/user.types";
 
-export const renderRoleName = (role: string | undefined) => {
+/** Libellés pour les rôles auth-service (Prisma) */
+const ROLE_LABELS: Record<string, string> = {
+  ADMIN: Role.ADMIN,
+  FRANCHISE_OWNER: Role.FRANCHISE_OWNER,
+  STAFF: Role.STAFF,
+  CUSTOMER: Role.CUSTOMER,
+};
+
+export const renderRoleName = (role: string | undefined): string => {
   if (!role) return "";
-  switch (role) {
-    case "SUPER_ADMIN":
-      return Role.SUPER_ADMIN;
-    case "ADMIN":
-      return Role.ADMIN;
-    case "EDITOR":
-      return Role.EDITOR;
-    default:
-      return Role.READER;
-  }
+  return ROLE_LABELS[role] ?? role;
 };

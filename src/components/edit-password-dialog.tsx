@@ -50,27 +50,29 @@ export function EditPasswordDialog({
     },
   });
 
+  const { reset } = form;
+
   useEffect(() => {
     if (!open) {
-      form.reset({
+      reset({
         currentPassword: "",
         newPassword: "",
         confirmPassword: "",
       });
     }
-  }, [open]);
+  }, [open, form, reset]);
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (data: EditPasswordForm) =>
       await userService.updatePassword(
         userId,
         data.currentPassword,
-        data.newPassword
+        data.newPassword,
       ),
     onSuccess: () => {
       toast.success("Mot de passe modifié avec succès");
       onOpenChange(false);
-      form.reset();
+      reset();
     },
     onError: () => {
       toast.error("Erreur lors de la modification du mot de passe");

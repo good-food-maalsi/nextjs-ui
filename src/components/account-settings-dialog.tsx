@@ -1,14 +1,13 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
 import { ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-import { useDeleteYourself } from "@/app/(dashboard)/membres/_hooks/use-delete-members";
+import { useDeleteYourself } from "@/app/dashboard/(dashboard-layout)/membres/_hooks/use-delete-members";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -24,8 +23,8 @@ import { userFormSchema } from "@/lib/schemas/user.schema";
 import { sessionStore } from "@/lib/session/session-store";
 import type { UserForm } from "@/lib/types/user.types";
 
+import { useLogoutGateway } from "@/hooks/use-auth-gateway";
 import { BASE_URL } from "../lib/constants/global.constants";
-import { authService } from "../services/auth.service";
 import { EditEmailDialog } from "./edit-email-dialog";
 import { EditPasswordDialog } from "./edit-password-dialog";
 import { EditUsernameDialog } from "./edit-username-dialog";
@@ -68,6 +67,18 @@ export function AccountSettingsDialog({
       profilePicture: [],
     },
   });
+
+  /**
+   * Opt-out of React Compiler memoization for React Hook Form's watch().
+   * watch() returns a value that must not be memoized (stale UI otherwise).
+   * See: https://github.com/facebook/react/issues/33057#issuecomment-2894450792
+   */
+  const useNoMemo = <T,>(factory: () => T): T => {
+    "use no memo";
+    return factory();
+  };
+  const profilePictureValue = useNoMemo(() => form.watch("profilePicture"));
+
   useEffect(() => {
     if (session.picture && !form.getValues("profilePicture")?.length) {
       const pictureUrl = session.picture;
@@ -85,15 +96,14 @@ export function AccountSettingsDialog({
 
   const router = useRouter();
 
-  const { mutate } = useMutation({
-    mutationFn: authService.logout,
-    onSuccess: () => {
-      router.push("/login");
-    },
-    onError: () => {
-      toast.error("Une erreur est survenue lors de la déconnexion");
-    },
-  });
+  const logoutMutation = useLogoutGateway();
+  const mutate = () => {
+    logoutMutation.mutate(undefined, {
+      onSuccess: () => router.push("/dashboard/login"),
+      onError: () =>
+        toast.error("Une erreur est survenue lors de la déconnexion"),
+    });
+  };
 
   const { mutate: deleteMember } = useDeleteYourself();
 
@@ -105,7 +115,7 @@ export function AccountSettingsDialog({
           onSuccess: () => {
             mutate();
           },
-        }
+        },
       );
       setActiveDialog(null);
     }
@@ -131,18 +141,18 @@ export function AccountSettingsDialog({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-3xl space-y-3">
+        <DialogContent className="space-y-3 sm:max-w-3xl">
           <DialogHeader>
-            <DialogTitle className="text-4xl font-medium text-secondary">
+            <DialogTitle className="text-4xl font-medium">
               Mon compte
             </DialogTitle>
           </DialogHeader>
           <Form {...form}>
             <div className="space-y-6">
               <div className="space-y-4">
-                <div className="flex items-start gap-6">
+                <div className="flex items-start gap-6 sm:flex-row flex-col">
                   <FileUpload
-                    value={form.watch("profilePicture")}
+                    value={profilePictureValue}
                     onChange={handleFileUploadChange}
                     size="icon"
                     accept={{ "image/*": [".jpg", ".jpeg", ".png"] }}
@@ -150,7 +160,7 @@ export function AccountSettingsDialog({
                     maxSize={0.5}
                   />
                   <div className="space-y-3">
-                    <h3 className="font-medium text-primary">
+                    <h3 className="font-medium text-secondary">
                       Uploader une nouvelle photo
                     </h3>
                     <p className="text-sm">
@@ -160,18 +170,17 @@ export function AccountSettingsDialog({
                       Taille maximale du fichier : 500ko.
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      {form.watch("profilePicture")?.length === 0
+                      {profilePictureValue?.length === 0
                         ? "Aucun fichier sélectionné"
                         : "Fichier sélectionné"}
                     </p>
                   </div>
                 </div>
                 <Button
-                  variant="outline"
+                  variant="secondaryOutline"
                   size="sm"
                   onClick={handleUpdateProfilePicture}
-                  className="border-primary text-primary hover:bg-primary hover:text-background"
-                  disabled={form.watch("profilePicture")?.length === 0}
+                  disabled={profilePictureValue?.length === 0}
                 >
                   Mettre à jour la photo de profil
                 </Button>
@@ -198,17 +207,12 @@ export function AccountSettingsDialog({
                   <div className="space-y-6">
                     <div className="flex items-center justify-between">
                       <div className="space-y-2">
-                        <h3 className="font-medium text-secondary">
-                          Nom d’utilisateur
-                        </h3>
-                        <p className="text-sm text-secondary">
-                          {session.username}
-                        </p>
+                        <h3 className="font-medium">Nom d’utilisateur</h3>
+                        <p className="text-sm">{session.username}</p>
                       </div>
                       <Button
-                        variant="outline"
+                        variant="secondaryOutline"
                         size="sm"
-                        className="border-primary text-primary hover:bg-primary hover:text-background"
                         onClick={() => setActiveDialog("username")}
                       >
                         Changer de nom d’utilisateur
@@ -216,15 +220,12 @@ export function AccountSettingsDialog({
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="space-y-2">
-                        <h3 className="font-medium text-secondary">Email</h3>
-                        <p className="text-sm text-secondary">
-                          {session.email}
-                        </p>
+                        <h3 className="font-medium">Email</h3>
+                        <p className="text-sm">{session.email}</p>
                       </div>
                       <Button
-                        variant="outline"
+                        variant="secondaryOutline"
                         size="sm"
-                        className="border-primary text-primary  hover:bg-primary hover:text-background"
                         onClick={() => setActiveDialog("email")}
                       >
                         Changer d’adresse e-mail
@@ -232,18 +233,15 @@ export function AccountSettingsDialog({
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="space-y-2">
-                        <h3 className="font-medium text-secondary">
-                          Mot de passe
-                        </h3>
+                        <h3 className="font-medium">Mot de passe</h3>
                         <p className="text-sm text-muted-foreground">
                           Modifiez votre mot de passe pour vous connecter à
                           votre compte
                         </p>
                       </div>
                       <Button
-                        variant="outline"
+                        variant="secondaryOutline"
                         size="sm"
-                        className="border-primary text-primary  hover:bg-primary hover:text-background"
                         onClick={() => setActiveDialog("password")}
                       >
                         Modifier le mot de passe
@@ -309,7 +307,10 @@ export function AccountSettingsDialog({
               irréversible.
             </p>
             <div className="flex justify-end space-x-4">
-              <Button variant="outline" onClick={() => setActiveDialog(null)}>
+              <Button
+                variant="secondaryOutline"
+                onClick={() => setActiveDialog(null)}
+              >
                 Annuler
               </Button>
               <Button onClick={handleDeleteAccount}>Supprimer</Button>

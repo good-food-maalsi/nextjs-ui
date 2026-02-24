@@ -1,0 +1,74 @@
+meta {
+  name: Add Ingredient to Command
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{apiUrl}}/commands/{{commandId}}/ingredients
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "ingredient_id": "{{ingredientId}}",
+    "quantity": 5
+  }
+}
+
+docs {
+  # Add Ingredient to Command
+
+  Ajoute un ingrédient à une commande.
+
+  **Note**: Si l'ingrédient existe déjà dans la commande, la quantité sera incrémentée.
+
+  ## Path Parameters
+
+  - `id` (uuid): ID de la commande
+
+  ## Request Body
+
+  - `ingredient_id` (uuid, required): ID de l'ingrédient (doit exister)
+  - `quantity` (number, positive int, required): Quantité à ajouter
+
+  ## Response (201 Created)
+
+  ```json
+  {
+    "id": "uuid",
+    "command_id": "uuid",
+    "ingredient_id": "uuid",
+    "quantity": 5,
+    "created_at": "2025-01-01T00:00:00.000Z",
+    "updated_at": "2025-01-01T00:00:00.000Z",
+    "ingredient": {
+      "id": "uuid",
+      "name": "Poulet fermier",
+      "unit_price": "12.50"
+    }
+  }
+  ```
+
+  ## Error Responses
+
+  - `404 Not Found`: Commande ou ingrédient non trouvé
+  - `400 Bad Request`: Données invalides
+}
+
+tests {
+  test("Status code is 201", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+
+  test("Response has ingredient data", function() {
+    const data = res.getBody();
+    expect(data).to.have.property('ingredient');
+    expect(data).to.have.property('quantity');
+  });
+}

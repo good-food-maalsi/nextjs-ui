@@ -3,7 +3,7 @@ import "server-only";
 import { cookies } from "next/headers";
 
 import type { Session } from "@/lib/types/session.types";
-import { decrypt } from "@/lib/utils/token.utils";
+import { decrypt, payloadToSession } from "@/lib/utils/token.utils";
 
 export const serverSession = {
   async getServerSession(): Promise<Session> {
@@ -11,13 +11,7 @@ export const serverSession = {
     if (!token) return {};
 
     const payload = await decrypt(token);
-    return {
-      sub: payload?.sub,
-      role: payload?.role,
-      username: payload?.username,
-      picture: payload?.picture,
-      email: payload?.email,
-    };
+    return payloadToSession(payload);
   },
 
   async getAccessToken(): Promise<string | undefined> {
