@@ -3,7 +3,7 @@ import type {
   StockWithIngredient,
   CreateStockFranchiseInput,
   UpdateStockFranchiseInput,
-} from "@good-food-maalsi/contracts/franchise";
+} from "@good-food/contracts/franchise";
 
 interface StockFranchiseResponse {
   data: StockWithIngredient[];

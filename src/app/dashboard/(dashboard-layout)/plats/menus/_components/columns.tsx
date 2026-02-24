@@ -43,7 +43,15 @@ export const menuColumnLabels: Record<string, string> = {
   [MenuColumnKey.CREATED_AT]: "Date de création",
 };
 
-export const columns: ColumnDef<Menu>[] = [
+interface ColumnsProps {
+  onEdit: (menu: Menu) => void;
+  onDelete: (menu: Menu) => void;
+}
+
+export const createColumns = ({
+  onEdit,
+  onDelete,
+}: ColumnsProps): ColumnDef<Menu>[] => [
   {
     id: MenuColumnKey.SELECT,
     header: ({ table }) => (
@@ -96,40 +104,11 @@ export const columns: ColumnDef<Menu>[] = [
     enableSorting: false,
   },
   {
-    accessorKey: MenuColumnKey.CATEGORY,
-    header: menuColumnLabels[MenuColumnKey.CATEGORY],
-    cell: ({ row }) => <div>{row.getValue(MenuColumnKey.CATEGORY)}</div>,
-    enableSorting: false,
-  },
-  {
-    accessorKey: MenuColumnKey.DISH_COUNT,
-    header: menuColumnLabels[MenuColumnKey.DISH_COUNT],
-    cell: ({ row }) => (
-      <div className="text-center">
-        {row.getValue(MenuColumnKey.DISH_COUNT)} plat(s)
-      </div>
-    ),
-    enableSorting: false,
-  },
-  {
-    accessorKey: MenuColumnKey.DISCOUNT_COUNT,
-    header: menuColumnLabels[MenuColumnKey.DISCOUNT_COUNT],
-    cell: ({ row }) => {
-      const count = row.getValue(MenuColumnKey.DISCOUNT_COUNT) as number;
-      return (
-        <div className="text-center">
-          {count > 0 ? `${count} réduction(s)` : "-"}
-        </div>
-      );
-    },
-    enableSorting: false,
-  },
-  {
     accessorKey: MenuColumnKey.AVAILABILITY,
     header: menuColumnLabels[MenuColumnKey.AVAILABILITY],
     cell: ({ row }) => {
       const availability = row.getValue(
-        MenuColumnKey.AVAILABILITY
+        MenuColumnKey.AVAILABILITY,
       ) as MenuAvailability;
       const isAvailable = availability === "available";
       return (
@@ -175,9 +154,13 @@ export const columns: ColumnDef<Menu>[] = [
                 Copier l'ID du menu
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Modifier le menu</DropdownMenuItem>
-              <DropdownMenuItem>Dupliquer le menu</DropdownMenuItem>
-              <DropdownMenuItem className="text-destructive">
+              <DropdownMenuItem onClick={() => onEdit(menu)}>
+                Modifier le menu
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="text-destructive"
+                onClick={() => onDelete(menu)}
+              >
                 Supprimer le menu
               </DropdownMenuItem>
             </DropdownMenuContent>

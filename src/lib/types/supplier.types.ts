@@ -4,7 +4,7 @@ export type {
   Supplier,
   SupplierQueryParams,
   UpdateSupplierInput,
-} from "@good-food-maalsi/contracts/franchise";
+} from "@good-food/contracts/franchise";
 
 // Frontend display type (French labels for UI) — UI-specific, not in contracts
 export interface SupplierDisplay {

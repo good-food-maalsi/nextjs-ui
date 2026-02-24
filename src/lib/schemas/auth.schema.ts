@@ -5,6 +5,22 @@ export const loginSchema = z.object({
   password: z.string().min(1, "Le mot de passe n'est pas requis"),
 });
 
+export const registerSchema = z
+  .object({
+    username: z.string().min(1, "Le pseudo est requis"),
+    email: z.string().email("L'email n'est pas valide").min(1, "Le champ est requis"),
+    password: z
+      .string()
+      .min(8, "Le mot de passe doit contenir au moins 8 caractères"),
+    passwordConfirmation: z.string().min(1, "Veuillez confirmer le mot de passe"),
+  })
+  .refine((data) => data.password === data.passwordConfirmation, {
+    message: "Les mots de passe ne correspondent pas",
+    path: ["passwordConfirmation"],
+  });
+
+export type TRegisterSchema = z.infer<typeof registerSchema>;
+
 export const passwordRegisterSchema = z
   .object({
     password: z

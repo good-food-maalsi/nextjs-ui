@@ -6,20 +6,34 @@ import type {
   UpdateDishInput,
   CreateDishIngredientInput,
   UpdateDishIngredientInput,
-} from "@good-food-maalsi/contracts/catalog";
+} from "@good-food/contracts/catalog";
 
-// Query keys
+export interface DishQueryParams {
+  menuId?: string;
+  categoryId?: string;
+  franchiseId?: string;
+  search?: string;
+}
+
+// Query keys (params sérialisés pour que le changement de catégorie déclenche bien un refetch)
 export const dishKeys = {
   all: ["dishes"] as const,
   lists: () => [...dishKeys.all, "list"] as const,
-  list: (params: { menuId?: string }) => [...dishKeys.lists(), params] as const,
+  list: (params: DishQueryParams) =>
+    [
+      ...dishKeys.lists(),
+      params.menuId ?? null,
+      params.categoryId ?? null,
+      params.franchiseId ?? null,
+    ] as const,
   details: () => [...dishKeys.all, "detail"] as const,
   detail: (id: string) => [...dishKeys.details(), id] as const,
-  ingredients: (dishId: string) => [...dishKeys.detail(dishId), "ingredients"] as const,
+  ingredients: (dishId: string) =>
+    [...dishKeys.detail(dishId), "ingredients"] as const,
 };
 
 // Query hooks
-export function useDishes(params: { menuId?: string } = {}) {
+export function useDishes(params: DishQueryParams = {}) {
   return useQuery({
     queryKey: dishKeys.list(params),
     queryFn: () => dishService.findAll(params),
@@ -72,16 +86,23 @@ export function useUpdateDish() {
       await queryClient.cancelQueries({ queryKey: dishKeys.lists() });
 
       const previousDish = queryClient.getQueryData<Dish>(dishKeys.detail(id));
-      const previousLists = queryClient.getQueriesData<Dish[]>({ queryKey: dishKeys.lists() });
+      const previousLists = queryClient.getQueriesData<Dish[]>({
+        queryKey: dishKeys.lists(),
+      });
 
       queryClient.setQueryData<Dish>(dishKeys.detail(id), (old) =>
-        old ? { ...old, ...data } : old
+        old ? { ...old, ...data } : old,
       );
 
-      queryClient.setQueriesData<Dish[]>({ queryKey: dishKeys.lists() }, (old) => {
-        if (!old) return old;
-        return old.map((dish) => (dish.id === id ? { ...dish, ...data } : dish));
-      });
+      queryClient.setQueriesData<Dish[]>(
+        { queryKey: dishKeys.lists() },
+        (old) => {
+          if (!old) return old;
+          return old.map((dish) =>
+            dish.id === id ? { ...dish, ...data } : dish,
+          );
+        },
+      );
 
       return { previousDish, previousLists };
     },
@@ -127,8 +148,13 @@ export function useAddDishIngredient() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ dishId, data }: { dishId: string; data: CreateDishIngredientInput }) =>
-      dishService.addIngredient(dishId, data),
+    mutationFn: ({
+      dishId,
+      data,
+    }: {
+      dishId: string;
+      data: CreateDishIngredientInput;
+    }) => dishService.addIngredient(dishId, data),
     onSuccess: (_data, { dishId }) => {
       toast.success("Ingrédient ajouté au plat");
       queryClient.invalidateQueries({ queryKey: dishKeys.ingredients(dishId) });
@@ -166,8 +192,13 @@ export function useRemoveDishIngredient() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ dishId, ingredientId }: { dishId: string; ingredientId: string }) =>
-      dishService.removeIngredient(dishId, ingredientId),
+    mutationFn: ({
+      dishId,
+      ingredientId,
+    }: {
+      dishId: string;
+      ingredientId: string;
+    }) => dishService.removeIngredient(dishId, ingredientId),
     onSuccess: (_data, { dishId }) => {
       toast.success("Ingrédient retiré du plat");
       queryClient.invalidateQueries({ queryKey: dishKeys.ingredients(dishId) });

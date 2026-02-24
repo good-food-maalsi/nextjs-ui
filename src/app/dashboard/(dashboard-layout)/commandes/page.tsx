@@ -10,7 +10,7 @@ import { columns } from "./_components/columns";
 import type { Order } from "./_types";
 import { PaymentStatus, OrderStatus, DeliveryStatus } from "./_types";
 import { useCommands } from "@/hooks/use-commands";
-import type { Command } from "@good-food-maalsi/contracts/franchise";
+import type { Command } from "@good-food/contracts/franchise";
 
 function mapCommandToOrder(command: Command): Order {
   const statusMap: Record<string, OrderStatus> = {

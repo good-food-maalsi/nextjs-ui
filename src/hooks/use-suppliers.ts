@@ -4,7 +4,7 @@ import { supplierService } from "@/services/supplier.service";
 import type {
   Supplier,
   UpdateSupplierInput,
-} from "@good-food-maalsi/contracts/franchise";
+} from "@good-food/contracts/franchise";
 
 interface SuppliersResponse {
   data: Supplier[];

@@ -1,21 +1,32 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { menuService } from "@/services/menu.service";
-import type { Menu, UpdateMenuInput } from "@good-food-maalsi/contracts/catalog";
+import type { Menu, UpdateMenuInput } from "@good-food/contracts/catalog";
 
-// Query keys
+export interface MenuQueryParams {
+  categoryId?: string;
+  franchiseId?: string;
+}
+
+// Query keys (params sérialisés pour que le changement de catégorie déclenche bien un refetch)
 export const menuKeys = {
   all: ["menus"] as const,
   lists: () => [...menuKeys.all, "list"] as const,
+  list: (params: MenuQueryParams) =>
+    [
+      ...menuKeys.lists(),
+      params.categoryId ?? null,
+      params.franchiseId ?? null,
+    ] as const,
   details: () => [...menuKeys.all, "detail"] as const,
   detail: (id: string) => [...menuKeys.details(), id] as const,
 };
 
 // Query hooks
-export function useMenus() {
+export function useMenus(params: MenuQueryParams = {}) {
   return useQuery({
-    queryKey: menuKeys.lists(),
-    queryFn: () => menuService.findAll(),
+    queryKey: menuKeys.list(params),
+    queryFn: () => menuService.findAll(params),
     staleTime: 60 * 1000,
   });
 }
@@ -57,16 +68,23 @@ export function useUpdateMenu() {
       await queryClient.cancelQueries({ queryKey: menuKeys.lists() });
 
       const previousMenu = queryClient.getQueryData<Menu>(menuKeys.detail(id));
-      const previousLists = queryClient.getQueriesData<Menu[]>({ queryKey: menuKeys.lists() });
+      const previousLists = queryClient.getQueriesData<Menu[]>({
+        queryKey: menuKeys.lists(),
+      });
 
       queryClient.setQueryData<Menu>(menuKeys.detail(id), (old) =>
-        old ? { ...old, ...data } : old
+        old ? { ...old, ...data } : old,
       );
 
-      queryClient.setQueriesData<Menu[]>({ queryKey: menuKeys.lists() }, (old) => {
-        if (!old) return old;
-        return old.map((menu) => (menu.id === id ? { ...menu, ...data } : menu));
-      });
+      queryClient.setQueriesData<Menu[]>(
+        { queryKey: menuKeys.lists() },
+        (old) => {
+          if (!old) return old;
+          return old.map((menu) =>
+            menu.id === id ? { ...menu, ...data } : menu,
+          );
+        },
+      );
 
       return { previousMenu, previousLists };
     },

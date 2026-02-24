@@ -1,13 +1,13 @@
 import { initClient } from "@ts-rest/core";
-import { franchiseContract } from "@good-food-maalsi/contracts/franchise";
-import { authContract } from "@good-food-maalsi/contracts/auth";
-import { catalogContract } from "@good-food-maalsi/contracts/catalog";
+import { franchiseContract } from "@good-food/contracts/franchise";
+import { authContract } from "@good-food/contracts/auth";
+import { catalogContract } from "@good-food/contracts/catalog";
+import { commandsContract } from "@good-food/contracts/commands";
 
 const gatewayUrl =
   process.env.NEXT_PUBLIC_GATEWAY_URL || "http://localhost:8080";
 
 // Le gateway nginx route /franchise/* → franchise-service (en strippant /franchise/)
-// Les paths du contrat (/suppliers, /ingredients, ...) doivent donc être préfixés par /franchise
 export const franchiseClient = initClient(franchiseContract, {
   baseUrl: `${gatewayUrl}/franchise`,
   credentials: "include" as const,
@@ -36,5 +36,16 @@ export const authClient = initClient(authContract, {
 // Le gateway nginx route /catalog/* → catalog-service (en strippant /catalog/)
 export const catalogClient = initClient(catalogContract, {
   baseUrl: `${gatewayUrl}/catalog`,
+  credentials: "include" as const,
+});
+
+// Le gateway nginx route /commands/* → commands-service (en strippant /commands/)
+// Côté navigateur : on passe par le proxy Next.js /api/commands pour éviter CORS
+// et pour que les cookies (accessToken / refreshToken) soient bien envoyés (same-origin 3000).
+const commandsBaseUrl =
+  typeof window !== "undefined" ? "/api/commands" : `${gatewayUrl}/commands`;
+
+export const commandsClient = initClient(commandsContract, {
+  baseUrl: commandsBaseUrl,
   credentials: "include" as const,
 });

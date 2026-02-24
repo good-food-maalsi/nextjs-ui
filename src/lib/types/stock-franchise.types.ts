@@ -5,10 +5,10 @@ export type {
   StockFranchiseQueryParams,
   StockWithIngredient,
   UpdateStockFranchiseInput,
-} from "@good-food-maalsi/contracts/franchise";
+} from "@good-food/contracts/franchise";
 
 // Backward-compatibility alias
-export type { StockWithIngredient as StockFranchise } from "@good-food-maalsi/contracts/franchise";
+export type { StockWithIngredient as StockFranchise } from "@good-food/contracts/franchise";
 
 // Frontend display type (French labels for UI) — UI-specific, not in contracts
 export interface StockFranchiseDisplay {

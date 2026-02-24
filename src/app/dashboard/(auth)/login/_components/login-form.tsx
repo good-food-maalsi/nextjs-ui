@@ -6,13 +6,7 @@ import { useState } from "react";
 
 import { useLogin } from "../_hooks/use-login";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -34,10 +28,6 @@ export const LoginForm = () => {
           <LockKeyhole />
           Se connecter
         </CardTitle>
-        <CardDescription className="font-light">
-          L'accès à <b>Lena</b> est réservé. Merci de vous identifier pour
-          accéder au service.
-        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid gap-7">

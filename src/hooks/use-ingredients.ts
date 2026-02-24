@@ -4,7 +4,7 @@ import { ingredientService } from "@/services/ingredient.service";
 import type {
   IngredientWithCategories,
   UpdateIngredientInput,
-} from "@good-food-maalsi/contracts/franchise";
+} from "@good-food/contracts/franchise";
 
 interface IngredientsResponse {
   data: IngredientWithCategories[];
