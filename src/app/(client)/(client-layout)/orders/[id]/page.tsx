@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { useRequireAuth } from "@/hooks/use-require-auth";
 import { useOrder } from "@/hooks/use-orders";
-import type { OrderWithItems } from "@good-food-maalsi/contracts/commands";
+import type { OrderWithItems } from "@good-food/contracts/commands";
 
 function OrderStatusBadge({ status }: { status: OrderWithItems["status"] }) {
   const config = {

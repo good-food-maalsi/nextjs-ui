@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { useCommand, useUpdateCommand } from "@/hooks/use-commands";
-import type { CommandWithItems } from "@good-food-maalsi/contracts/franchise";
+import type { CommandWithItems } from "@good-food/contracts/franchise";
 
 const statusLabels: Record<string, string> = {
   draft: "Brouillon",
@@ -17,7 +17,10 @@ const statusLabels: Record<string, string> = {
   canceled: "Annulée",
 };
 
-const statusVariants: Record<string, "default" | "pending" | "paid" | "failed"> = {
+const statusVariants: Record<
+  string,
+  "default" | "pending" | "paid" | "failed"
+> = {
   draft: "pending",
   confirmed: "default",
   in_progress: "pending",
@@ -54,7 +57,9 @@ function CommandDetailContent({ command }: { command: CommandWithItems }) {
                 <h1 className="text-2xl font-semibold">
                   Commande #{command.id.slice(-6).toUpperCase()}
                 </h1>
-                <StatusBadge variant={statusVariants[command.status] ?? "default"}>
+                <StatusBadge
+                  variant={statusVariants[command.status] ?? "default"}
+                >
                   {statusLabels[command.status] ?? command.status}
                 </StatusBadge>
               </div>
@@ -81,8 +86,11 @@ function CommandDetailContent({ command }: { command: CommandWithItems }) {
           <Card>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
-                <StatusBadge variant={statusVariants[command.status] ?? "default"}>
-                  {statusLabels[command.status] ?? command.status} ({command.items.length})
+                <StatusBadge
+                  variant={statusVariants[command.status] ?? "default"}
+                >
+                  {statusLabels[command.status] ?? command.status} (
+                  {command.items.length})
                 </StatusBadge>
               </div>
 
@@ -190,7 +198,8 @@ function CommandDetailContent({ command }: { command: CommandWithItems }) {
                     </div>
                     <div className="flex-1 pb-4">
                       <p className="text-sm">
-                        Statut mis à jour : {statusLabels[command.status] ?? command.status}
+                        Statut mis à jour :{" "}
+                        {statusLabels[command.status] ?? command.status}
                       </p>
                       <p className="text-sm text-muted-foreground">
                         {formatDate(command.updated_at)}
@@ -224,10 +233,14 @@ function CommandDetailContent({ command }: { command: CommandWithItems }) {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Articles</p>
-                <p className="text-sm font-medium">{command.items.length} article(s)</p>
+                <p className="text-sm font-medium">
+                  {command.items.length} article(s)
+                </p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Dernière mise à jour</p>
+                <p className="text-sm text-muted-foreground">
+                  Dernière mise à jour
+                </p>
                 <p className="text-sm">{formatDate(command.updated_at)}</p>
               </div>
             </CardContent>

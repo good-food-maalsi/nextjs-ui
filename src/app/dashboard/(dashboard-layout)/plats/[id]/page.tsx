@@ -23,15 +23,24 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useDish, useDishIngredients, useAddDishIngredient, useUpdateDishIngredient, useRemoveDishIngredient } from "@/hooks/use-dishes";
+import {
+  useDish,
+  useDishIngredients,
+  useAddDishIngredient,
+  useUpdateDishIngredient,
+  useRemoveDishIngredient,
+} from "@/hooks/use-dishes";
 import { useStocks } from "@/hooks/use-stocks";
 import { useFranchiseId } from "@/hooks/use-franchise";
-import type { DishIngredient } from "@good-food-maalsi/contracts/catalog";
-import type { StockWithIngredient } from "@good-food-maalsi/contracts/franchise";
+import type { DishIngredient } from "@good-food/contracts/catalog";
+import type { StockWithIngredient } from "@good-food/contracts/franchise";
 
 const EMPTY_STOCKS: StockWithIngredient[] = [];
 
-function getIngredientName(stockId: string, stocks: StockWithIngredient[] | undefined): string {
+function getIngredientName(
+  stockId: string,
+  stocks: StockWithIngredient[] | undefined,
+): string {
   const stock = stocks?.find((s) => s.id === stockId);
   return stock?.ingredient?.name ?? stockId;
 }
@@ -43,18 +52,25 @@ export default function PlatDetailPage() {
 
   const [selectedStockId, setSelectedStockId] = React.useState<string>("");
   const [quantityToAdd, setQuantityToAdd] = React.useState<number>(1);
-  const [editingIngredientId, setEditingIngredientId] = React.useState<string | null>(null);
+  const [editingIngredientId, setEditingIngredientId] = React.useState<
+    string | null
+  >(null);
   const [editQuantity, setEditQuantity] = React.useState<number>(1);
 
-  const { data: dish, isLoading: dishLoading, isError: dishError } = useDish(dishId);
-  const { data: dishIngredients = [], isLoading: ingredientsLoading } = useDishIngredients(dishId);
+  const {
+    data: dish,
+    isLoading: dishLoading,
+    isError: dishError,
+  } = useDish(dishId);
+  const { data: dishIngredients = [], isLoading: ingredientsLoading } =
+    useDishIngredients(dishId);
   const { data: stocksData } = useStocks({
     franchise_id: franchiseId ?? "",
     limit: 100,
   });
   const stocksList = React.useMemo(
     () => stocksData?.data ?? EMPTY_STOCKS,
-    [stocksData?.data]
+    [stocksData?.data],
   );
   const addIngredientMutation = useAddDishIngredient();
   const updateIngredientMutation = useUpdateDishIngredient();
@@ -62,11 +78,11 @@ export default function PlatDetailPage() {
 
   const existingStockIds = React.useMemo(
     () => new Set(dishIngredients.map((di) => di.stock_id)),
-    [dishIngredients]
+    [dishIngredients],
   );
   const availableStocks = React.useMemo(
     () => stocksList.filter((s) => !existingStockIds.has(s.id)),
-    [stocksList, existingStockIds]
+    [stocksList, existingStockIds],
   );
 
   const handleAddIngredient = async (e: React.FormEvent) => {
@@ -170,9 +186,15 @@ export default function PlatDetailPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           {franchiseId && (
-            <form onSubmit={handleAddIngredient} className="flex flex-wrap items-end gap-3">
+            <form
+              onSubmit={handleAddIngredient}
+              className="flex flex-wrap items-end gap-3"
+            >
               <div className="space-y-2">
-                <label htmlFor="add-ingredient-stock" className="text-sm font-medium">
+                <label
+                  htmlFor="add-ingredient-stock"
+                  className="text-sm font-medium"
+                >
                   Ajouter un ingrédient (stock franchise)
                 </label>
                 <Select
@@ -180,7 +202,10 @@ export default function PlatDetailPage() {
                   onValueChange={setSelectedStockId}
                   disabled={availableStocks.length === 0}
                 >
-                  <SelectTrigger id="add-ingredient-stock" className="w-[220px]">
+                  <SelectTrigger
+                    id="add-ingredient-stock"
+                    className="w-[220px]"
+                  >
                     <SelectValue placeholder="Choisir un ingrédient" />
                   </SelectTrigger>
                   <SelectContent>
@@ -193,7 +218,10 @@ export default function PlatDetailPage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <label htmlFor="add-ingredient-quantity" className="text-sm font-medium">
+                <label
+                  htmlFor="add-ingredient-quantity"
+                  className="text-sm font-medium"
+                >
                   Quantité requise
                 </label>
                 <Input
@@ -201,13 +229,19 @@ export default function PlatDetailPage() {
                   type="number"
                   min={1}
                   value={quantityToAdd}
-                  onChange={(e) => setQuantityToAdd(parseInt(e.target.value, 10) || 1)}
+                  onChange={(e) =>
+                    setQuantityToAdd(parseInt(e.target.value, 10) || 1)
+                  }
                   className="w-24"
                 />
               </div>
               <Button
                 type="submit"
-                disabled={!selectedStockId || addIngredientMutation.isPending || availableStocks.length === 0}
+                disabled={
+                  !selectedStockId ||
+                  addIngredientMutation.isPending ||
+                  availableStocks.length === 0
+                }
               >
                 Ajouter
               </Button>
@@ -221,9 +255,13 @@ export default function PlatDetailPage() {
           )}
 
           {ingredientsLoading ? (
-            <div className="text-muted-foreground text-sm">Chargement des ingrédients...</div>
+            <div className="text-muted-foreground text-sm">
+              Chargement des ingrédients...
+            </div>
           ) : dishIngredients.length === 0 ? (
-            <p className="text-muted-foreground text-sm">Aucun ingrédient pour ce plat.</p>
+            <p className="text-muted-foreground text-sm">
+              Aucun ingrédient pour ce plat.
+            </p>
           ) : (
             <Table>
               <TableHeader>
@@ -246,13 +284,23 @@ export default function PlatDetailPage() {
                             type="number"
                             min={1}
                             value={editQuantity}
-                            onChange={(e) => setEditQuantity(parseInt(e.target.value, 10) || 1)}
+                            onChange={(e) =>
+                              setEditQuantity(parseInt(e.target.value, 10) || 1)
+                            }
                             className="w-20"
                           />
-                          <Button size="sm" onClick={saveEdit} disabled={updateIngredientMutation.isPending}>
+                          <Button
+                            size="sm"
+                            onClick={saveEdit}
+                            disabled={updateIngredientMutation.isPending}
+                          >
                             Enregistrer
                           </Button>
-                          <Button size="sm" variant="ghost" onClick={cancelEdit}>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={cancelEdit}
+                          >
                             Annuler
                           </Button>
                         </div>

@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ShoppingCart } from "lucide-react";
-import type { Dish } from "@good-food-maalsi/contracts/catalog";
+import type { Dish } from "@good-food/contracts/catalog";
 import { cartActions } from "@/lib/store/cart.store";
 import { useProfileGateway } from "@/hooks/use-auth-gateway";
 import { toast } from "sonner";

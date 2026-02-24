@@ -1,7 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { discountService } from "@/services/discount.service";
-import type { Discount, UpdateDiscountInput } from "@good-food-maalsi/contracts/catalog";
+import type {
+  Discount,
+  UpdateDiscountInput,
+} from "@good-food/contracts/catalog";
 
 // Query keys
 export const discountKeys = {
@@ -55,16 +58,21 @@ export function useUpdateDiscount() {
     onMutate: async ({ id, data }) => {
       await queryClient.cancelQueries({ queryKey: discountKeys.detail(id) });
 
-      const previousDiscount = queryClient.getQueryData<Discount>(discountKeys.detail(id));
-
-      queryClient.setQueryData<Discount>(discountKeys.detail(id), (old) =>
-        old ? { ...old, ...data } : old
+      const previousDiscount = queryClient.getQueryData<Discount>(
+        discountKeys.detail(id),
       );
 
-      queryClient.setQueriesData<Discount[]>({ queryKey: discountKeys.lists() }, (old) => {
-        if (!old) return old;
-        return old.map((d) => (d.id === id ? { ...d, ...data } : d));
-      });
+      queryClient.setQueryData<Discount>(discountKeys.detail(id), (old) =>
+        old ? { ...old, ...data } : old,
+      );
+
+      queryClient.setQueriesData<Discount[]>(
+        { queryKey: discountKeys.lists() },
+        (old) => {
+          if (!old) return old;
+          return old.map((d) => (d.id === id ? { ...d, ...data } : d));
+        },
+      );
 
       return { previousDiscount };
     },
@@ -73,7 +81,10 @@ export function useUpdateDiscount() {
     },
     onError: (_error, { id }, context) => {
       if (context?.previousDiscount) {
-        queryClient.setQueryData(discountKeys.detail(id), context.previousDiscount);
+        queryClient.setQueryData(
+          discountKeys.detail(id),
+          context.previousDiscount,
+        );
       }
       toast.error("Erreur lors de la modification de la réduction");
     },

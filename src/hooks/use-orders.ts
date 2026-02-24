@@ -4,7 +4,7 @@ import { orderService } from "@/services/order.service";
 import type {
   CreateOrderInput,
   UpdateOrderItemsInput,
-} from "@good-food-maalsi/contracts/commands";
+} from "@good-food/contracts/commands";
 
 // Query keys
 export const orderKeys = {

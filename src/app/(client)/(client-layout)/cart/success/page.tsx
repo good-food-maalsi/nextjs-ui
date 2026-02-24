@@ -1,11 +1,12 @@
 "use client";
 
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { CheckCircle, Package, Store } from "lucide-react";
 import { useRequireAuth } from "@/hooks/use-require-auth";
 
-export default function CartSuccessPage() {
+function CartSuccessContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId");
   const { isLoading, isAuthenticated } = useRequireAuth("CUSTOMER");
@@ -69,5 +70,24 @@ export default function CartSuccessPage() {
         </Link>
       </div>
     </div>
+  );
+}
+
+function CartSuccessFallback() {
+  return (
+    <div className="container mx-auto px-4 py-16 flex items-center justify-center min-h-[60vh]">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4" />
+        <p className="text-gray-500">Chargement...</p>
+      </div>
+    </div>
+  );
+}
+
+export default function CartSuccessPage() {
+  return (
+    <Suspense fallback={<CartSuccessFallback />}>
+      <CartSuccessContent />
+    </Suspense>
   );
 }

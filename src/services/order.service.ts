@@ -5,7 +5,7 @@ import type {
   AddOrderItemInput,
   UpdateOrderItemsInput,
   UpdateOrderStatusInput,
-} from "@good-food-maalsi/contracts/commands";
+} from "@good-food/contracts/commands";
 
 async function findAll(): Promise<OrderWithItems[]> {
   const response = await commandsClient.orders.getAll({});
@@ -27,7 +27,7 @@ async function create(data: CreateOrderInput): Promise<OrderWithItems> {
 
 async function addItem(
   id: string,
-  data: AddOrderItemInput
+  data: AddOrderItemInput,
 ): Promise<OrderWithItems> {
   const response = await commandsClient.orders.addItem({
     params: { id },
@@ -39,7 +39,7 @@ async function addItem(
 
 async function updateItems(
   id: string,
-  data: UpdateOrderItemsInput
+  data: UpdateOrderItemsInput,
 ): Promise<OrderWithItems> {
   const response = await commandsClient.orders.updateItems({
     params: { id },
@@ -51,7 +51,7 @@ async function updateItems(
 
 async function updateStatus(
   id: string,
-  data: UpdateOrderStatusInput
+  data: UpdateOrderStatusInput,
 ): Promise<OrderWithItems> {
   const response = await commandsClient.orders.updateStatus({
     params: { id },

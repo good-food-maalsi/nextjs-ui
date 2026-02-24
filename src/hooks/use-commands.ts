@@ -7,7 +7,7 @@ import type {
   CommandQueryParams,
   Command,
   CommandWithItems,
-} from "@good-food-maalsi/contracts/franchise";
+} from "@good-food/contracts/franchise";
 
 // Query keys
 export const commandKeys = {
@@ -38,8 +38,7 @@ export function useCreateCommand() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (dto: CreateCommandInput) =>
-      commandService.create(dto),
+    mutationFn: (dto: CreateCommandInput) => commandService.create(dto),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: commandKeys.lists() });
       toast.success("Commande créée avec succès");

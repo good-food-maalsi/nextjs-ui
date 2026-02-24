@@ -1,10 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { menuService } from "@/services/menu.service";
-import type {
-  Menu,
-  UpdateMenuInput,
-} from "@good-food-maalsi/contracts/catalog";
+import type { Menu, UpdateMenuInput } from "@good-food/contracts/catalog";
 
 export interface MenuQueryParams {
   categoryId?: string;
@@ -16,7 +13,11 @@ export const menuKeys = {
   all: ["menus"] as const,
   lists: () => [...menuKeys.all, "list"] as const,
   list: (params: MenuQueryParams) =>
-    [...menuKeys.lists(), params.categoryId ?? null, params.franchiseId ?? null] as const,
+    [
+      ...menuKeys.lists(),
+      params.categoryId ?? null,
+      params.franchiseId ?? null,
+    ] as const,
   details: () => [...menuKeys.all, "detail"] as const,
   detail: (id: string) => [...menuKeys.details(), id] as const,
 };

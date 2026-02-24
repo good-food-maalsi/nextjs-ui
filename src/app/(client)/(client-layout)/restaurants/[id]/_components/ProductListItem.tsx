@@ -11,9 +11,22 @@ interface ProductListItemProps {
     restaurantId: string;
 }
 
+/** Adapte un Product (restaurant.service) au format Dish attendu par le panier. */
+function productToDish(product: Product, restaurantId: string) {
+    return {
+        id: product.id,
+        name: product.name,
+        description: product.description,
+        basePrice: product.price,
+        imageUrl: product.image ?? null,
+        franchiseId: restaurantId,
+        availability: true,
+    };
+}
+
 export function ProductListItem({ product, restaurantId }: ProductListItemProps) {
     const addToCart = () => {
-        cartActions.addToCart(product, restaurantId);
+        cartActions.addToCart(productToDish(product, restaurantId), restaurantId);
         toast.success(`${product.name} ajouté au panier`);
     };
 
@@ -35,7 +48,7 @@ export function ProductListItem({ product, restaurantId }: ProductListItemProps)
                 </div>
             </div>
             {product.image && (
-                <div className="relative w-32 h-32 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
+                <div className="relative w-32 h-32 shrink-0 rounded-lg overflow-hidden bg-gray-100">
                     <Image
                         src={product.image}
                         alt={product.name}

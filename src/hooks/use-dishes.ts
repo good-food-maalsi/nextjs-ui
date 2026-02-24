@@ -6,7 +6,7 @@ import type {
   UpdateDishInput,
   CreateDishIngredientInput,
   UpdateDishIngredientInput,
-} from "@good-food-maalsi/contracts/catalog";
+} from "@good-food/contracts/catalog";
 
 export interface DishQueryParams {
   menuId?: string;

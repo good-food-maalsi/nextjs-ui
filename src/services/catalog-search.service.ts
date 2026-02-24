@@ -1,5 +1,5 @@
 import { catalogClient } from "@/lib/config/ts-rest-client";
-import type { Dish, Menu } from "@good-food-maalsi/contracts/catalog";
+import type { Dish, Menu } from "@good-food/contracts/catalog";
 
 /** GET /catalog/search?q= — recherche insensible à la casse dans nom + description (dishes + menus). Optionnel : franchiseId pour limiter à une franchise. */
 export async function search(

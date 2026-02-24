@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ShoppingCart } from "lucide-react";
-import type { Menu, Dish } from "@good-food-maalsi/contracts/catalog";
+import type { Menu, Dish } from "@good-food/contracts/catalog";
 import { DishGridItem } from "@/components/DishGridItem";
 import { cartActions } from "@/lib/store/cart.store";
 import { useProfileGateway } from "@/hooks/use-auth-gateway";

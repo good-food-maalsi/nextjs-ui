@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { MapPin /*, Clock, Truck */ } from "lucide-react";
-import type { Franchise } from "@good-food-maalsi/contracts/franchise";
+import type { Franchise } from "@good-food/contracts/franchise";
 
 interface FranchiseCardProps {
   franchise: Franchise;
