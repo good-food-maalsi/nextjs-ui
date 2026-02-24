@@ -25,6 +25,7 @@ jobs:
             - name: Build and tag Docker image
               run: |
                   docker build -f Dockerfile.prod \
+                    --build-arg NEXT_PUBLIC_API_URL=https://api.good-food.code-with-alex.com \
                     -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest \
                     -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
                     .
