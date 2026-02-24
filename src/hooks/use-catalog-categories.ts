@@ -4,7 +4,7 @@ import { catalogCategoryService } from "@/services/catalog-category.service";
 import type {
   CatalogCategory,
   UpdateCatalogCategoryInput,
-} from "@good-food-maalsi/contracts/catalog";
+} from "@good-food/contracts/catalog";
 
 // Query keys
 export const catalogCategoryKeys = {
@@ -53,17 +53,25 @@ export function useUpdateCatalogCategory() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateCatalogCategoryInput }) =>
-      catalogCategoryService.update(id, data),
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: UpdateCatalogCategoryInput;
+    }) => catalogCategoryService.update(id, data),
     onMutate: async ({ id, data }) => {
-      await queryClient.cancelQueries({ queryKey: catalogCategoryKeys.detail(id) });
+      await queryClient.cancelQueries({
+        queryKey: catalogCategoryKeys.detail(id),
+      });
 
       const previousCategory = queryClient.getQueryData<CatalogCategory>(
-        catalogCategoryKeys.detail(id)
+        catalogCategoryKeys.detail(id),
       );
 
-      queryClient.setQueryData<CatalogCategory>(catalogCategoryKeys.detail(id), (old) =>
-        old ? { ...old, ...data } : old
+      queryClient.setQueryData<CatalogCategory>(
+        catalogCategoryKeys.detail(id),
+        (old) => (old ? { ...old, ...data } : old),
       );
 
       queryClient.setQueriesData<CatalogCategory[]>(
@@ -71,7 +79,7 @@ export function useUpdateCatalogCategory() {
         (old) => {
           if (!old) return old;
           return old.map((cat) => (cat.id === id ? { ...cat, ...data } : cat));
-        }
+        },
       );
 
       return { previousCategory };
@@ -81,12 +89,17 @@ export function useUpdateCatalogCategory() {
     },
     onError: (_error, { id }, context) => {
       if (context?.previousCategory) {
-        queryClient.setQueryData(catalogCategoryKeys.detail(id), context.previousCategory);
+        queryClient.setQueryData(
+          catalogCategoryKeys.detail(id),
+          context.previousCategory,
+        );
       }
       toast.error("Erreur lors de la modification de la catégorie");
     },
     onSettled: (_data, _error, { id }) => {
-      queryClient.invalidateQueries({ queryKey: catalogCategoryKeys.detail(id) });
+      queryClient.invalidateQueries({
+        queryKey: catalogCategoryKeys.detail(id),
+      });
       queryClient.invalidateQueries({ queryKey: catalogCategoryKeys.lists() });
     },
   });

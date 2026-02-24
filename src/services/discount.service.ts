@@ -3,7 +3,7 @@ import type {
   Discount,
   CreateDiscountInput,
   UpdateDiscountInput,
-} from "@good-food-maalsi/contracts/catalog";
+} from "@good-food/contracts/catalog";
 
 async function findAll(): Promise<Discount[]> {
   const response = await catalogClient.discounts.getAll({});
@@ -23,14 +23,23 @@ async function create(data: CreateDiscountInput): Promise<Discount> {
   return response.body.data;
 }
 
-async function update(id: string, data: UpdateDiscountInput): Promise<Discount> {
-  const response = await catalogClient.discounts.update({ params: { id }, body: data });
+async function update(
+  id: string,
+  data: UpdateDiscountInput,
+): Promise<Discount> {
+  const response = await catalogClient.discounts.update({
+    params: { id },
+    body: data,
+  });
   if (response.status !== 200) throw new Error("Failed to update discount");
   return response.body.data;
 }
 
 async function deleteDiscount(id: string): Promise<void> {
-  const response = await catalogClient.discounts.delete({ params: { id }, body: {} });
+  const response = await catalogClient.discounts.delete({
+    params: { id },
+    body: {},
+  });
   if (response.status !== 200) throw new Error("Failed to delete discount");
 }
 

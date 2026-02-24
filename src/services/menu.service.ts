@@ -3,10 +3,20 @@ import type {
   Menu,
   CreateMenuInput,
   UpdateMenuInput,
-} from "@good-food-maalsi/contracts/catalog";
+} from "@good-food/contracts/catalog";
 
-async function findAll(): Promise<Menu[]> {
-  const response = await catalogClient.menus.getAll({});
+async function findAll(
+  params: {
+    categoryId?: string;
+    franchiseId?: string;
+  } = {},
+): Promise<Menu[]> {
+  const query: { categoryId?: string; franchiseId?: string } = {};
+  if (params.categoryId != null) query.categoryId = params.categoryId;
+  if (params.franchiseId != null) query.franchiseId = params.franchiseId;
+  const response = await catalogClient.menus.getAll(
+    Object.keys(query).length > 0 ? { query } : {},
+  );
   if (response.status !== 200) throw new Error("Failed to fetch menus");
   return response.body.data;
 }
@@ -24,13 +34,19 @@ async function create(data: CreateMenuInput): Promise<Menu> {
 }
 
 async function update(id: string, data: UpdateMenuInput): Promise<Menu> {
-  const response = await catalogClient.menus.update({ params: { id }, body: data });
+  const response = await catalogClient.menus.update({
+    params: { id },
+    body: data,
+  });
   if (response.status !== 200) throw new Error("Failed to update menu");
   return response.body.data;
 }
 
 async function deleteMenu(id: string): Promise<void> {
-  const response = await catalogClient.menus.delete({ params: { id }, body: {} });
+  const response = await catalogClient.menus.delete({
+    params: { id },
+    body: {},
+  });
   if (response.status !== 200) throw new Error("Failed to delete menu");
 }
 

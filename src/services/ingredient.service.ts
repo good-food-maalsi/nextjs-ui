@@ -3,7 +3,7 @@ import type {
   CreateIngredientInput,
   UpdateIngredientInput,
   IngredientWithCategories,
-} from "@good-food-maalsi/contracts/franchise";
+} from "@good-food/contracts/franchise";
 
 interface IngredientsResponse {
   data: IngredientWithCategories[];

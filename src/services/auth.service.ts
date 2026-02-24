@@ -34,6 +34,8 @@ export interface AuthResponse {
     email: string;
     username: string;
     roles: string[];
+    /** Rôle principal (premier de la liste), utilisé par le front */
+    role?: string;
   };
 }
 
@@ -54,9 +56,10 @@ export const authService = {
 
   /**
    * Inscription nouveau utilisateur (username, email, password).
+   * Passe par le proxy Next pour que les cookies soient sur la même origine.
    */
   register: async (dto: RegisterDto): Promise<AuthResponse> => {
-    const { data } = await gatewayApi.post("/auth/register", dto);
+    const { data } = await nextApi.post("/api/auth/register", dto);
     return data;
   },
 
@@ -106,10 +109,10 @@ export const authService = {
   },
 
   /**
-   * Profil utilisateur courant.
+   * Profil utilisateur courant (via proxy Next pour envoyer les cookies same-origin).
    */
   getProfile: async (): Promise<AuthResponse["user"]> => {
-    const { data } = await gatewayApi.get("/auth/profile");
+    const { data } = await nextApi.get("/api/auth/profile");
     return data;
   },
 

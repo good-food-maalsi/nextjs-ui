@@ -2,11 +2,11 @@
 
 import React from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Plus, Trash2, Tag } from "lucide-react";
+import { ArrowLeft, Pencil, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { StatusBadge, getStatusVariant } from "@/components/ui/status-badge";
+import { StatusBadge } from "@/components/ui/status-badge";
 import {
   Table,
   TableBody,
@@ -16,69 +16,30 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import type { MenuDetail, MenuDish, MenuDiscount } from "../_types";
+import { useMenu } from "@/hooks/use-menus";
+import { useDishes } from "@/hooks/use-dishes";
+import { MenuFormDialog } from "../_components/menu-form-dialog";
+import { DeleteMenuDialog } from "../_components/delete-menu-dialog";
 import { MenuAvailability, menuAvailabilityLabels } from "../_types";
+import type { Menu } from "../_types";
 
-// Données mockées pour un menu détaillé
-const mockDishes: MenuDish[] = [
-  {
-    id: "dish-1",
-    name: "Big King",
-    description: "Double steak, fromage, salade, tomate, oignons, sauce burger",
-    basePrice: "9,00 €",
-    availability: "available",
-  },
-  {
-    id: "dish-2",
-    name: "Frites Moyennes",
-    description: "Frites dorées et croustillantes",
-    basePrice: "3,50 €",
-    availability: "available",
-  },
-  {
-    id: "dish-3",
-    name: "Boisson 50cl",
-    description: "Coca-Cola, Fanta, Sprite ou Oasis",
-    basePrice: "2,50 €",
-    availability: "available",
-  },
-];
-
-const mockDiscounts: MenuDiscount[] = [
-  {
-    id: "discount-1",
-    name: "Promo Week-end",
-    description: "Réduction de 20% sur tous les menus le week-end",
-    type: "percentage",
-    discountValue: 20,
-    dateStart: "01/03/2025",
-    dateEnd: "31/03/2025",
-  },
-];
-
-const mockMenuDetail: MenuDetail = {
-  id: "menu-1",
-  name: "Menu Big King",
-  description: "Un menu complet avec frites et boisson",
-  category: "Menu Signature",
-  availability: MenuAvailability.AVAILABLE,
-  dishes: mockDishes,
-  discounts: mockDiscounts,
-  createdAt: "08/03/2025",
-  updatedAt: "10/03/2025",
-};
-
-const discountTypeLabels: Record<string, string> = {
-  percentage: "Pourcentage",
-  fixed_amount: "Montant fixe",
-  special_offer: "Offre spéciale",
-};
+function formatDate(date: string | Date | undefined): string {
+  if (!date) return "-";
+  return new Date(date).toLocaleDateString("fr-FR");
+}
 
 export default function MenuDetailPage() {
-  const _params = useParams();
+  const params = useParams<{ id: string }>();
   const router = useRouter();
-  const [menu] = React.useState<MenuDetail>(mockMenuDetail);
-  const [isLoading] = React.useState(false);
+  const menuId = params.id;
+
+  const [editOpen, setEditOpen] = React.useState(false);
+  const [deleteOpen, setDeleteOpen] = React.useState(false);
+
+  const { data: apiMenu, isLoading, isError } = useMenu(menuId);
+  const { data: apiDishes, isLoading: dishesLoading } = useDishes({
+    menuId,
+  });
 
   if (isLoading) {
     return (
@@ -90,6 +51,38 @@ export default function MenuDetailPage() {
       </div>
     );
   }
+
+  if (isError || !apiMenu) {
+    return (
+      <div className="container mx-auto py-6">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => router.back()}
+          className="mb-4"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Retour aux menus
+        </Button>
+        <p className="text-destructive">Menu introuvable.</p>
+      </div>
+    );
+  }
+
+  const availability = (apiMenu.availability ?? true)
+    ? MenuAvailability.AVAILABLE
+    : MenuAvailability.UNAVAILABLE;
+
+  const menuForDialog: Menu = {
+    id: apiMenu.id,
+    name: apiMenu.name,
+    description: apiMenu.description ?? "-",
+    category: "-",
+    availability,
+    dishCount: apiDishes?.length ?? 0,
+    discountCount: 0,
+    createdAt: formatDate(apiMenu.createdAt),
+  };
 
   return (
     <div className="container mx-auto py-6">
@@ -107,15 +100,28 @@ export default function MenuDetailPage() {
 
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">{menu.name}</h1>
-            <p className="text-muted-foreground mt-2">{menu.description}</p>
+            <h1 className="text-3xl font-bold tracking-tight">
+              {apiMenu.name}
+            </h1>
+            {apiMenu.description && (
+              <p className="text-muted-foreground mt-2">{apiMenu.description}</p>
+            )}
           </div>
 
           <div className="flex gap-2">
-            <Button variant="secondaryOutline" size="sm">
+            <Button
+              variant="secondaryOutline"
+              size="sm"
+              onClick={() => setEditOpen(true)}
+            >
+              <Pencil className="mr-2 h-4 w-4" />
               Modifier
             </Button>
-            <Button variant="destructive" size="sm">
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => setDeleteOpen(true)}
+            >
               <Trash2 className="mr-2 h-4 w-4" />
               Supprimer
             </Button>
@@ -123,7 +129,7 @@ export default function MenuDetailPage() {
         </div>
       </div>
 
-      {/* Informations du menu */}
+      {/* Informations générales */}
       <Card className="mb-6">
         <CardHeader>
           <CardTitle>Informations générales</CardTitle>
@@ -131,17 +137,13 @@ export default function MenuDetailPage() {
         <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <p className="text-sm font-medium text-muted-foreground">
-              Catégorie
-            </p>
-            <p className="text-base mt-1">{menu.category}</p>
-          </div>
-          <div>
-            <p className="text-sm font-medium text-muted-foreground">
               Disponibilité
             </p>
-              <div className="mt-1">
-              <StatusBadge variant={getStatusVariant(menu.availability)}>
-                {menuAvailabilityLabels[menu.availability]}
+            <div className="mt-1">
+              <StatusBadge
+                variant={availability === MenuAvailability.AVAILABLE ? "confirmed" : "cancelled"}
+              >
+                {menuAvailabilityLabels[availability]}
               </StatusBadge>
             </div>
           </div>
@@ -149,34 +151,36 @@ export default function MenuDetailPage() {
             <p className="text-sm font-medium text-muted-foreground">
               Nombre de plats
             </p>
-            <p className="text-base mt-1">{menu.dishes.length} plat(s)</p>
+            <p className="text-base mt-1">{apiDishes?.length ?? 0} plat(s)</p>
           </div>
           <div>
             <p className="text-sm font-medium text-muted-foreground">
               Date de création
             </p>
-            <p className="text-base mt-1">{menu.createdAt}</p>
+            <p className="text-base mt-1">{formatDate(apiMenu.createdAt)}</p>
           </div>
           <div>
             <p className="text-sm font-medium text-muted-foreground">
               Dernière modification
             </p>
-            <p className="text-base mt-1">{menu.updatedAt}</p>
+            <p className="text-base mt-1">{formatDate(apiMenu.updatedAt)}</p>
           </div>
         </CardContent>
       </Card>
 
-      {/* Liste des plats du menu */}
+      {/* Plats du menu */}
       <Card className="mb-6">
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader>
           <CardTitle>Plats du menu</CardTitle>
-          <Button variant="secondaryOutline" size="sm">
-            <Plus className="mr-2 h-4 w-4" />
-            Ajouter un plat
-          </Button>
         </CardHeader>
         <CardContent>
-          {menu.dishes.length > 0 ? (
+          {dishesLoading ? (
+            <div className="space-y-2">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="h-10 bg-muted animate-pulse rounded" />
+              ))}
+            </div>
+          ) : apiDishes && apiDishes.length > 0 ? (
             <div className="rounded-md border overflow-hidden">
               <Table>
                 <TableHeader className="bg-primary-200">
@@ -185,32 +189,24 @@ export default function MenuDetailPage() {
                     <TableHead>Description</TableHead>
                     <TableHead>Prix de base</TableHead>
                     <TableHead>Disponibilité</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {menu.dishes.map((dish) => (
+                  {apiDishes.map((dish) => (
                     <TableRow key={dish.id}>
                       <TableCell className="font-medium">{dish.name}</TableCell>
                       <TableCell className="text-muted-foreground max-w-[300px] truncate">
                         {dish.description}
                       </TableCell>
-                      <TableCell>{dish.basePrice}</TableCell>
                       <TableCell>
-                        <StatusBadge variant={getStatusVariant(dish.availability)}>
-                          {dish.availability === "available"
-                            ? "Disponible"
-                            : "Indisponible"}
-                        </StatusBadge>
+                        {dish.basePrice.toFixed(2).replace(".", ",")} €
                       </TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-destructive hover:text-destructive"
+                      <TableCell>
+                        <StatusBadge
+                          variant={dish.availability ? "confirmed" : "cancelled"}
                         >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                          {dish.availability ? "Disponible" : "Indisponible"}
+                        </StatusBadge>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -225,74 +221,19 @@ export default function MenuDetailPage() {
         </CardContent>
       </Card>
 
-      {/* Liste des réductions appliquées */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <Tag className="h-5 w-5" />
-            Réductions appliquées
-          </CardTitle>
-          <Button variant="secondaryOutline" size="sm">
-            <Plus className="mr-2 h-4 w-4" />
-            Ajouter une réduction
-          </Button>
-        </CardHeader>
-        <CardContent>
-          {menu.discounts.length > 0 ? (
-            <div className="rounded-md border overflow-hidden">
-              <Table>
-                <TableHeader className="bg-primary-200">
-                  <TableRow>
-                    <TableHead>Nom de la réduction</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Valeur</TableHead>
-                    <TableHead>Date de début</TableHead>
-                    <TableHead>Date de fin</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {menu.discounts.map((discount) => (
-                    <TableRow key={discount.id}>
-                      <TableCell>
-                        <div>
-                          <p className="font-medium">{discount.name}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {discount.description}
-                          </p>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        {discountTypeLabels[discount.type]}
-                      </TableCell>
-                      <TableCell>
-                        {discount.type === "percentage"
-                          ? `${discount.discountValue}%`
-                          : `${discount.discountValue} €`}
-                      </TableCell>
-                      <TableCell>{discount.dateStart}</TableCell>
-                      <TableCell>{discount.dateEnd}</TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-destructive hover:text-destructive"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          ) : (
-            <div className="text-center py-8 text-muted-foreground">
-              Aucune réduction appliquée à ce menu
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      {/* Dialogs */}
+      <MenuFormDialog
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        menuId={menuId}
+      />
+
+      <DeleteMenuDialog
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        menu={menuForDialog}
+        onDeleted={() => router.push("/dashboard/plats/menus")}
+      />
     </div>
   );
 }
