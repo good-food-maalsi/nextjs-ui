@@ -26,6 +26,8 @@
     "install:with-auth": "node -e \"const fs=require('fs'),path=require('path');const p=path.join(process.cwd(),'.env');if(fs.existsSync(p)){fs.readFileSync(p,'utf8').split(/\\\\n/).forEach(l=>{const m=l.match(/^NPM_TOKEN=(.*)$/);if(m)process.env.NPM_TOKEN=m[1].trim().replace(/^['\\\"]|['\\\"]$/g,'');});}require('child_process').spawnSync('pnpm',['install','--no-frozen-lockfile'],{stdio:'inherit',env:process.env});\""
   },
   "dependencies": {
+    "@good-food-maalsi/contracts": "file:../good-food-contracts",
+    "@good-food/contracts": "link:../good-food-contracts",
     "@hookform/resolvers": "^5.2.2",
     "@legendapp/state": "^2.1.15",
     "@prisma/adapter-pg": "^7.3.0",
@@ -44,7 +46,6 @@
     "@tanstack/react-query": "^5.90.20",
     "@tanstack/react-query-devtools": "^5.91.3",
     "@tanstack/react-table": "^8.21.3",
-    "@good-food-maalsi/contracts": "file:../good-food-contracts",
     "@ts-rest/core": "^3.52.1",
     "@ts-rest/react-query": "^3.52.1",
     "axios": "^1.13.4",

@@ -12,10 +12,11 @@ function getAccessTokenFromCookie(cookieHeader: string | null): string | null {
 
 async function proxy(
   request: NextRequest,
-  context: { params: { path?: string[] } },
+  context: { params: Promise<{ path?: string[] }> },
 ) {
   try {
-    const path = context.params.path ?? [];
+    const { path: pathSegments } = await context.params;
+    const path = pathSegments ?? [];
     const pathStr = path.length ? path.join("/") : "";
     const url = `${GATEWAY_URL}/commands/${pathStr}`;
 
@@ -42,7 +43,9 @@ async function proxy(
 
     const res = await fetch(url, init);
     const data = await res.json().catch(() => ({}));
-    return NextResponse.json(data, { status: res.status });
+    const nextRes = NextResponse.json(data, { status: res.status });
+    nextRes.headers.set("X-Commands-Proxy", pathStr || "root");
+    return nextRes;
   } catch (err) {
     console.error("[api/commands proxy]", err);
     return NextResponse.json(

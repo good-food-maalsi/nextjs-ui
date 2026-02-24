@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icons } from "@/components/icons";
 import { cn } from "@/lib/utils";
-import { User, ShoppingBag, LogOut, ChevronDown } from "lucide-react";
+import { User, ShoppingBag, LogOut, ChevronDown, History } from "lucide-react";
 import { useSelector } from "@legendapp/state/react";
 import { cartState$ } from "@/lib/store/cart.store";
 import { useProfileGateway, useLogoutGateway } from "@/hooks/use-auth-gateway";
@@ -95,7 +95,16 @@ export function ClientHeader() {
                     <ChevronDown className="size-4 text-black-400" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuItem asChild>
+                    <Link
+                      href="/orders"
+                      className="cursor-pointer flex items-center"
+                    >
+                      <History className="mr-2 size-4" />
+                      Historique des commandes
+                    </Link>
+                  </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => logout()}
                     disabled={logoutPending}

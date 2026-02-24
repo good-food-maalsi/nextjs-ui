@@ -2,6 +2,7 @@ import { commandsClient } from "@/lib/config/ts-rest-client";
 import type {
   OrderWithItems,
   CreateOrderInput,
+  AddOrderItemInput,
   UpdateOrderItemsInput,
   UpdateOrderStatusInput,
 } from "@good-food-maalsi/contracts/commands";
@@ -21,6 +22,18 @@ async function findById(id: string): Promise<OrderWithItems> {
 async function create(data: CreateOrderInput): Promise<OrderWithItems> {
   const response = await commandsClient.orders.create({ body: data });
   if (response.status !== 201) throw new Error("Failed to create order");
+  return response.body.data;
+}
+
+async function addItem(
+  id: string,
+  data: AddOrderItemInput
+): Promise<OrderWithItems> {
+  const response = await commandsClient.orders.addItem({
+    params: { id },
+    body: data,
+  });
+  if (response.status !== 200) throw new Error("Failed to add item to order");
   return response.body.data;
 }
 
@@ -60,6 +73,7 @@ export const orderService = {
   findAll,
   findById,
   create,
+  addItem,
   updateItems,
   updateStatus,
   delete: deleteOrder,

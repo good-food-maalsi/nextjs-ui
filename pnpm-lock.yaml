@@ -14,7 +14,10 @@ importers:
     dependencies:
       '@good-food-maalsi/contracts':
         specifier: file:../good-food-contracts
-        version: file:../good-food-contracts(@types/node@25.2.3)
+        version: '@good-food/contracts@file:../good-food-contracts(@types/node@25.2.3)'
+      '@good-food/contracts':
+        specifier: link:../good-food-contracts
+        version: link:../good-food-contracts
       '@hookform/resolvers':
         specifier: ^5.2.2
         version: 5.2.2(react-hook-form@7.71.1(react@19.2.4))
@@ -576,7 +579,7 @@ packages:
   '@floating-ui/utils@0.2.10':
     resolution: {integrity: sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==}
 
-  '@good-food-maalsi/contracts@file:../good-food-contracts':
+  '@good-food/contracts@file:../good-food-contracts':
     resolution: {directory: ../good-food-contracts, type: directory}
 
   '@hono/node-server@1.19.9':
@@ -4310,7 +4313,7 @@ snapshots:
 
   '@floating-ui/utils@0.2.10': {}
 
-  '@good-food-maalsi/contracts@file:../good-food-contracts(@types/node@25.2.3)':
+  '@good-food/contracts@file:../good-food-contracts(@types/node@25.2.3)':
     dependencies:
       '@ts-rest/core': 3.52.1(@types/node@25.2.3)(zod@3.25.76)
       zod: 3.25.76

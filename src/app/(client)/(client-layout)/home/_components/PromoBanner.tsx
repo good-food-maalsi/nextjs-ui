@@ -1,15 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { Sparkles, ShoppingBasket } from "lucide-react";
-import { useProfileGateway } from "@/hooks/use-auth-gateway";
+import { Sparkles } from "lucide-react";
 
 export function PromoBanner() {
-  const { data: profile, isLoading } = useProfileGateway();
-  const isCustomer = !!profile && profile.role === "CUSTOMER";
-
   return (
-    <div className="bg-white">
+    <div className="bg-white py-5">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between text-sm">
           {/* Left side - Promo */}
@@ -42,24 +38,6 @@ export function PromoBanner() {
                 Changer d'adresse
               </Link>
             </div>
-
-            {/* Cart */}
-            <Link
-              href="/cart"
-              className="flex items-center gap-4 bg-primary-400 hover:bg-primary-500 transition-colors rounded-lg overflow-hidden"
-            >
-              <div className="bg-primary-500 px-4 py-2">
-                <ShoppingBasket className="w-6 h-6 text-white" />
-              </div>
-              {!isLoading && isCustomer && (
-                <div className="px-4 py-2 flex items-center gap-4">
-                  <span className="font-semibold text-black-500">
-                    26 Articles
-                  </span>
-                  <span className="font-bold text-black-500">79,89 €</span>
-                </div>
-              )}
-            </Link>
           </div>
         </div>
       </div>

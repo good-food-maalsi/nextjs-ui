@@ -72,12 +72,6 @@ export function useConfirmOrder() {
   return useMutation({
     mutationFn: (id: string) =>
       orderService.updateStatus(id, { status: "confirmed" }),
-    onSuccess: () => {
-      toast.success("Commande confirmée avec succès");
-    },
-    onError: () => {
-      toast.error("Erreur lors de la confirmation de la commande");
-    },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: orderKeys.all });
     },

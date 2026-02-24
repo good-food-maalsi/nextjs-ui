@@ -60,35 +60,39 @@ export const cartActions = {
             await cartActions.clearCart();
         }
 
-        // Calculer le prochain état en mémoire (sans toucher au store)
-        const currentAfterClear = cartState$.items.peek();
-        const existingItemIndex = currentAfterClear.findIndex((item) => item.id === dish.id);
-        const newItems: CartItem[] =
-            existingItemIndex > -1
-                ? currentAfterClear.map((item, i) =>
-                      i === existingItemIndex
-                          ? { ...item, quantity: item.quantity + 1 }
-                          : item
-                  )
-                : [...currentAfterClear, dishToCartItem(dish, restaurantId)];
-
-        const payload = newItems.map((item) => ({
-            itemId: item.id,
-            quantity: item.quantity,
-            unitPrice: item.price,
-        }));
         const draftOrderId = cartState$.draftOrderId.peek();
+        const currentItems = cartState$.items.peek();
+
+        // Prepare item to add
+        const itemToAdd = {
+            itemId: dish.id,
+            quantity: 1,
+            unitPrice: dish.basePrice,
+        };
 
         if (!draftOrderId) {
+            // First item: create draft order
             const order = await orderService.create({
                 shopId: restaurantId,
-                items: payload,
+                items: [itemToAdd],
             });
-            cartState$.items.set(newItems);
+            cartState$.items.set([dishToCartItem(dish, restaurantId)]);
             cartState$.draftOrderId.set(order.id);
             cartState$.restaurantId.set(restaurantId);
         } else {
-            await orderService.updateItems(draftOrderId, { items: payload });
+            // Add item incrementally to existing draft order
+            await orderService.addItem(draftOrderId, itemToAdd);
+
+            // Update local state
+            const existingItemIndex = currentItems.findIndex((item) => item.id === dish.id);
+            const newItems: CartItem[] =
+                existingItemIndex > -1
+                    ? currentItems.map((item, i) =>
+                          i === existingItemIndex
+                              ? { ...item, quantity: item.quantity + 1 }
+                              : item
+                      )
+                    : [...currentItems, dishToCartItem(dish, restaurantId)];
             cartState$.items.set(newItems);
         }
         cartState$.isOpen.set(true);
@@ -151,6 +155,14 @@ export const cartActions = {
         if (draftOrderId) {
             await orderService.delete(draftOrderId);
         }
+        cartState$.items.set([]);
+        cartState$.draftOrderId.set(null);
+        cartState$.restaurantId.set(null);
+    },
+
+    clearCartLocal: () => {
+        // Clear local state only (without deleting backend order)
+        // Used after order confirmation since confirmed orders can't be deleted
         cartState$.items.set([]);
         cartState$.draftOrderId.set(null);
         cartState$.restaurantId.set(null);

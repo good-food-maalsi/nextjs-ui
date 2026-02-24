@@ -24,11 +24,15 @@ export function OrderSummary() {
 
     confirmOrder(draftOrderId, {
       onSuccess: async (order) => {
+        console.log("✅ Order confirmed:", order);
         toast.success("Commande confirmée avec succès !");
-        await cartActions.clearCart(); // Clear cart locally
-        router.push(`/orders/${order.id}`);
+        // Clear local state only (order is now confirmed, can't be deleted)
+        cartActions.clearCartLocal();
+        console.log("✅ Cart cleared locally, redirecting to success page");
+        router.push(`/cart/success?orderId=${order.id}`);
       },
       onError: (error: Error) => {
+        console.error("❌ Order confirmation error:", error);
         toast.error("Erreur lors de la confirmation : " + error.message);
       },
     });
