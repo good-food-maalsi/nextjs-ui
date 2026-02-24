@@ -88,28 +88,36 @@ export const LoginForm = () => {
                   </FormItem>
                 )}
               />
-              <div className="flex items-center justify-between">
-                <Button
-                  variant="secondary"
-                  type="submit"
-                  className="px-6"
-                  disabled={isPending}
-                >
-                  {isPending ? (
-                    <div className="flex items-center gap-2">
-                      <Loader2 className="animate-spin" />
-                      En cours...
-                    </div>
-                  ) : (
-                    "Valider"
-                  )}
-                </Button>
-                <Link
-                  href="/dashboard/request-password-reset"
-                  className="hover:underline"
-                >
-                  Mot de passe oublié ?
-                </Link>
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center justify-between">
+                  <Button
+                    variant="secondary"
+                    type="submit"
+                    className="px-6"
+                    disabled={isPending}
+                  >
+                    {isPending ? (
+                      <div className="flex items-center gap-2">
+                        <Loader2 className="animate-spin" />
+                        En cours...
+                      </div>
+                    ) : (
+                      "Valider"
+                    )}
+                  </Button>
+                  <Link
+                    href="/request-password-reset"
+                    className="hover:underline text-sm"
+                  >
+                    Mot de passe oublié ?
+                  </Link>
+                </div>
+                <p className="text-center text-sm text-muted-foreground">
+                  Pas encore de compte ?{" "}
+                  <Link href="/signup" className="hover:underline font-medium">
+                    Créer un compte
+                  </Link>
+                </p>
               </div>
             </form>
           </Form>
