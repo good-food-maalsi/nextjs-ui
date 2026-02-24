@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: nextjs-ui
+    labels:
+        app: nextjs-ui
+spec:
+    replicas: 1
+    revisionHistoryLimit: 3
+    selector:
+        matchLabels:
+            app: nextjs-ui
+    template:
+        metadata:
+            labels:
+                app: nextjs-ui
+        spec:
+            imagePullSecrets:
+                - name: scw-registry-secret
+            containers:
+                - name: nextjs-ui
+                  image: rg.fr-par.scw.cloud/good-food-container-registry/nextjs-ui:latest
+                  imagePullPolicy: Always
+                  ports:
+                      - containerPort: 3000
+                  resources:
+                      requests:
+                          memory: "64Mi"
+                          cpu: "10m"
+                      limits:
+                          memory: "128Mi"
+                          cpu: "200m"
+                  envFrom:
+                      - configMapRef:
+                            name: nextjs-ui-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: nextjs-ui
+spec:
+    selector:
+        app: nextjs-ui
+    ports:
+        - protocol: TCP
+          port: 3000
+          targetPort: 3000
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: nextjs-ui-config
+data:
+    NODE_ENV: "production"
+    PORT: "3000"
