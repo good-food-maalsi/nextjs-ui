@@ -53,3 +53,4 @@ metadata:
 data:
     NODE_ENV: "production"
     PORT: "3000"
+    NEXT_PUBLIC_GATEWAY_URL: "http://auth-service:8080"
