@@ -33,6 +33,12 @@ spec:
                   envFrom:
                       - configMapRef:
                             name: nextjs-ui-config
+                  env:
+                      - name: NEXT_PUBLIC_JWT_PUBLIC_KEY
+                        valueFrom:
+                            secretKeyRef:
+                                name: good-food-jwt-secret
+                                key: JWT_PUBLIC_KEY_BASE64
 ---
 apiVersion: v1
 kind: Service
@@ -53,5 +59,7 @@ metadata:
 data:
     NODE_ENV: "production"
     PORT: "3000"
+
     # URL publique de l'API (ingress) pour que le navigateur et le serveur Next puissent joindre auth-service
     NEXT_PUBLIC_GATEWAY_URL: "https://api.good-food.code-with-alex.com"
+    NEXT_PUBLIC_API_URL: "https://app.good-food.code-with-alex.com"
