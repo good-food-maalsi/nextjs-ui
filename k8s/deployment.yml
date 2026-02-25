@@ -33,12 +33,8 @@ spec:
                   envFrom:
                       - configMapRef:
                             name: nextjs-ui-config
-                  env:
-                      - name: NEXT_PUBLIC_JWT_PUBLIC_KEY
-                        valueFrom:
-                            secretKeyRef:
-                                name: good-food-jwt-secret
-                                key: NEXT_PUBLIC_JWT_PUBLIC_KEY
+                      - secretRef:
+                            name: good-food-jwt-secret
 ---
 apiVersion: v1
 kind: Service
