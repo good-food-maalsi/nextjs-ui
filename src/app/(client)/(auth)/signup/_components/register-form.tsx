@@ -94,6 +94,30 @@ export const RegisterForm = () => {
               />
               <FormField
                 control={form.control}
+                name="phoneNumber"
+                render={({ field }) => (
+                  <FormItem className="grid gap-2">
+                    <FormLabel
+                      className="text-xs font-semibold"
+                      htmlFor="phoneNumber"
+                    >
+                      Numéro de téléphone
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        className="rounded-none border-0 border-b shadow-none"
+                        id="phoneNumber"
+                        type="tel"
+                        placeholder="+33 6 12 34 56 78"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
                 name="password"
                 render={({ field }) => (
                   <FormItem className="grid gap-2">

@@ -9,6 +9,10 @@ export const registerSchema = z
   .object({
     username: z.string().min(1, "Le pseudo est requis"),
     email: z.string().email("L'email n'est pas valide").min(1, "Le champ est requis"),
+    phoneNumber: z
+      .string()
+      .min(1, "Le numéro de téléphone est requis")
+      .regex(/^[+\d\s().-]{6,20}$/, "Le numéro de téléphone n'est pas valide"),
     password: z
       .string()
       .min(8, "Le mot de passe doit contenir au moins 8 caractères"),

@@ -22,6 +22,7 @@ export const useRegister = () => {
       authService.register({
         username: data.username,
         email: data.email,
+        phoneNumber: data.phoneNumber,
         password: data.password,
       }),
     onSuccess: () => {
