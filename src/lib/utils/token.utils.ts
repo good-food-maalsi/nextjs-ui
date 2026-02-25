@@ -53,9 +53,16 @@ export const decrypt = async (token: string): Promise<JwtPayloadRaw | null> => {
 
         let pem: string;
         try {
-            const decoded = decodeBase64Key(base64Key);
-            // Normalize PEM: K8s secret injection can corrupt whitespace/line endings.
-            // Strip headers, remove all whitespace, then reconstruct with proper 64-char lines.
+            // K8s envFrom auto-decodes secret .data → app receives raw PEM.
+            // Local .env files provide base64-encoded PEM.
+            // Auto-detect: if it already starts with -----BEGIN, it's raw PEM.
+            const raw = base64Key.trimStart();
+            const decoded = raw.startsWith("-----BEGIN")
+                ? raw
+                : decodeBase64Key(raw);
+
+            // Normalize PEM: strip headers, remove all whitespace,
+            // reconstruct with proper 64-char lines.
             const body = decoded
                 .replace(/-----BEGIN PUBLIC KEY-----/g, "")
                 .replace(/-----END PUBLIC KEY-----/g, "")
@@ -63,10 +70,7 @@ export const decrypt = async (token: string): Promise<JwtPayloadRaw | null> => {
             const lines = body.match(/.{1,64}/g) ?? [];
             pem = `-----BEGIN PUBLIC KEY-----\n${lines.join("\n")}\n-----END PUBLIC KEY-----`;
         } catch (e) {
-            console.error(
-                "🔴 Failed to base64-decode JWT_PUBLIC_KEY_BASE64:",
-                e,
-            );
+            console.error("🔴 Failed to process JWT_PUBLIC_KEY_BASE64:", e);
             return null;
         }
 
