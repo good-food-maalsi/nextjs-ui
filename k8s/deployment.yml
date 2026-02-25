@@ -59,3 +59,4 @@ data:
     # URL publique de l'API (ingress) pour que le navigateur et le serveur Next puissent joindre auth-service
     NEXT_PUBLIC_GATEWAY_URL: "https://api.good-food.code-with-alex.com"
     NEXT_PUBLIC_API_URL: "https://app.good-food.code-with-alex.com"
+    COOKIE_DOMAIN: ".good-food.code-with-alex.com"
