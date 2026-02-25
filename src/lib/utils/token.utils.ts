@@ -53,7 +53,15 @@ export const decrypt = async (token: string): Promise<JwtPayloadRaw | null> => {
 
         let pem: string;
         try {
-            pem = decodeBase64Key(base64Key);
+            const decoded = decodeBase64Key(base64Key);
+            // Normalize PEM: K8s secret injection can corrupt whitespace/line endings.
+            // Strip headers, remove all whitespace, then reconstruct with proper 64-char lines.
+            const body = decoded
+                .replace(/-----BEGIN PUBLIC KEY-----/g, "")
+                .replace(/-----END PUBLIC KEY-----/g, "")
+                .replace(/\s+/g, "");
+            const lines = body.match(/.{1,64}/g) ?? [];
+            pem = `-----BEGIN PUBLIC KEY-----\n${lines.join("\n")}\n-----END PUBLIC KEY-----`;
         } catch (e) {
             console.error(
                 "🔴 Failed to base64-decode JWT_PUBLIC_KEY_BASE64:",
