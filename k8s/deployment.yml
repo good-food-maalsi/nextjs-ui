@@ -19,7 +19,7 @@ spec:
                 - name: scw-registry-secret
             containers:
                 - name: nextjs-ui
-                  image: rg.fr-par.scw.cloud/good-food-container-registry/nextjs-ui:c0923dd8b1f468106e0bbf9691c6a931b5e559c1
+                  image: rg.fr-par.scw.cloud/good-food-container-registry/nextjs-ui:be16e4bdc1296634bc815f8059d223865a2da53d
                   imagePullPolicy: Always
                   ports:
                       - containerPort: 3000
