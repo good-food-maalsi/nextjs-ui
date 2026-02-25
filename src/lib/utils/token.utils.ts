@@ -45,14 +45,31 @@ export function payloadToSession(payload: JwtPayloadRaw | null): Session {
 
 export const decrypt = async (token: string): Promise<JwtPayloadRaw | null> => {
     try {
-        const publicKey = await importSPKI(
-            decodeBase64Key(process.env.JWT_PUBLIC_KEY_BASE64!),
-            "RS256",
-        );
+        const base64Key = process.env.JWT_PUBLIC_KEY_BASE64;
+        if (!base64Key) {
+            console.error("🔴 JWT_PUBLIC_KEY_BASE64 env var is not set!");
+            return null;
+        }
+
+        let pem: string;
+        try {
+            pem = decodeBase64Key(base64Key);
+        } catch (e) {
+            console.error(
+                "🔴 Failed to base64-decode JWT_PUBLIC_KEY_BASE64:",
+                e,
+            );
+            return null;
+        }
+
+        const publicKey = await importSPKI(pem, "RS256");
         const { payload } = await jwtVerify(token, publicKey);
         return payload as JwtPayloadRaw;
     } catch (error) {
-        console.error("🔴 Erreur lors du déchiffrement du token:", error);
+        console.error(
+            "🔴 JWT verification failed:",
+            error instanceof Error ? error.message : error,
+        );
         return null;
     }
 };
