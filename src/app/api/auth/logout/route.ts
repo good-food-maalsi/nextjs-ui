@@ -3,6 +3,17 @@ import { NextResponse } from "next/server";
 const GATEWAY_URL =
     process.env.NEXT_PUBLIC_GATEWAY_URL || "http://localhost:8080";
 
+function clearAuthCookies(nextRes: NextResponse) {
+    const options = {
+        path: "/",
+        ...(process.env.COOKIE_DOMAIN && {
+            domain: process.env.COOKIE_DOMAIN,
+        }),
+    };
+    nextRes.cookies.set("accessToken", "", { ...options, maxAge: 0 });
+    nextRes.cookies.set("refreshToken", "", { ...options, maxAge: 0 });
+}
+
 /**
  * Proxy logout : appelle le gateway et efface les cookies same-origin.
  */
@@ -25,8 +36,7 @@ export async function GET(request: Request) {
 
         // Always return 200 OK to the client to ensure cookies are cleared locally
         const nextRes = NextResponse.json(data, { status: 200 });
-        nextRes.cookies.delete("accessToken");
-        nextRes.cookies.delete("refreshToken");
+        clearAuthCookies(nextRes);
         return nextRes;
     } catch (err) {
         console.error("[api/auth/logout]", err);
@@ -35,8 +45,7 @@ export async function GET(request: Request) {
             { message: "Logout locally successful (upstream failed)" },
             { status: 200 },
         );
-        res.cookies.delete("accessToken");
-        res.cookies.delete("refreshToken");
+        clearAuthCookies(res);
         return res;
     }
 }
